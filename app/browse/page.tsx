@@ -26,7 +26,8 @@ export default async function BrowsePage({
       licence_type,
       published_at,
       category_id,
-      categories(name, slug)
+      categories(name, slug),
+      media_assets(ipfs_cid, is_primary)
     `)
     .not('published_at', 'is', null)
     .order('published_at', { ascending: false })
@@ -113,9 +114,17 @@ export default async function BrowsePage({
                     href={`/artefact/${artefact.id}`}
                     className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-400 transition-colors"
                   >
-                    <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                      <span className="text-4xl">🏷️</span>
-                    </div>
+                    <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+  {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
+    <img
+      src={(artefact.media_assets as any)[0].ipfs_cid}
+      alt={artefact.title}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <span className="text-4xl">🏷️</span>
+  )}
+</div>
                     <div className="p-4">
                       <div className="text-xs text-gray-400 mb-1">
   {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
