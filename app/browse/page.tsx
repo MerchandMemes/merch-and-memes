@@ -118,8 +118,8 @@ export default async function BrowsePage({
                     </div>
                     <div className="p-4">
                       <div className="text-xs text-gray-400 mb-1">
-                        {(artefact.categories as { name: string; slug: string } | null)?.name} · {artefact.year_approx || 'Year unknown'}
-                      </div>
+  {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
+</div>
                       <div className="font-medium text-gray-900 text-sm leading-snug">{artefact.title}</div>
                       {artefact.description && (
                         <div className="text-xs text-gray-500 mt-1 line-clamp-2">{artefact.description}</div>
