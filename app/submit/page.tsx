@@ -267,19 +267,32 @@ export default function SubmitPage() {
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rightsConfirmed}
-                  onChange={e => setRightsConfirmed(e.target.checked)}
-                  className="mt-0.5"
-                />
-                <span className="text-sm text-amber-900">
-                  I confirm that I have the right to submit this content and agree that it will be published under <strong>{selectedCat?.licence}</strong>. I understand that once published, the content will be stored on IPFS and may remain accessible even if later removed from this site.
-                </span>
-              </label>
-            </div>
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 space-y-3">
+  <p className="text-sm text-gray-700">
+    By submitting you confirm that you have the right to share this content and agree to the{' '}
+    <a href="/terms" className="underline hover:text-black">Terms of Service</a>.
+    This artefact will be published under{' '}
+    <span className="font-medium">{selectedCat?.licence}</span>
+    {selectedCat?.licence === 'CC0' ? (
+      <span className="text-gray-500"> — no rights reserved, free for anyone to use</span>
+    ) : (
+      <span className="text-gray-500"> — free to share with attribution to you</span>
+    )}
+    .
+  </p>
+  <p className="text-xs text-gray-400">
+    Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
+  </p>
+  <label className="flex items-center gap-2 cursor-pointer">
+    <input
+      type="checkbox"
+      checked={rightsConfirmed}
+      onChange={e => setRightsConfirmed(e.target.checked)}
+      className="mt-0.5"
+    />
+    <span className="text-sm text-gray-700">I understand and agree</span>
+  </label>
+</div>
 
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 

@@ -1,6 +1,15 @@
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
-export default function Home() {
+export const dynamic = 'force-dynamic'
+
+export default async function Home() {
+  // Fetch live stats
+  const [{ count: artefactCount }, { count: eventCount }] = await Promise.all([
+    supabase.from('artefacts').select('*', { count: 'exact', head: true }).not('published_at', 'is', null),
+    supabase.from('events').select('*', { count: 'exact', head: true }),
+  ])
+
   return (
     <main className="min-h-screen bg-gray-50">
 
@@ -48,16 +57,16 @@ export default function Home() {
       <section className="border-y border-gray-200 bg-white py-8">
         <div className="max-w-4xl mx-auto grid grid-cols-4 gap-8 text-center">
           <div>
-            <div className="text-2xl font-bold text-gray-900">0</div>
+            <div className="text-2xl font-bold text-gray-900">{artefactCount || 0}</div>
             <div className="text-sm text-gray-500 mt-1">artefacts</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">0</div>
-            <div className="text-sm text-gray-500 mt-1">contributors</div>
+            <div className="text-2xl font-bold text-gray-900">{eventCount || 0}</div>
+            <div className="text-sm text-gray-500 mt-1">events documented</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-gray-900">0</div>
-            <div className="text-sm text-gray-500 mt-1">events documented</div>
+            <div className="text-2xl font-bold text-gray-900">14</div>
+            <div className="text-sm text-gray-500 mt-1">categories</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-gray-900">2013</div>
