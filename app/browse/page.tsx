@@ -32,14 +32,47 @@ export default async function BrowsePage({
     .not('published_at', 'is', null)
 
   if (category) query = query.eq('categories.slug', category)
-  if (q) query = query.ilike('title', `%${q}%`)
+  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`)
   if (sort === 'oldest') {
     query = query.order('published_at', { ascending: true })
   } else {
     query = query.order('published_at', { ascending: false })
   }
 
-  const { data: artefacts, error: artError } = await query
+  let { data: artefacts, error: artError } = await query
+
+// If searching, also find artefacts matching story content
+if (q) {
+  const { data: storyMatches } = await supabase
+    .from('stories')
+    .select('artefact_id')
+    .ilike('content', `%${q}%`)
+
+  if (storyMatches && storyMatches.length > 0) {
+    const storyArtefactIds = storyMatches.map(s => s.artefact_id)
+    const { data: storyArtefacts } = await supabase
+      .from('artefacts')
+      .select(`
+        id,
+        title,
+        description,
+        year_approx,
+        licence_type,
+        published_at,
+        category_id,
+        categories(name, slug),
+        media_assets(ipfs_cid, is_primary)
+      `)
+      .not('published_at', 'is', null)
+      .in('id', storyArtefactIds)
+
+    if (storyArtefacts) {
+      const existingIds = new Set(artefacts?.map(a => a.id) || [])
+      const newArtefacts = storyArtefacts.filter(a => !existingIds.has(a.id))
+      artefacts = [...(artefacts || []), ...newArtefacts]
+    }
+  }
+}
 
   const { data: reactionData } = await supabase
     .from('artefact_reaction_counts')
