@@ -37,12 +37,20 @@ export default function Comments({ artefactId }: { artefactId: string }) {
   }
 
   const handleFlag = async (commentId: string) => {
-    if (flagged.has(commentId)) return
-    await supabase.rpc('increment_comment_flag', { comment_id: commentId })
-    const next = new Set([...flagged, commentId])
-    setFlagged(next)
-    localStorage.setItem('flagged_comments', JSON.stringify([...next]))
-  }
+  if (flagged.has(commentId)) return
+  await supabase.rpc('increment_comment_flag', { comment_id: commentId })
+
+  // Notify moderator on first flag
+  await fetch('/api/flag-comment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ commentId }),
+  })
+
+  const next = new Set([...flagged, commentId])
+  setFlagged(next)
+  localStorage.setItem('flagged_comments', JSON.stringify([...next]))
+}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
