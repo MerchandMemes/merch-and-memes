@@ -345,10 +345,6 @@ export default function SubmitPage() {
 
       </div>
 
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400 mt-16">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
-
     </main>
   )
 }

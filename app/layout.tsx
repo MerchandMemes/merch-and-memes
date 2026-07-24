@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import FeedbackButton from './components/FeedbackButton'
+import Footer from './components/Footer'
 
 export const metadata: Metadata = {
   title: 'Merch&Memes — the web3 archive',
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         {children}
         <FeedbackButton />
+        <Footer />
       </body>
     </html>
   )

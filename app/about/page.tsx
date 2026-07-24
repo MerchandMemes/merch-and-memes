@@ -80,6 +80,30 @@ export default function AboutPage() {
           community humour is how Web3 processed every cycle. The meme archive is being built with
           the community — submit yours and help shape what it becomes.
         </p>
+<h2 className="text-2xl font-bold text-gray-900 mb-4">This is just the beginning</h2>
+
+<p className="text-gray-600 mb-4 leading-relaxed">
+  The archive you see today is a starting point, not a finished product. It will grow with every
+  contribution, every reaction, every piece of feedback from the community that uses it. The features,
+  the categories, the way artefacts are organised — all of it will evolve based on what the community
+  needs and what the culture produces.
+</p>
+
+<p className="text-gray-600 mb-4 leading-relaxed">
+  There is a roadmap. It includes community governance, a full meme archive, event tagging, contributor
+  profiles, and permanent archival storage on decentralised networks designed to outlast any single
+  organisation or platform. If any of that interests you — as a contributor, a volunteer moderator,
+  a developer, or simply someone with ideas — we want to hear from you. Use the feedback button on
+  any page.
+</p>
+
+<p className="text-gray-600 mb-12 leading-relaxed">
+  What will not change: the archive will always be decentralised, free to access, privacy-respecting,
+  and owned by the community that built it. No ads, no paywalls, no data harvesting.
+  Just Web3 culture, preserved for the people who lived it — and open to everyone who is curious
+  about it.
+</p>
+
 
         <div className="border-t border-gray-200 pt-8 flex gap-4">
           <Link href="/submit" className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800">
@@ -92,9 +116,6 @@ export default function AboutPage() {
 
       </div>
 
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400 mt-8">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
     </main>
   )
 }

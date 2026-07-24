@@ -31,7 +31,14 @@ export default async function BrowsePage({
     `)
     .not('published_at', 'is', null)
 
-  if (category) query = query.eq('categories.slug', category)
+  if (category) {
+  const { data: catData } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', category)
+    .single()
+  if (catData) query = query.eq('category_id', catData.id)
+}
   if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`)
   if (sort === 'oldest') {
     query = query.order('published_at', { ascending: true })
@@ -77,6 +84,14 @@ if (q) {
   const { data: reactionData } = await supabase
     .from('artefact_reaction_counts')
     .select('artefact_id, emoji, count')
+    const { data: commentData } = await supabase
+  .from('artefact_comment_counts')
+  .select('artefact_id, count')
+
+const commentMap: Record<string, number> = {}
+commentData?.forEach((c: any) => {
+  commentMap[c.artefact_id] = parseInt(c.count)
+})
 
   const reactionMap: Record<string, Record<string, number>> = {}
   reactionData?.forEach((r: any) => {
@@ -228,21 +243,28 @@ if (sort === 'reactions') {
                           <div className="text-xs text-gray-500 mt-1 line-clamp-2">{artefact.description}</div>
                         )}
                         <div className="mt-3 flex items-center justify-between">
-                          <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
-                            {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
-                          </span>
-                          {hasReactions && (
-                            <div className="flex gap-1.5">
-                              {EMOJIS.map(emoji =>
-                                reactions[emoji] ? (
-                                  <span key={emoji} className="text-xs text-gray-500 flex items-center gap-0.5">
-                                    {emoji}{reactions[emoji]}
-                                  </span>
-                                ) : null
-                              )}
-                            </div>
-                          )}
-                        </div>
+  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
+    {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
+  </span>
+  <div className="flex items-center gap-2">
+    {hasReactions && (
+      <div className="flex gap-1.5">
+        {EMOJIS.map(emoji =>
+          reactions[emoji] ? (
+            <span key={emoji} className="text-xs text-gray-500 flex items-center gap-0.5">
+              {emoji}{reactions[emoji]}
+            </span>
+          ) : null
+        )}
+      </div>
+    )}
+    {commentMap[artefact.id] > 0 && (
+      <span className="text-xs text-gray-400 flex items-center gap-0.5">
+        💬{commentMap[artefact.id]}
+      </span>
+    )}
+  </div>
+</div>
                       </div>
                     </Link>
                   )

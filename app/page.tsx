@@ -5,10 +5,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   // Fetch live stats
-  const [{ count: artefactCount }, { count: eventCount }] = await Promise.all([
-    supabase.from('artefacts').select('*', { count: 'exact', head: true }).not('published_at', 'is', null),
-    supabase.from('events').select('*', { count: 'exact', head: true }),
-  ])
+  const { count: artefactCount } = await supabase
+  .from('artefacts')
+  .select('*', { count: 'exact', head: true })
+  .not('published_at', 'is', null)
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -55,24 +55,20 @@ export default async function Home() {
 
       {/* Stats */}
       <section className="border-y border-gray-200 bg-white py-8">
-        <div className="max-w-4xl mx-auto grid grid-cols-4 gap-8 text-center">
-          <div>
-            <div className="text-2xl font-bold text-gray-900">{artefactCount || 0}</div>
-            <div className="text-sm text-gray-500 mt-1">artefacts</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-gray-900">{eventCount || 0}</div>
-            <div className="text-sm text-gray-500 mt-1">events documented</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-gray-900">14</div>
-            <div className="text-sm text-gray-500 mt-1">categories</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-gray-900">2013</div>
-            <div className="text-sm text-gray-500 mt-1">earliest artefact</div>
-          </div>
-        </div>
+        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-8 text-center">
+  <div>
+    <div className="text-2xl font-bold text-gray-900">{artefactCount || 0}</div>
+    <div className="text-sm text-gray-500 mt-1">artefacts</div>
+  </div>
+  <div>
+    <div className="text-2xl font-bold text-gray-900">14</div>
+    <div className="text-sm text-gray-500 mt-1">categories</div>
+  </div>
+  <div>
+    <div className="text-2xl font-bold text-gray-900">2013</div>
+    <div className="text-sm text-gray-500 mt-1">earliest artefact</div>
+  </div>
+</div>
       </section>
 
       {/* Categories */}
@@ -80,15 +76,21 @@ export default async function Home() {
         <h2 className="text-2xl font-bold text-gray-900 mb-8">Browse by category</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { name: 'Hoodies & Sweatshirts', emoji: '🧥', slug: 'hoodies-sweatshirts' },
-            { name: 'T-Shirts', emoji: '👕', slug: 't-shirts' },
-            { name: 'Stickers', emoji: '🏷️', slug: 'stickers' },
-            { name: 'Badges & Pins', emoji: '📛', slug: 'badges-pins' },
-            { name: 'Caps & Hats', emoji: '🧢', slug: 'caps-hats' },
-            { name: 'Posters & Flyers', emoji: '📄', slug: 'posters-flyers' },
-            { name: 'POAPs', emoji: '⬡', slug: 'poaps' },
-            { name: 'Memes', emoji: '😂', slug: 'memes' },
-          ].map((cat) => (
+  { name: 'Hoodies & Sweatshirts', emoji: '🧥', slug: 'hoodies-sweatshirts' },
+  { name: 'T-Shirts', emoji: '👕', slug: 't-shirts' },
+  { name: 'Stickers', emoji: '🏷️', slug: 'stickers' },
+  { name: 'Badges & Pins', emoji: '📛', slug: 'badges-pins' },
+  { name: 'Caps & Hats', emoji: '🧢', slug: 'caps-hats' },
+  { name: 'Posters & Flyers', emoji: '📄', slug: 'posters-flyers' },
+  { name: 'POAPs', emoji: '⬡', slug: 'poaps' },
+  { name: 'Memes', emoji: '😂', slug: 'memes' },
+  { name: 'Photography', emoji: '📷', slug: 'photography' },
+  { name: 'Artwork & Illustrations', emoji: '🎨', slug: 'artwork-illustrations' },
+  { name: 'Publications', emoji: '📖', slug: 'publications' },
+  { name: 'Hardware', emoji: '🔧', slug: 'hardware' },
+  { name: 'Screenshots', emoji: '🖥️', slug: 'screenshots' },
+  { name: 'Other Merchandise', emoji: '📦', slug: 'other-merchandise' },
+].map((cat) => (
             <Link
               key={cat.slug}
               href={`/browse?category=${cat.slug}`}
@@ -116,10 +118,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
+      
 
     </main>
   )

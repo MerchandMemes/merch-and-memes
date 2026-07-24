@@ -32,9 +32,11 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 mb-3">2. What you can contribute</h2>
             <p className="leading-relaxed mb-3">
-              Merch&Memes accepts physical merchandise, stickers, badges, memes, photography, artwork,
-              publications, and other artefacts related to Web3 culture and history.
-            </p>
+  Merch&Memes accepts photographs and digital images of physical merchandise (hoodies, stickers,
+  badges, caps, hardware, and similar objects), as well as digital artefacts such as memes,
+  photography, artwork, publications, screenshots, and POAPs — all related to Web3 culture and
+  history. Contributors submit images of their artefacts, not the physical objects themselves.
+</p>
             <p className="leading-relaxed">
               You may not submit content that is illegal, harmful, abusive, defamatory, or unrelated
               to Web3 culture. All submissions are reviewed before publication.
@@ -44,7 +46,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 mb-3">3. Licensing</h2>
             <p className="leading-relaxed mb-3">
-              Physical merchandise and promotional artefacts are published under{' '}
+            Merchandise and promotional artefacts are published under{' '}
               <strong className="text-gray-900">CC0 (Public Domain)</strong> — you waive all rights
               and the content enters the public domain.
             </p>
@@ -77,10 +79,16 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-bold text-gray-900 mb-3">6. Takedown requests</h2>
-            <p className="leading-relaxed">
-              If you believe content published on this site infringes your rights, contact the platform
-              administrator. Confirmed infringements will be removed promptly from our infrastructure.
-            </p>
+            <p className="leading-relaxed mb-3">
+  If you believe content published on this site infringes your rights, contact the platform
+  administrator. Confirmed infringements will be removed promptly from our infrastructure —
+  meaning the content will no longer be accessible through this site or our storage services.
+</p>
+<p className="leading-relaxed">
+  As noted in section 5, content stored on IPFS may persist on the broader decentralised network
+  beyond our control. We will always act promptly on valid takedown requests within our
+  infrastructure, and we will document all removal actions transparently.
+</p>
           </section>
 
           <section>
