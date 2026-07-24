@@ -30,6 +30,7 @@ export default function SubmitPage() {
   const [source, setSource] = useState('')
   const [rightsConfirmed, setRightsConfirmed] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [notificationEmail, setNotificationEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -60,6 +61,7 @@ export default function SubmitPage() {
       formData.append('category', selectedCategory)
       formData.append('year', year)
       formData.append('source', source)
+      formData.append('notificationEmail', notificationEmail)
 
       const res = await fetch('/api/submit', {
         method: 'POST',
@@ -239,7 +241,19 @@ export default function SubmitPage() {
                 />
                 <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.</p>
               </div>
-
+<div className="border-t border-gray-100 pt-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Notification email <span className="text-gray-400 font-normal">(optional)</span>
+  </label>
+  <input
+    type="email"
+    value={notificationEmail}
+    onChange={e => setNotificationEmail(e.target.value)}
+    placeholder="Get notified when people react to your artefact"
+    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
+  />
+  <p className="text-xs text-gray-400 mt-1">Only used for reaction notifications. Never shared or used for anything else.</p>
+</div>
             </div>
 
             <div className="flex gap-3 mt-6">
