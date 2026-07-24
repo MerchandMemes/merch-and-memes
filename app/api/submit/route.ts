@@ -1,3 +1,4 @@
+import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -104,14 +105,36 @@ export async function POST(request: NextRequest) {
     })
 
     // Log to audit log
-    await supabase.from('audit_log').insert({
-      action: 'submission_created',
-      entity_type: 'submission',
-      entity_id: artefact.id,
-      note: `New submission: ${title} (category: ${categorySlug})`,
-    })
+await supabase.from('audit_log').insert({
+  action: 'submission_created',
+  entity_type: 'submission',
+  entity_id: artefact.id,
+  note: `New submission: ${title} (category: ${categorySlug})`,
+})
 
-    return NextResponse.json({ success: true, id: artefact.id })
+// Send moderator notification email
+try {
+  console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
+  console.log('RESEND_API_KEY starts with:', process.env.RESEND_API_KEY?.substring(0, 5))
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  await resend.emails.send({
+    from: 'onboarding@resend.dev',
+    to: 'resend.fifth231@passmail.net',
+    subject: `New submission: ${title}`,
+    html: `
+      <p>A new artefact has been submitted to Merch&Memes and is awaiting moderation.</p>
+      <p><strong>Title:</strong> ${title}</p>
+      <p><strong>Category:</strong> ${categorySlug}</p>
+      ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
+      <p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/moderation">Review in moderation queue →</a></p>
+    `,
+  })
+} catch (emailError) {
+  console.error('Failed to send moderator notification:', emailError)
+  // Do not fail the submission if email fails
+}
+
+return NextResponse.json({ success: true, id: artefact.id })
 
   } catch (error) {
     console.error('Submission error:', error)

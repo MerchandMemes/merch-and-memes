@@ -28,16 +28,30 @@ export default function SubmitPage() {
   const [story, setStory] = useState('')
   const [year, setYear] = useState('')
   const [source, setSource] = useState('')
+  const [notificationEmail, setNotificationEmail] = useState('')
   const [rightsConfirmed, setRightsConfirmed] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [notificationEmail, setNotificationEmail] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
 
   const selectedCat = CATEGORIES.find(c => c.slug === selectedCategory)
-  const isMeme = selectedCategory === 'memes' || selectedCategory === 'photography' || 
-                  selectedCategory === 'artwork-illustrations' || selectedCategory === 'screenshots'
+  const isMeme = selectedCategory === 'memes' || selectedCategory === 'photography' ||
+    selectedCategory === 'artwork-illustrations' || selectedCategory === 'screenshots'
+
+  const resetForm = () => {
+    setSubmitted(false)
+    setStep(1)
+    setSelectedCategory('')
+    setTitle('')
+    setDescription('')
+    setStory('')
+    setYear('')
+    setSource('')
+    setRightsConfirmed(false)
+    setFile(null)
+    setNotificationEmail('')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,15 +101,23 @@ export default function SubmitPage() {
         <div className="text-center max-w-md mx-auto px-6">
           <div className="text-5xl mb-6">🎉</div>
           <h1 className="text-2xl font-black text-gray-900 mb-4">Submission received</h1>
-          <p className="text-gray-500 mb-8">
-            Your artefact is now in the moderation queue. We will review it shortly and publish it to the archive.
+          <p className="text-gray-500 mb-4">
+            Your artefact is now in the moderation queue and will be reviewed before publication.
           </p>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-8 text-left">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              <span className="font-medium text-gray-900">When will it appear?</span><br />
+              Moderation happens during daytime European hours (CET/CEST). If you are submitting
+              from the US or Asia, your artefact will typically be reviewed the following morning
+              European time. We appreciate your patience — every submission is reviewed by a human.
+            </p>
+          </div>
           <div className="flex gap-4 justify-center">
             <Link href="/browse" className="bg-black text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
               Browse the archive
             </Link>
             <button
-              onClick={() => { setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle(''); setDescription(''); setStory(''); setYear(''); setSource(''); setRightsConfirmed(false); setFile(null) }}
+              onClick={resetForm}
               className="border border-gray-300 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-50"
             >
               Submit another
@@ -109,7 +131,6 @@ export default function SubmitPage() {
   return (
     <main className="min-h-screen bg-gray-50">
 
-      {/* Navigation */}
       <nav className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
@@ -126,7 +147,6 @@ export default function SubmitPage() {
         <h1 className="text-3xl font-black text-gray-900 mb-2">Contribute an artefact</h1>
         <p className="text-gray-500 mb-8">Share a piece of Web3 history with the community.</p>
 
-        {/* Step indicator */}
         <div className="flex items-center gap-3 mb-8">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-3">
@@ -141,7 +161,6 @@ export default function SubmitPage() {
           </span>
         </div>
 
-        {/* Step 1 — Category */}
         {step === 1 && (
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">What are you contributing?</h2>
@@ -167,7 +186,6 @@ export default function SubmitPage() {
           </div>
         )}
 
-        {/* Step 2 — Details */}
         {step === 2 && (
           <form onSubmit={(e) => { e.preventDefault(); setStep(3) }}>
             <div className="space-y-5">
@@ -241,19 +259,21 @@ export default function SubmitPage() {
                 />
                 <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.</p>
               </div>
-<div className="border-t border-gray-100 pt-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Notification email <span className="text-gray-400 font-normal">(optional)</span>
-  </label>
-  <input
-    type="email"
-    value={notificationEmail}
-    onChange={e => setNotificationEmail(e.target.value)}
-    placeholder="Get notified when people react to your artefact"
-    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-  />
-  <p className="text-xs text-gray-400 mt-1">Only used for reaction notifications. Never shared or used for anything else.</p>
-</div>
+
+              <div className="border-t border-gray-100 pt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notification email <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="email"
+                  value={notificationEmail}
+                  onChange={e => setNotificationEmail(e.target.value)}
+                  placeholder="Reaction notifications coming soon — leave your email to be first"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
+                />
+                <p className="text-xs text-gray-400 mt-1">Reaction notifications coming soon — leave your email to be first.Never shared or used for anything else.</p>
+              </div>
+
             </div>
 
             <div className="flex gap-3 mt-6">
@@ -267,7 +287,6 @@ export default function SubmitPage() {
           </form>
         )}
 
-        {/* Step 3 — Confirm */}
         {step === 3 && (
           <form onSubmit={handleSubmit}>
             <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 space-y-3">
@@ -282,31 +301,30 @@ export default function SubmitPage() {
             </div>
 
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 space-y-3">
-  <p className="text-sm text-gray-700">
-    By submitting you confirm that you have the right to share this content and agree to the{' '}
-    <a href="/terms" className="underline hover:text-black">Terms of Service</a>.
-    This artefact will be published under{' '}
-    <span className="font-medium">{selectedCat?.licence}</span>
-    {selectedCat?.licence === 'CC0' ? (
-      <span className="text-gray-500"> — no rights reserved, free for anyone to use</span>
-    ) : (
-      <span className="text-gray-500"> — free to share with attribution to you</span>
-    )}
-    .
-  </p>
-  <p className="text-xs text-gray-400">
-    Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
-  </p>
-  <label className="flex items-center gap-2 cursor-pointer">
-    <input
-      type="checkbox"
-      checked={rightsConfirmed}
-      onChange={e => setRightsConfirmed(e.target.checked)}
-      className="mt-0.5"
-    />
-    <span className="text-sm text-gray-700">I understand and agree</span>
-  </label>
-</div>
+              <p className="text-sm text-gray-700">
+                By submitting you confirm that you have the right to share this content and agree to the{' '}
+                <a href="/terms" className="underline hover:text-black">Terms of Service</a>.
+                This artefact will be published under{' '}
+                <span className="font-medium">{selectedCat?.licence}</span>
+                {selectedCat?.licence === 'CC0' ? (
+                  <span className="text-gray-500"> — no rights reserved, free for anyone to use</span>
+                ) : (
+                  <span className="text-gray-500"> — free to share with attribution to you</span>
+                )}.
+              </p>
+              <p className="text-xs text-gray-400">
+                Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
+              </p>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rightsConfirmed}
+                  onChange={e => setRightsConfirmed(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span className="text-sm text-gray-700">I understand and agree</span>
+              </label>
+            </div>
 
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
