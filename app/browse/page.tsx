@@ -1,6 +1,22 @@
+import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 
+const cardHoverStyle = `
+  .artefact-card { 
+    background: white; 
+    border-radius: 4px; 
+    overflow: hidden; 
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    padding-bottom: 40px;
+  }
+  .artefact-card:hover { 
+    transform: translateY(-6px) rotate(1deg);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.1);
+  }
+  .artefact-card .card-title { color: #111 !important; }
+  .artefact-card .card-meta { color: #666 !important; }
+`
 export const dynamic = 'force-dynamic'
 
 export default async function BrowsePage({
@@ -11,7 +27,12 @@ export default async function BrowsePage({
   const params = await searchParams
   const { category, q, sort } = params
 
-  const { data: categories, error: catError } = await supabase
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { data: categories } = await supabase
     .from('categories')
     .select('*')
     .order('name')
@@ -32,66 +53,52 @@ export default async function BrowsePage({
     .not('published_at', 'is', null)
 
   if (category) {
-  const { data: catData } = await supabase
-    .from('categories')
-    .select('id')
-    .eq('slug', category)
-    .single()
-  if (catData) query = query.eq('category_id', catData.id)
-}
+    const { data: catData } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('slug', category)
+      .single()
+    if (catData) query = query.eq('category_id', catData.id)
+  }
+
   if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+
   if (sort === 'oldest') {
     query = query.order('published_at', { ascending: true })
   } else {
     query = query.order('published_at', { ascending: false })
   }
 
-  let { data: artefacts, error: artError } = await query
+  let { data: artefacts } = await query
 
-// If searching, also find artefacts matching story content
-if (q) {
-  const { data: storyMatches } = await supabase
-    .from('stories')
-    .select('artefact_id')
-    .ilike('content', `%${q}%`)
+  if (q) {
+    const { data: storyMatches } = await supabase
+      .from('stories')
+      .select('artefact_id')
+      .ilike('content', `%${q}%`)
 
-  if (storyMatches && storyMatches.length > 0) {
-    const storyArtefactIds = storyMatches.map(s => s.artefact_id)
-    const { data: storyArtefacts } = await supabase
-      .from('artefacts')
-      .select(`
-        id,
-        title,
-        description,
-        year_approx,
-        licence_type,
-        published_at,
-        category_id,
-        categories(name, slug),
-        media_assets(ipfs_cid, is_primary)
-      `)
-      .not('published_at', 'is', null)
-      .in('id', storyArtefactIds)
-
-    if (storyArtefacts) {
-      const existingIds = new Set(artefacts?.map(a => a.id) || [])
-      const newArtefacts = storyArtefacts.filter(a => !existingIds.has(a.id))
-      artefacts = [...(artefacts || []), ...newArtefacts]
+    if (storyMatches && storyMatches.length > 0) {
+      const storyArtefactIds = storyMatches.map(s => s.artefact_id)
+      const { data: storyArtefacts } = await supabase
+        .from('artefacts')
+        .select(`id, title, description, year_approx, licence_type, published_at, category_id, categories(name, slug), media_assets(ipfs_cid, is_primary)`)
+        .not('published_at', 'is', null)
+        .in('id', storyArtefactIds)
+      if (storyArtefacts) {
+        const existingIds = new Set(artefacts?.map(a => a.id) || [])
+        const newArtefacts = storyArtefacts.filter(a => !existingIds.has(a.id))
+        artefacts = [...(artefacts || []), ...newArtefacts]
+      }
     }
   }
-}
 
   const { data: reactionData } = await supabase
     .from('artefact_reaction_counts')
     .select('artefact_id, emoji, count')
-    const { data: commentData } = await supabase
-  .from('artefact_comment_counts')
-  .select('artefact_id, count')
 
-const commentMap: Record<string, number> = {}
-commentData?.forEach((c: any) => {
-  commentMap[c.artefact_id] = parseInt(c.count)
-})
+  const { data: commentData } = await supabase
+    .from('artefact_comment_counts')
+    .select('artefact_id, count')
 
   const reactionMap: Record<string, Record<string, number>> = {}
   reactionData?.forEach((r: any) => {
@@ -99,110 +106,138 @@ commentData?.forEach((c: any) => {
     reactionMap[r.artefact_id][r.emoji] = parseInt(r.count)
   })
 
-  const EMOJI_SORT_MAP: Record<string, string> = {
-  fire: '🔥',
-  diamond: '💎',
-  rocket: '🚀',
-  laugh: '😂',
-  heart: '❤️',
-}
+  const commentMap: Record<string, number> = {}
+  commentData?.forEach((c: any) => {
+    commentMap[c.artefact_id] = parseInt(c.count)
+  })
 
-let sortedArtefacts = artefacts || []
-if (sort === 'reactions') {
-  sortedArtefacts = [...sortedArtefacts].sort((a, b) => {
-    const aTotal = Object.values(reactionMap[a.id] || {}).reduce((s: number, n: any) => s + n, 0)
-    const bTotal = Object.values(reactionMap[b.id] || {}).reduce((s: number, n: any) => s + n, 0)
-    return bTotal - aTotal
-  })
-} else if (EMOJI_SORT_MAP[sort || '']) {
-  const emoji = EMOJI_SORT_MAP[sort || '']
-  sortedArtefacts = [...sortedArtefacts].sort((a, b) => {
-    const aCount = reactionMap[a.id]?.[emoji] || 0
-    const bCount = reactionMap[b.id]?.[emoji] || 0
-    return bCount - aCount
-  })
-}
+  const EMOJI_SORT_MAP: Record<string, string> = {
+    fire: '🔥', diamond: '💎', rocket: '🚀', laugh: '😂', heart: '❤️',
+  }
+
+  let sortedArtefacts = artefacts || []
+  if (sort === 'reactions') {
+    sortedArtefacts = [...sortedArtefacts].sort((a, b) => {
+      const aTotal = Object.values(reactionMap[a.id] || {}).reduce((s: number, n: any) => s + n, 0)
+      const bTotal = Object.values(reactionMap[b.id] || {}).reduce((s: number, n: any) => s + n, 0)
+      return bTotal - aTotal
+    })
+  } else if (EMOJI_SORT_MAP[sort || '']) {
+    const emoji = EMOJI_SORT_MAP[sort || '']
+    sortedArtefacts = [...sortedArtefacts].sort((a, b) => {
+      const aCount = reactionMap[a.id]?.[emoji] || 0
+      const bCount = reactionMap[b.id]?.[emoji] || 0
+      return bCount - aCount
+    })
+  }
 
   const EMOJIS = ['🔥', '💎', '🚀', '😂', '❤️']
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-sm">M&M</span>
-          </div>
-          <span className="font-semibold text-gray-900">Merch&Memes</span>
-          <span className="text-gray-400 text-sm">the web3 archive</span>
+  <>
+    <style>{cardHoverStyle}</style>
+    <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
+
+      {/* Navigation */}
+      <nav style={{
+        borderBottom: '1px solid #2A2A2A',
+background: 'rgba(13,13,13,0.95)',
+        padding: '14px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+          <span style={{ fontWeight: 700, color: '#111', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
-        <div className="flex items-center gap-6">
-          <Link href="/browse" className="text-sm font-medium text-gray-900">Browse</Link>
-          <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">About</Link>
-          <Link href="/submit" className="text-sm bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800">
-            Contribute
-          </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
+          <Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
+          <Link href="/submit" style={{
+            fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
+            background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
+          }}>Contribute</Link>
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="text-3xl font-black text-gray-900 mb-6">Browse the archive</h1>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px' }}>
 
-        <div className="mb-8 flex gap-3">
-          <form method="GET" action="/browse" className="flex-1 flex gap-3">
+        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '24px', fontFamily: 'Space Grotesk, sans-serif', color: 'white'}}>
+          Browse the archive
+        </h1>
+
+        {/* Search and sort */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
+          <form method="GET" action="/browse" style={{ flex: 1, display: 'flex', gap: '8px', minWidth: '200px' }}>
             <input
               name="q"
               defaultValue={q}
               placeholder="Search by title, project, event..."
-              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
+              style={{
+                flex: 1, border: '1px solid #E5E5E5', borderRadius: '10px',
+                padding: '10px 16px', fontSize: '0.9rem', background: '#1A1A1A', color: '#F5F5F5', borderColor: '#2A2A2A', outline: 'none',
+              }}
             />
             {category && <input type="hidden" name="category" value={category} />}
             {sort && <input type="hidden" name="sort" value={sort} />}
-            <button type="submit" className="bg-black text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-              Search
-            </button>
+            <button type="submit" style={{
+              padding: '10px 20px', borderRadius: '10px', background: '#111', color: 'white',
+              border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+            }}>Search</button>
           </form>
-          <form method="GET" action="/browse" className="flex gap-2">
+          <form method="GET" action="/browse" style={{ display: 'flex', gap: '8px' }}>
             {q && <input type="hidden" name="q" value={q} />}
             {category && <input type="hidden" name="category" value={category} />}
-            <select
-              name="sort"
-              defaultValue={sort || 'newest'}
-              className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500 bg-white"
-            >
+            <select name="sort" defaultValue={sort || 'newest'} style={{
+              border: '1px solid #E5E5E5', borderRadius: '10px', padding: '10px 16px',
+              fontSize: '0.9rem', background: 'white', outline: 'none',
+            }}>
               <option value="newest">Most recent</option>
-<option value="oldest">Oldest first</option>
-<option value="reactions">Most reacted</option>
-<option value="fire">Most 🔥</option>
-<option value="diamond">Most 💎</option>
-<option value="rocket">Most 🚀</option>
-<option value="laugh">Most 😂</option>
-<option value="heart">Most ❤️</option>
+              <option value="oldest">Oldest first</option>
+              <option value="reactions">Most reacted</option>
+              <option value="fire">Most 🔥</option>
+              <option value="diamond">Most 💎</option>
+              <option value="rocket">Most 🚀</option>
+              <option value="laugh">Most 😂</option>
+              <option value="heart">Most ❤️</option>
             </select>
-            <button type="submit" className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-              Sort
-            </button>
+            <button type="submit" style={{
+              padding: '10px 16px', borderRadius: '10px', background: '#111', color: 'white',
+              border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+            }}>Sort</button>
           </form>
         </div>
 
-        <div className="flex gap-8">
-          <aside className="w-48 flex-shrink-0">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Categories</h2>
-            {catError && <p className="text-xs text-red-500">{catError.message}</p>}
-            <ul className="space-y-1">
-              <li>
-                <Link
-                  href={`/browse${sort ? `?sort=${sort}` : ''}`}
-                  className={`block text-sm px-3 py-2 rounded-lg ${!category ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-                >
+        <div style={{ display: 'flex', gap: '32px' }}>
+
+          {/* Sidebar */}
+          <aside style={{ width: '200px', flexShrink: 0 }}>
+            <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>
+              Categories
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <li style={{ marginBottom: '4px' }}>
+                <Link href={`/browse${sort ? `?sort=${sort}` : ''}`} style={{
+                  display: 'block', padding: '8px 12px', borderRadius: '8px', fontSize: '0.9rem',
+                  textDecoration: 'none', fontWeight: !category ? 600 : 400,
+                  background: !category ? 'linear-gradient(135deg, #627EEA, #DC1FFF)' : 'transparent',
+color: !category ? 'white' : '#888',
+                }}>
                   All artefacts
                 </Link>
               </li>
               {categories?.map((cat) => (
-                <li key={cat.id}>
-                  <Link
-                    href={`/browse?category=${cat.slug}${sort ? `&sort=${sort}` : ''}`}
-                    className={`block text-sm px-3 py-2 rounded-lg ${category === cat.slug ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-                  >
+                <li key={cat.id} style={{ marginBottom: '4px' }}>
+                  <Link href={`/browse?category=${cat.slug}${sort ? `&sort=${sort}` : ''}`} style={{
+                    display: 'block', padding: '8px 12px', borderRadius: '8px', fontSize: '0.9rem',
+                    textDecoration: 'none', fontWeight: category === cat.slug ? 600 : 400,
+                    background: category === cat.slug ? 'linear-gradient(135deg, #627EEA, #DC1FFF)' : 'transparent',
+color: category === cat.slug ? 'white' : '#888',
+                  }}>
                     {cat.name}
                   </Link>
                 </li>
@@ -210,83 +245,77 @@ if (sort === 'reactions') {
             </ul>
           </aside>
 
-          <div className="flex-1">
-            {artError && <p className="text-xs text-red-500 mb-4">{artError.message}</p>}
+          {/* Main content */}
+          <div style={{ flex: 1 }}>
             {sortedArtefacts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
                 {sortedArtefacts.map((artefact) => {
                   const reactions = reactionMap[artefact.id] || {}
                   const hasReactions = Object.values(reactions).some((n: any) => n > 0)
                   return (
-                    <Link
-                      key={artefact.id}
-                      href={`/artefact/${artefact.id}`}
-                      className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-400 transition-colors"
-                    >
-                      <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
-                        {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
-                          <img
-                            src={(artefact.media_assets as any)[0].ipfs_cid}
-                            alt={artefact.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-4xl">🏷️</span>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <div className="text-xs text-gray-400 mb-1">
-                          {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
+                    <Link key={artefact.id} href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
+                      <div className="artefact-card">
+                        <div style={{ aspectRatio: '1', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                          {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
+                            <img src={(artefact.media_assets as any)[0].ipfs_cid} alt={artefact.title}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <span style={{ fontSize: '2.5rem' }}>🏷️</span>
+                          )}
                         </div>
-                        <div className="font-medium text-gray-900 text-sm leading-snug">{artefact.title}</div>
-                        {artefact.description && (
-                          <div className="text-xs text-gray-500 mt-1 line-clamp-2">{artefact.description}</div>
-                        )}
-                        <div className="mt-3 flex items-center justify-between">
-  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
-    {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
-  </span>
-  <div className="flex items-center gap-2">
-    {hasReactions && (
-      <div className="flex gap-1.5">
-        {EMOJIS.map(emoji =>
-          reactions[emoji] ? (
-            <span key={emoji} className="text-xs text-gray-500 flex items-center gap-0.5">
-              {emoji}{reactions[emoji]}
-            </span>
-          ) : null
-        )}
-      </div>
-    )}
-    {commentMap[artefact.id] > 0 && (
-      <span className="text-xs text-gray-400 flex items-center gap-0.5">
-        💬{commentMap[artefact.id]}
-      </span>
-    )}
-  </div>
-</div>
+                        <div style={{ padding: '14px' }}>
+                          <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: '4px' }}>
+                            {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
+                          </div>
+                          <div style={{ fontWeight: 600, color: '#111', fontSize: '0.9rem', lineHeight: 1.4, marginBottom: '10px' }}>
+                            {artefact.title}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{
+                              fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px',
+                              background: artefact.licence_type === 'CC0' ? '#F0FDF4' : '#EFF6FF',
+                              color: artefact.licence_type === 'CC0' ? '#15803D' : '#1D4ED8',
+                              fontWeight: 600,
+                            }}>
+                              {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
+                            </span>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              {hasReactions && (
+                                <div style={{ display: 'flex', gap: '4px' }}>
+                                  {EMOJIS.map(emoji => reactions[emoji] ? (
+                                    <span key={emoji} style={{ fontSize: '0.75rem', color: '#666' }}>
+                                      {emoji}{reactions[emoji]}
+                                    </span>
+                                  ) : null)}
+                                </div>
+                              )}
+                              {commentMap[artefact.id] > 0 && (
+                                <span style={{ fontSize: '0.75rem', color: '#666' }}>💬{commentMap[artefact.id]}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </Link>
                   )
                 })}
               </div>
             ) : (
-              <div className="text-center py-24">
-                <div className="text-4xl mb-4">📦</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No artefacts yet</h3>
-                <p className="text-gray-500 text-sm mb-6">Be the first to contribute to the archive.</p>
-                <Link href="/submit" className="bg-black text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-                  Contribute an artefact
-                </Link>
+              <div style={{ textAlign: 'center', padding: '96px 24px' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📦</div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '8px' }}>No artefacts yet</h3>
+                <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '24px' }}>Be the first to contribute to the archive.</p>
+                <Link href="/submit" style={{
+                  padding: '10px 24px', borderRadius: '10px', background: '#111', color: 'white',
+                  textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600,
+                }}>Contribute an artefact</Link>
               </div>
             )}
           </div>
+
         </div>
       </div>
-
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400 mt-16">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
     </main>
+  </>
   )
 }
