@@ -35,13 +35,30 @@ export default function FeedbackButton() {
     <>
       {/* Floating button */}
       <button
-        onClick={() => { setOpen(true); setSubmitted(false); setMessage(''); setEmail(''); setError('') }}
-        className="fixed bottom-6 right-6 bg-black text-white px-4 py-2.5 rounded-full text-sm font-medium shadow-lg hover:bg-gray-800 transition-all z-50 flex items-center gap-2"
-        aria-label="Send feedback"
-      >
-        <span>💬</span>
-        <span>Feedback</span>
-      </button>
+  onClick={() => { setOpen(true); setSubmitted(false); setMessage(''); setEmail(''); setError('') }}
+  style={{
+    position: 'fixed',
+    bottom: '24px',
+    right: '24px',
+    background: 'linear-gradient(135deg, #627EEA, #DC1FFF)',
+    color: 'white',
+    border: 'none',
+    padding: '14px 24px',
+    borderRadius: '999px',
+    fontSize: '1rem',
+    fontWeight: 700,
+    cursor: 'pointer',
+    zIndex: 50,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    boxShadow: '0 0 30px rgba(98,126,234,0.4)',
+  }}
+  aria-label="Send feedback"
+>
+  <span style={{ fontSize: '1.2rem' }}>💬</span>
+  <span>Feedback</span>
+</button>
 
       {/* Modal */}
       {open && (

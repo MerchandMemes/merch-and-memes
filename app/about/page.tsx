@@ -19,7 +19,7 @@ export default function AboutPage() {
         <h1 className="text-4xl font-black text-gray-900 mb-6">About Merch&Memes</h1>
 
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          Web3 has always been more than technology. It is also a culture — shaped by the people who built it,
+          Web3 has always been more than technology. It is also a culture, shaped by the people who built it,
           questioned it, celebrated it, and occasionally laughed at it.
         </p>
 
@@ -31,7 +31,7 @@ export default function AboutPage() {
 
         <p className="text-gray-600 mb-12 leading-relaxed">
           Merch&Memes is a community-driven archive of Web3 cultural history. Whether you created a protocol,
-          organised a meetup, designed a sticker, or simply picked one up at a conference years ago —
+          organised a meetup, designed a sticker, or simply picked one up at a conference years ago:
           your contribution belongs here.
         </p>
 
@@ -69,8 +69,8 @@ export default function AboutPage() {
 
         <p className="text-gray-600 mb-12 leading-relaxed">
           Merchandise artefacts are published under <strong>CC0</strong> — no rights reserved.
-          Memes, photography, and creative works are published under <strong>CC BY 4.0</strong> —
-          free to share with attribution.
+          Memes, photography, and creative works are published under <strong>CC BY 4.0</strong>,
+          free to share with attribution (for more information see the Terms of Service).
         </p>
 
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Memes — coming soon</h2>
@@ -78,29 +78,29 @@ export default function AboutPage() {
         <p className="text-gray-600 mb-12 leading-relaxed">
           From &ldquo;This is fine&rdquo; during the 2018 bear market to the Terra collapse meme series of May 2022,
           community humour is how Web3 processed every cycle. The meme archive is being built with
-          the community — submit yours and help shape what it becomes.
+          the community, submit yours and help shape what it becomes.
         </p>
 <h2 className="text-2xl font-bold text-gray-900 mb-4">This is just the beginning</h2>
 
 <p className="text-gray-600 mb-4 leading-relaxed">
   The archive you see today is a starting point, not a finished product. It will grow with every
   contribution, every reaction, every piece of feedback from the community that uses it. The features,
-  the categories, the way artefacts are organised — all of it will evolve based on what the community
+  the categories, the way artefacts are organised, all of it will evolve based on what the community
   needs and what the culture produces.
 </p>
 
 <p className="text-gray-600 mb-4 leading-relaxed">
   There is a roadmap. It includes community governance, a full meme archive, event tagging, contributor
   profiles, and permanent archival storage on decentralised networks designed to outlast any single
-  organisation or platform. If any of that interests you — as a contributor, a volunteer moderator,
-  a developer, or simply someone with ideas — we want to hear from you. Use the feedback button on
+  organisation or platform. If any of that interests you, as a contributor, a volunteer moderator,
+  a developer, or simply someone with ideas, we want to hear from you. Use the feedback button on
   any page.
 </p>
 
 <p className="text-gray-600 mb-12 leading-relaxed">
   What will not change: the archive will always be decentralised, free to access, privacy-respecting,
   and owned by the community that built it. No ads, no paywalls, no data harvesting.
-  Just Web3 culture, preserved for the people who lived it — and open to everyone who is curious
+  Just Web3 culture, preserved for the people who lived it, and open to everyone who is curious
   about it.
 </p>
 

@@ -34,7 +34,7 @@ export default function TermsPage() {
             <p className="leading-relaxed mb-3">
   Merch&Memes accepts photographs and digital images of physical merchandise (hoodies, stickers,
   badges, caps, hardware, and similar objects), as well as digital artefacts such as memes,
-  photography, artwork, publications, screenshots, and POAPs — all related to Web3 culture and
+  photography, artwork, publications, screenshots, and POAPs; all related to Web3 culture and
   history. Contributors submit images of their artefacts, not the physical objects themselves.
 </p>
             <p className="leading-relaxed">
@@ -47,12 +47,12 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-3">3. Licensing</h2>
             <p className="leading-relaxed mb-3">
             Merchandise and promotional artefacts are published under{' '}
-              <strong className="text-gray-900">CC0 (Public Domain)</strong> — you waive all rights
+              <strong className="text-gray-900">CC0 (Public Domain)</strong>: you waive all rights
               and the content enters the public domain.
             </p>
             <p className="leading-relaxed">
               Memes, photography, artwork, and personal creative work are published under{' '}
-              <strong className="text-gray-900">CC BY 4.0</strong> — you retain copyright but grant
+              <strong className="text-gray-900">CC BY 4.0</strong>: you retain copyright but grant
               others the right to share and adapt your contribution with attribution.
             </p>
           </section>
@@ -81,7 +81,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-3">6. Takedown requests</h2>
             <p className="leading-relaxed mb-3">
   If you believe content published on this site infringes your rights, contact the platform
-  administrator. Confirmed infringements will be removed promptly from our infrastructure —
+  administrator. Confirmed infringements will be removed promptly from our infrastructure,
   meaning the content will no longer be accessible through this site or our storage services.
 </p>
 <p className="leading-relaxed">
@@ -113,7 +113,7 @@ export default function TermsPage() {
     that undermines the integrity or purpose of the archive as a community resource.
   </p>
   <p className="leading-relaxed">
-    Automated access to this site — including crawlers, bots, and scraping tools — is
+    Automated access to this site, including crawlers, bots, and scraping tools, is
     permitted only for non-commercial indexing purposes and must not place unreasonable
     load on the platform infrastructure. Bulk downloading of media files is not permitted.
   </p>
@@ -135,9 +135,6 @@ export default function TermsPage() {
 
       </div>
 
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
     </main>
   )
 }
