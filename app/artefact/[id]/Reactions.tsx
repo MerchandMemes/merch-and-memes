@@ -90,7 +90,8 @@ export default function Reactions({ artefactId }: { artefactId: string }) {
             key={emoji}
             onClick={() => handleReaction(emoji)}
             disabled={loading === emoji}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium transition-all ${
+            style={{ padding: '8px 14px', minWidth: '52px', justifyContent: 'center' }}
+            className={`flex items-center gap-1.5 rounded-full border text-sm font-medium transition-all ${
               userReactions.has(emoji)
                 ? 'bg-gray-900 border-gray-900 text-white'
                 : 'bg-white border-gray-200 text-gray-700 hover:border-gray-400'

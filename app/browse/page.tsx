@@ -152,7 +152,7 @@ background: 'rgba(13,13,13,0.95)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
-          <span style={{ fontWeight: 700, color: '#111', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
+          <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
@@ -178,8 +178,8 @@ background: 'rgba(13,13,13,0.95)',
               defaultValue={q}
               placeholder="Search by title, project, event..."
               style={{
-                flex: 1, border: '1px solid #E5E5E5', borderRadius: '10px',
-                padding: '10px 16px', fontSize: '0.9rem', background: '#1A1A1A', color: '#F5F5F5', borderColor: '#2A2A2A', outline: 'none',
+                flex: 1, border: '1px solid #2A2A2A', borderRadius: '10px', padding: '10px 16px',
+fontSize: '0.9rem', background: '#1A1A1A', color: '#F5F5F5', outline: 'none',
               }}
             />
             {category && <input type="hidden" name="category" value={category} />}
@@ -193,8 +193,9 @@ background: 'rgba(13,13,13,0.95)',
             {q && <input type="hidden" name="q" value={q} />}
             {category && <input type="hidden" name="category" value={category} />}
             <select name="sort" defaultValue={sort || 'newest'} style={{
-              border: '1px solid #E5E5E5', borderRadius: '10px', padding: '10px 16px',
-              fontSize: '0.9rem', background: 'white', outline: 'none',
+              border: '1px solid #E5E5E5', borderRadius: '10px',
+padding: '10px 16px', fontSize: '0.9rem', background: '#1A1A1A', color: '#F5F5F5', outline: 'none',
+WebkitAppearance: 'none', appearance: 'none',
             }}>
               <option value="newest">Most recent</option>
               <option value="oldest">Oldest first</option>

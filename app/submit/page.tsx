@@ -20,6 +20,26 @@ const CATEGORIES = [
   { name: 'POAPs', slug: 'poaps', licence: 'CC BY 4.0' },
 ]
 
+const inputStyle = {
+  width: '100%',
+  background: '#1A1A1A',
+  border: '1px solid #2A2A2A',
+  borderRadius: '10px',
+  padding: '12px 16px',
+  fontSize: '0.95rem',
+  color: '#F5F5F5',
+  outline: 'none',
+  boxSizing: 'border-box' as const,
+}
+
+const labelStyle = {
+  display: 'block',
+  fontSize: '0.85rem',
+  fontWeight: 600,
+  color: '#888',
+  marginBottom: '6px',
+}
+
 export default function SubmitPage() {
   const [step, setStep] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -36,36 +56,19 @@ export default function SubmitPage() {
   const [error, setError] = useState('')
 
   const selectedCat = CATEGORIES.find(c => c.slug === selectedCategory)
-  const isMeme = selectedCategory === 'memes' || selectedCategory === 'photography' ||
-    selectedCategory === 'artwork-illustrations' || selectedCategory === 'screenshots'
+  const isMeme = ['memes', 'photography', 'artwork-illustrations', 'screenshots'].includes(selectedCategory)
 
   const resetForm = () => {
-    setSubmitted(false)
-    setStep(1)
-    setSelectedCategory('')
-    setTitle('')
-    setDescription('')
-    setStory('')
-    setYear('')
-    setSource('')
-    setRightsConfirmed(false)
-    setFile(null)
-    setNotificationEmail('')
+    setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
+    setDescription(''); setStory(''); setYear(''); setSource('')
+    setRightsConfirmed(false); setFile(null); setNotificationEmail('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!rightsConfirmed) {
-      setError('Please confirm you have the rights to submit this content.')
-      return
-    }
-    if (!file) {
-      setError('Please select an image to upload.')
-      return
-    }
-    setSubmitting(true)
-    setError('')
-
+    if (!rightsConfirmed) { setError('Please confirm you have the rights to submit this content.'); return }
+    if (!file) { setError('Please select an image to upload.'); return }
+    setSubmitting(true); setError('')
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -76,17 +79,8 @@ export default function SubmitPage() {
       formData.append('year', year)
       formData.append('source', source)
       formData.append('notificationEmail', notificationEmail)
-
-      const res = await fetch('/api/submit', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Submission failed')
-      }
-
+      const res = await fetch('/api/submit', { method: 'POST', body: formData })
+      if (!res.ok) { const data = await res.json(); throw new Error(data.error || 'Submission failed') }
       setSubmitted(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -97,31 +91,32 @@ export default function SubmitPage() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-6">
-          <div className="text-5xl mb-6">🎉</div>
-          <h1 className="text-2xl font-black text-gray-900 mb-4">Submission received</h1>
-          <p className="text-gray-500 mb-4">
+      <main style={{ background: '#0D0D0D', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F5F5F5' }}>
+        <div style={{ textAlign: 'center', maxWidth: '480px', padding: '0 24px' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '24px' }}>🎉</div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', marginBottom: '16px', color: 'white' }}>
+            Submission received
+          </h1>
+          <p style={{ color: '#999', marginBottom: '16px', lineHeight: 1.7 }}>
             Your artefact is now in the moderation queue and will be reviewed before publication.
           </p>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-8 text-left">
-            <p className="text-sm text-gray-600 leading-relaxed">
-              <span className="font-medium text-gray-900">When will it appear?</span><br />
+          <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '12px', padding: '16px', marginBottom: '32px', textAlign: 'left' }}>
+            <p style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.7 }}>
+              <span style={{ fontWeight: 600, color: '#F5F5F5' }}>When will it appear?</span><br />
               Moderation happens during daytime European hours (CET/CEST). If you are submitting
               from the US or Asia, your artefact will typically be reviewed the following morning
-              European time. We appreciate your patience — every submission is reviewed by a human.
+              European time. We appreciate your patience, every submission is reviewed by a human.
             </p>
           </div>
-          <div className="flex gap-4 justify-center">
-            <Link href="/browse" className="bg-black text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-800">
-              Browse the archive
-            </Link>
-            <button
-              onClick={resetForm}
-              className="border border-gray-300 text-gray-700 px-5 py-2 rounded-lg text-sm font-medium hover:bg-gray-50"
-            >
-              Submit another
-            </button>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <Link href="/browse" style={{
+              padding: '12px 24px', borderRadius: '12px', fontWeight: 700, textDecoration: 'none',
+              background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', fontSize: '0.95rem',
+            }}>Browse the archive</Link>
+            <button onClick={resetForm} style={{
+              padding: '12px 24px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
+              border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
+            }}>Submit another</button>
           </div>
         </div>
       </main>
@@ -129,214 +124,219 @@ export default function SubmitPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
 
-      <nav className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-sm">M&M</span>
-          </div>
-          <span className="font-semibold text-gray-900">Merch&Memes</span>
-          <span className="text-gray-400 text-sm">the web3 archive</span>
+      {/* Navigation */}
+      <nav style={{
+        borderBottom: '1px solid #2A2A2A', background: 'rgba(13,13,13,0.95)',
+        padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(8px)',
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+          <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
-        <Link href="/browse" className="text-sm text-gray-600 hover:text-gray-900">Browse</Link>
+        <Link href="/browse" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>Browse</Link>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-6 py-10">
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: '48px 24px' }}>
 
-        <h1 className="text-3xl font-black text-gray-900 mb-2">Contribute an artefact</h1>
-        <p className="text-gray-500 mb-8">Share a piece of Web3 history with the community.</p>
+        <h1 style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '8px' }}>
+          Contribute an artefact
+        </h1>
+        <p style={{ color: '#666', marginBottom: '40px' }}>Share a piece of Web3 history with the community.</p>
 
-        <div className="flex items-center gap-3 mb-8">
+        {/* Step indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px' }}>
           {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= s ? 'bg-black text-white' : 'bg-gray-200 text-gray-400'}`}>
-                {s}
-              </div>
-              {s < 3 && <div className={`w-12 h-0.5 ${step > s ? 'bg-black' : 'bg-gray-200'}`} />}
+            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '50%', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem', fontWeight: 700,
+                background: step >= s ? 'linear-gradient(135deg, #627EEA, #DC1FFF)' : '#1A1A1A',
+                color: step >= s ? 'white' : '#444',
+                border: step >= s ? 'none' : '1px solid #2A2A2A',
+              }}>{s}</div>
+              {s < 3 && <div style={{ width: '48px', height: '1px', background: step > s ? '#627EEA' : '#2A2A2A' }} />}
             </div>
           ))}
-          <span className="text-sm text-gray-500 ml-2">
+          <span style={{ fontSize: '0.85rem', color: '#666', marginLeft: '8px' }}>
             {step === 1 ? 'Choose category' : step === 2 ? 'Add details' : 'Confirm & submit'}
           </span>
         </div>
 
+        {/* Step 1 */}
         {step === 1 && (
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">What are you contributing?</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', marginBottom: '20px' }}>
+              What are you contributing?
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.slug}
                   onClick={() => setSelectedCategory(cat.slug)}
-                  className={`text-left p-4 rounded-xl border-2 transition-colors ${selectedCategory === cat.slug ? 'border-black bg-black text-white' : 'border-gray-200 bg-white hover:border-gray-400'}`}
+                  style={{
+                    textAlign: 'left', padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
+                    border: selectedCategory === cat.slug ? '2px solid #627EEA' : '1px solid #2A2A2A',
+                    background: selectedCategory === cat.slug ? 'rgba(98,126,234,0.15)' : '#1A1A1A',
+                    transition: 'all 0.15s',
+                  }}
                 >
-                  <div className="font-medium text-sm">{cat.name}</div>
-                  <div className={`text-xs mt-1 ${selectedCategory === cat.slug ? 'text-gray-300' : 'text-gray-400'}`}>{cat.licence}</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem', color: selectedCategory === cat.slug ? '#627EEA' : '#F5F5F5', marginBottom: '2px' }}>
+                    {cat.name}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: selectedCategory === cat.slug ? '#627EEA' : '#555' }}>
+                    {cat.licence}
+                  </div>
                 </button>
               ))}
             </div>
             <button
               onClick={() => selectedCategory && setStep(2)}
               disabled={!selectedCategory}
-              className="mt-6 w-full bg-black text-white py-3 rounded-lg font-medium disabled:opacity-40 hover:bg-gray-800"
+              style={{
+                width: '100%', padding: '14px', borderRadius: '12px', fontSize: '1rem', fontWeight: 700,
+                border: 'none', cursor: selectedCategory ? 'pointer' : 'not-allowed',
+                background: selectedCategory ? 'linear-gradient(135deg, #627EEA, #DC1FFF)' : '#1A1A1A',
+                color: selectedCategory ? 'white' : '#444',
+              }}
             >
               Continue
             </button>
           </div>
         )}
 
+        {/* Step 2 */}
         {step === 2 && (
           <form onSubmit={(e) => { e.preventDefault(); setStep(3) }}>
-            <div className="space-y-5">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
-                <input
-                  required
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  placeholder="e.g. Devcon IV Hoodie — Berlin 2018"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
+                <label style={labelStyle}>Title <span style={{ color: '#DC1FFF' }}>*</span></label>
+                <input required value={title} onChange={e => setTitle(e.target.value)}
+                  placeholder="e.g. Devcon IV Hoodie, Berlin 2018" style={inputStyle} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  placeholder="Brief description of the artefact"
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
+                <label style={labelStyle}>Description</label>
+                <textarea value={description} onChange={e => setDescription(e.target.value)}
+                  placeholder="Brief description of the artefact" rows={3}
+                  style={{ ...inputStyle, resize: 'none' }} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your story</label>
-                <textarea
-                  value={story}
-                  onChange={e => setStory(e.target.value)}
+                <label style={labelStyle}>Your story</label>
+                <textarea value={story} onChange={e => setStory(e.target.value)}
                   placeholder="Tell us the story behind this artefact. Where did you get it? What does it mean to you?"
-                  rows={4}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
+                  rows={4} style={{ ...inputStyle, resize: 'none' }} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Approximate year</label>
-                <input
-                  type="number"
-                  value={year}
-                  onChange={e => setYear(e.target.value)}
-                  placeholder="e.g. 2018"
-                  min="2008"
-                  max="2030"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
+                <label style={labelStyle}>Approximate year</label>
+                <input type="number" value={year} onChange={e => setYear(e.target.value)}
+                  placeholder="e.g. 2018" min="2008" max="2030" style={inputStyle} />
               </div>
 
               {isMeme && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Source <span className="text-red-500">*</span></label>
-                  <input
-                    required={isMeme}
-                    value={source}
-                    onChange={e => setSource(e.target.value)}
-                    placeholder="Where did this originate? URL, platform, community..."
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                  />
+                  <label style={labelStyle}>Source <span style={{ color: '#DC1FFF' }}>*</span></label>
+                  <input required={isMeme} value={source} onChange={e => setSource(e.target.value)}
+                    placeholder="Where did this originate? URL, platform, community..." style={inputStyle} />
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image <span className="text-red-500">*</span></label>
-                <input
-                  type="file"
-                  accept="image/*,.heic,.heif,application/pdf"
+                <label style={labelStyle}>Image <span style={{ color: '#DC1FFF' }}>*</span></label>
+                <input type="file" accept="image/*,.heic,.heif,application/pdf"
                   onChange={e => setFile(e.target.files?.[0] || null)}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
-                <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.</p>
+                  style={{ ...inputStyle, padding: '10px 16px' }} />
+                <p style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px' }}>
+                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.
+                </p>
               </div>
 
-              <div className="border-t border-gray-100 pt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notification email <span className="text-gray-400 font-normal">(optional)</span>
+              <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '20px' }}>
+                <label style={labelStyle}>
+                  Notification email <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span>
                 </label>
-                <input
-                  type="email"
-                  value={notificationEmail}
-                  onChange={e => setNotificationEmail(e.target.value)}
-                  placeholder="Reaction notifications coming soon — leave your email to be first"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-gray-500"
-                />
-                <p className="text-xs text-gray-400 mt-1">Reaction notifications coming soon — leave your email to be first.Never shared or used for anything else.</p>
+                <input type="email" value={notificationEmail} onChange={e => setNotificationEmail(e.target.value)}
+                  placeholder="Reaction notifications coming soon, leave your email to be first"
+                  style={inputStyle} />
+                <p style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px' }}>
+                  Only used for reaction notifications. Never shared or used for anything else.
+                </p>
               </div>
 
             </div>
 
-            <div className="flex gap-3 mt-6">
-              <button type="button" onClick={() => setStep(1)} className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50">
-                Back
-              </button>
-              <button type="submit" className="flex-1 bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800">
-                Continue
-              </button>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+              <button type="button" onClick={() => setStep(1)} style={{
+                flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
+                border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
+              }}>Back</button>
+              <button type="submit" style={{
+                flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer',
+                border: 'none', background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', fontSize: '0.95rem',
+              }}>Continue</button>
             </div>
           </form>
         )}
 
+        {/* Step 3 */}
         {step === 3 && (
           <form onSubmit={handleSubmit}>
-            <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 space-y-3">
-              <h2 className="font-semibold text-gray-900">Review your submission</h2>
-              <div className="text-sm space-y-2">
-                <div><span className="text-gray-500">Category:</span> <span className="font-medium">{selectedCat?.name}</span></div>
-                <div><span className="text-gray-500">Licence:</span> <span className="font-medium">{selectedCat?.licence}</span></div>
-                <div><span className="text-gray-500">Title:</span> <span className="font-medium">{title}</span></div>
-                {year && <div><span className="text-gray-500">Year:</span> <span className="font-medium">{year}</span></div>}
-                {file && <div><span className="text-gray-500">Image:</span> <span className="font-medium">{file.name}</span></div>}
+            <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '16px', padding: '24px', marginBottom: '24px' }}>
+              <h2 style={{ fontWeight: 700, color: 'white', marginBottom: '16px', fontSize: '1rem' }}>Review your submission</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { label: 'Category', value: selectedCat?.name },
+                  { label: 'Licence', value: selectedCat?.licence },
+                  { label: 'Title', value: title },
+                  year ? { label: 'Year', value: year } : null,
+                  file ? { label: 'Image', value: file.name } : null,
+                ].filter(Boolean).map((item: any) => (
+                  <div key={item.label} style={{ display: 'flex', gap: '8px', fontSize: '0.9rem' }}>
+                    <span style={{ color: '#555', minWidth: '80px' }}>{item.label}:</span>
+                    <span style={{ color: '#F5F5F5', fontWeight: 500 }}>{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 space-y-3">
-              <p className="text-sm text-gray-700">
+            <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
+              <p style={{ fontSize: '0.9rem', color: '#999', lineHeight: 1.7, marginBottom: '12px' }}>
                 By submitting you confirm that you have the right to share this content and agree to the{' '}
-                <a href="/terms" className="underline hover:text-black">Terms of Service</a>.
+                <Link href="/terms" style={{ color: '#627EEA' }}>Terms of Service</Link>.
                 This artefact will be published under{' '}
-                <span className="font-medium">{selectedCat?.licence}</span>
-                {selectedCat?.licence === 'CC0' ? (
-                  <span className="text-gray-500"> — no rights reserved, free for anyone to use</span>
-                ) : (
-                  <span className="text-gray-500"> — free to share with attribution to you</span>
-                )}.
+                <span style={{ fontWeight: 600, color: '#F5F5F5' }}>{selectedCat?.licence}</span>
+                {selectedCat?.licence === 'CC0'
+                  ? <span style={{ color: '#666' }}> — no rights reserved, free for anyone to use</span>
+                  : <span style={{ color: '#666' }}> — free to share with attribution to you</span>}.
               </p>
-              <p className="text-xs text-gray-400">
+              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.6, marginBottom: '16px' }}>
                 Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
               </p>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rightsConfirmed}
-                  onChange={e => setRightsConfirmed(e.target.checked)}
-                  className="mt-0.5"
-                />
-                <span className="text-sm text-gray-700">I understand and agree</span>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                <input type="checkbox" checked={rightsConfirmed} onChange={e => setRightsConfirmed(e.target.checked)} />
+                <span style={{ fontSize: '0.9rem', color: '#ccc' }}>I understand and agree</span>
               </label>
             </div>
 
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            {error && <p style={{ color: '#FF4444', fontSize: '0.9rem', marginBottom: '16px' }}>{error}</p>}
 
-            <div className="flex gap-3">
-              <button type="button" onClick={() => setStep(2)} className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50">
-                Back
-              </button>
-              <button
-                type="submit"
-                disabled={submitting || !rightsConfirmed}
-                className="flex-1 bg-black text-white py-3 rounded-lg font-medium disabled:opacity-40 hover:bg-gray-800"
-              >
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button type="button" onClick={() => setStep(2)} style={{
+                flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
+                border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
+              }}>Back</button>
+              <button type="submit" disabled={submitting || !rightsConfirmed} style={{
+                flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 700,
+                border: 'none', fontSize: '0.95rem', color: 'white',
+                background: 'linear-gradient(135deg, #627EEA, #DC1FFF)',
+                cursor: submitting || !rightsConfirmed ? 'not-allowed' : 'pointer',
+                opacity: submitting || !rightsConfirmed ? 0.4 : 1,
+              }}>
                 {submitting ? 'Submitting...' : 'Submit to archive'}
               </button>
             </div>
@@ -344,7 +344,6 @@ export default function SubmitPage() {
         )}
 
       </div>
-
     </main>
   )
 }

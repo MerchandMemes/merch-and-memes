@@ -1,8 +1,9 @@
-import Comments from './Comments'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Reactions from './Reactions'
+import Comments from './Comments'
+
 export const dynamic = 'force-dynamic'
 
 export default async function ArtefactPage({
@@ -41,99 +42,148 @@ export default async function ArtefactPage({
   const category = artefact.categories as any
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
 
       {/* Navigation */}
-      <nav className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-sm">M&M</span>
-          </div>
-          <span className="font-semibold text-gray-900">Merch&Memes</span>
-          <span className="text-gray-400 text-sm">the web3 archive</span>
+      <nav style={{
+        borderBottom: '1px solid #2A2A2A',
+        background: 'rgba(13,13,13,0.95)',
+        padding: '14px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        backdropFilter: 'blur(8px)',
+      }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+          <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
-        <Link href="/browse" className="text-sm text-gray-600 hover:text-gray-900">
+        <Link href="/browse" style={{
+          fontSize: '0.9rem', color: '#888', textDecoration: 'none',
+          display: 'flex', alignItems: 'center', gap: '6px',
+        }}>
           ← Back to archive
         </Link>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
 
-          {/* Image */}
-          <div>
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden aspect-square flex items-center justify-center">
+          {/* Image — polaroid style */}
+          <div style={{
+            background: 'white',
+            padding: '16px 16px 56px 16px',
+            borderRadius: '4px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+            transform: 'rotate(-1deg)',
+          }}>
+            <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#f0f0f0' }}>
               {image?.ipfs_cid ? (
                 <img
                   src={image.ipfs_cid}
                   alt={artefact.title}
-                  className="w-full h-full object-contain"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
               ) : (
-                <span className="text-6xl">🏷️</span>
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>🏷️</div>
               )}
             </div>
+            <p style={{ textAlign: 'center', marginTop: '16px', color: '#333', fontSize: '0.85rem', fontFamily: 'Space Grotesk, sans-serif' }}>
+              {artefact.title}
+            </p>
           </div>
 
           {/* Details */}
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Link
-                href={`/browse?category=${category?.slug}`}
-                className="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full hover:bg-gray-200"
-              >
+            {/* Category and licence */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              <Link href={`/browse?category=${category?.slug}`} style={{
+                fontSize: '0.75rem', padding: '4px 12px', borderRadius: '999px',
+                background: 'rgba(98,126,234,0.2)', color: '#627EEA',
+                textDecoration: 'none', fontWeight: 600,
+              }}>
                 {category?.name}
               </Link>
-              <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full">
+              <span style={{
+                fontSize: '0.75rem', padding: '4px 12px', borderRadius: '999px',
+                background: artefact.licence_type === 'CC0' ? 'rgba(0,255,163,0.15)' : 'rgba(98,126,234,0.15)',
+                color: artefact.licence_type === 'CC0' ? '#00FFA3' : '#627EEA',
+                fontWeight: 600,
+              }}>
                 {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
               </span>
             </div>
 
-            <h1 className="text-3xl font-black text-gray-900 mb-2">{artefact.title}</h1>
+            {/* Title */}
+            <h1 style={{
+              fontSize: 'clamp(1.8rem, 3vw, 2.8rem)',
+              fontWeight: 700,
+              color: 'white',
+              fontFamily: 'Space Grotesk, sans-serif',
+              lineHeight: 1.2,
+              marginBottom: '8px',
+            }}>
+              {artefact.title}
+            </h1>
 
+            {/* Year */}
             {artefact.year_approx && (
-              <p className="text-gray-400 text-sm mb-4">{artefact.year_approx}</p>
+              <p style={{ color: '#627EEA', fontSize: '1rem', marginBottom: '16px', fontWeight: 500 }}>
+                {artefact.year_approx}
+              </p>
             )}
 
+            {/* Description */}
             {artefact.description && (
-              <p className="text-gray-600 mb-6">{artefact.description}</p>
+              <p style={{ color: '#999', fontSize: '1rem', lineHeight: 1.7, marginBottom: '24px' }}>
+                {artefact.description}
+              </p>
             )}
 
+            {/* Story */}
             {story && (
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+              <div style={{
+                background: '#1A1A1A',
+                border: '1px solid #2A2A2A',
+                borderLeft: '3px solid #627EEA',
+                borderRadius: '8px',
+                padding: '16px 20px',
+                marginBottom: '24px',
+              }}>
+                <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#627EEA', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>
                   Contributor story
                 </p>
-                <p className="text-gray-700 leading-relaxed">{story.content}</p>
+                <p style={{ color: '#ccc', lineHeight: 1.7, fontSize: '0.95rem' }}>{story.content}</p>
               </div>
             )}
-<Reactions artefactId={artefact.id} />
+
+            {/* Reactions */}
+            <Reactions artefactId={artefact.id} />
+
             {/* Licence info */}
-            <div className="border-t border-gray-200 pt-4 mt-4">
-              <p className="text-xs text-gray-400">
+            <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '16px', marginTop: '24px' }}>
+              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.6 }}>
                 {artefact.licence_type === 'CC0'
-                  ? 'This artefact has been dedicated to the public domain under CC0. No rights reserved — free for anyone to use, share, or build upon without restriction.'
+                  ? 'This artefact has been dedicated to the public domain under CC0. No rights reserved, free for anyone to use, share, or build upon without restriction.'
                   : 'This artefact is shared under CC BY 4.0. You may use, share, or adapt it provided you give appropriate credit to the contributor.'}
               </p>
             </div>
 
-            <div className="mt-6">
-              <Link
-                href="/submit"
-                className="text-sm text-gray-500 hover:text-gray-900 underline"
-              >
+            <div style={{ marginTop: '16px' }}>
+              <Link href="/submit" style={{ fontSize: '0.85rem', color: '#627EEA', textDecoration: 'underline' }}>
                 Have something similar? Contribute it →
               </Link>
             </div>
+
+            {/* Comments */}
             <Comments artefactId={artefact.id} />
           </div>
 
         </div>
       </div>
-
-      <footer className="border-t border-gray-200 px-6 py-8 text-center text-sm text-gray-400 mt-16">
-        <p>Merch&Memes — the web3 archive · merchandmemes.eth · CC0 &amp; CC BY 4.0</p>
-      </footer>
 
     </main>
   )
