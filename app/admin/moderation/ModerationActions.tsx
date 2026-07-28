@@ -42,20 +42,20 @@ export default function ModerationActions({
         onChange={e => setNote(e.target.value)}
         placeholder="Moderation note (required for rejection, optional for approval)"
         rows={2}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-400"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400"
       />
       <div className="flex gap-3">
         <button
           onClick={() => handleAction('approve')}
           disabled={loading !== null}
-          className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-40"
+          className="flex-1 bg-[#00B37A] text-white py-2 rounded-full text-sm font-medium hover:bg-[#00996A] disabled:opacity-40 transition-colors"
         >
           {loading === 'approve' ? 'Approving...' : '✓ Approve'}
         </button>
         <button
           onClick={() => handleAction('reject')}
           disabled={loading !== null}
-          className="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-40"
+          className="flex-1 bg-red-600 text-white py-2 rounded-full text-sm font-medium hover:bg-red-700 disabled:opacity-40 transition-colors"
         >
           {loading === 'reject' ? 'Rejecting...' : '✗ Reject'}
         </button>

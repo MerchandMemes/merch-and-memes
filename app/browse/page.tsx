@@ -61,7 +61,7 @@ export default async function BrowsePage({
     if (catData) query = query.eq('category_id', catData.id)
   }
 
-  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+  if (q) query = query.textSearch('fts', q, { type: 'websearch', config: 'english' })
 
   if (sort === 'oldest') {
     query = query.order('published_at', { ascending: true })
@@ -75,7 +75,7 @@ export default async function BrowsePage({
     const { data: storyMatches } = await supabase
       .from('stories')
       .select('artefact_id')
-      .ilike('content', `%${q}%`)
+      .textSearch('fts', q, { type: 'websearch', config: 'english' })
 
     if (storyMatches && storyMatches.length > 0) {
       const storyArtefactIds = storyMatches.map(s => s.artefact_id)
@@ -258,8 +258,8 @@ color: category === cat.slug ? 'white' : '#888',
                       <div className="artefact-card">
                         <div style={{ aspectRatio: '1', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                           {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
-                            <img src={(artefact.media_assets as any)[0].ipfs_cid} alt={artefact.title}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any)[0].ipfs_cid}`} alt={artefact.title}
+    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             <span style={{ fontSize: '2.5rem' }}>🏷️</span>
                           )}

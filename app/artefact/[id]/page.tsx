@@ -82,11 +82,11 @@ export default async function ArtefactPage({
           }}>
             <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#f0f0f0' }}>
               {image?.ipfs_cid ? (
-                <img
-                  src={image.ipfs_cid}
-                  alt={artefact.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                />
+  <img
+    src={`https://ipfs.filebase.io/ipfs/${image.ipfs_cid}`}
+    alt={artefact.title}
+    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+  />
               ) : (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>🏷️</div>
               )}

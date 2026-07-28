@@ -27,14 +27,14 @@ export default function CommentActions({ commentId }: { commentId: string }) {
       <button
         onClick={() => handleAction('hide')}
         disabled={loading !== null}
-        className="text-sm bg-red-600 text-white px-4 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-40"
+        className="text-sm bg-red-600 text-white px-4 py-1.5 rounded-full hover:bg-red-700 disabled:opacity-40 transition-colors"
       >
         {loading === 'hide' ? 'Hiding...' : 'Hide comment'}
       </button>
       <button
         onClick={() => handleAction('keep')}
         disabled={loading !== null}
-        className="text-sm border border-gray-300 text-gray-600 px-4 py-1.5 rounded-lg hover:bg-gray-50 disabled:opacity-40"
+        className="text-sm border border-gray-300 text-gray-600 px-4 py-1.5 rounded-full hover:bg-gray-50 disabled:opacity-40 transition-colors"
       >
         {loading === 'keep' ? 'Saving...' : 'Keep (dismiss flags)'}
       </button>

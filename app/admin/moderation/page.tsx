@@ -63,24 +63,34 @@ export default async function ModerationPage() {
   )
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="border-b border-gray-200 bg-white px-6 py-4 flex items-center justify-between">
+    <main className="min-h-screen bg-[#0D0D0D]">
+      {/*
+        NOTE: This nav is written inline to match the screenshot (logo, wordmark,
+        nav links, gradient pill). If you have a shared Header/Nav component used
+        on /browse, /about etc., swap this block for <Header /> instead so nav
+        changes stay in one place.
+      */}
+      <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <span className="text-white font-black text-sm">M&M</span>
+          <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center">
+            <img src="/logo_nofold.png" alt="Merch&Memes" className="w-full h-full object-contain" />
           </div>
-          <span className="font-semibold text-gray-900">Merch&Memes</span>
-          <span className="text-gray-400 text-sm">moderation</span>
+          <span className="font-['Space_Grotesk'] font-bold text-white">Merch&Memes</span>
+          <span className="text-white/40 text-sm">moderation</span>
         </Link>
-        <Link href="/browse" className="text-sm text-gray-600 hover:text-gray-900">Back to site</Link>
+        <Link href="/browse" className="text-sm text-white/60 hover:text-white transition-colors">
+          Back to site
+        </Link>
       </nav>
 
       <div className="max-w-4xl mx-auto px-6 py-10">
 
         {/* Submissions queue */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-black text-gray-900">Submission queue</h1>
-          <span className="bg-gray-900 text-white text-sm px-3 py-1 rounded-full">
+          <h1 className="font-['Space_Grotesk'] text-2xl font-black text-white">
+            Submission queue
+          </h1>
+          <span className="bg-gradient-to-r from-[#627EEA] to-[#DC1FFF] text-white text-sm font-medium px-3 py-1 rounded-full">
             {submissionsWithUrls.length} pending
           </span>
         </div>
@@ -92,11 +102,18 @@ export default async function ModerationPage() {
               const story = artefact?.stories?.[0]?.content
 
               return (
-                <div key={submission.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div
+                  key={submission.id}
+                  className="bg-white rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                >
                   <div className="flex gap-6 p-6">
                     <div className="w-48 h-48 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                       {submission.signedUrl ? (
-                        <img src={submission.signedUrl} alt={artefact?.title} className="w-full h-full object-cover" />
+                        <img
+                          src={submission.signedUrl}
+                          alt={artefact?.title}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-4xl">🏷️</div>
                       )}
@@ -104,12 +121,13 @@ export default async function ModerationPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <h2 className="font-bold text-gray-900 text-lg">{artefact?.title}</h2>
-                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded ml-4">
+                        <span className="text-xs bg-[#00FFA3]/10 text-[#00B37A] px-2 py-1 rounded ml-4 font-medium">
                           {artefact?.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
                         </span>
                       </div>
                       <div className="text-xs text-gray-400 mb-3">
-                        {(artefact?.categories as any)?.name} · {artefact?.year_approx || 'Year unknown'} · Submitted {new Date(submission.submitted_at).toLocaleDateString()}
+                        {(artefact?.categories as any)?.name} · {artefact?.year_approx || 'Year unknown'} · Submitted{' '}
+                        {new Date(submission.submitted_at).toLocaleDateString()}
                       </div>
                       {artefact?.description && (
                         <p className="text-sm text-gray-600 mb-3">{artefact.description}</p>
@@ -128,17 +146,19 @@ export default async function ModerationPage() {
             })}
           </div>
         ) : (
-          <div className="text-center py-16 mb-12 bg-white rounded-xl border border-gray-200">
+          <div className="text-center py-16 mb-12 bg-white/5 rounded-xl border border-white/10">
             <div className="text-4xl mb-4">✅</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Queue is empty</h3>
-            <p className="text-gray-500 text-sm">No pending submissions to review.</p>
+            <h3 className="text-lg font-medium text-white mb-2">Queue is empty</h3>
+            <p className="text-white/50 text-sm">No pending submissions to review.</p>
           </div>
         )}
 
         {/* Flagged comments */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-black text-gray-900">Flagged comments</h2>
-          <span className="bg-red-600 text-white text-sm px-3 py-1 rounded-full">
+          <h2 className="font-['Space_Grotesk'] text-2xl font-black text-white">
+            Flagged comments
+          </h2>
+          <span className="bg-red-500 text-white text-sm font-medium px-3 py-1 rounded-full">
             {flaggedComments?.length || 0} flagged
           </span>
         </div>
@@ -146,19 +166,26 @@ export default async function ModerationPage() {
         {flaggedComments && flaggedComments.length > 0 ? (
           <div className="space-y-4">
             {flaggedComments.map((comment) => (
-              <div key={comment.id} className="bg-white border border-red-200 rounded-xl p-5">
+              <div
+                key={comment.id}
+                className="bg-white rounded-xl p-5 shadow-[0_0_0_1px_rgba(239,68,68,0.35)]"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <span className="text-sm font-medium text-gray-900">
                       {comment.display_name || 'Anonymous'}
                     </span>
                     <span className="text-xs text-gray-400 ml-2">
-                      on <Link href={`/artefact/${comment.artefact_id}`} className="underline hover:text-gray-700">
+                      on{' '}
+                      <Link
+                        href={`/artefact/${comment.artefact_id}`}
+                        className="underline hover:text-gray-700"
+                      >
                         {(comment.artefacts as any)?.title}
                       </Link>
                     </span>
                   </div>
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">
                     {comment.flag_count} flag{comment.flag_count !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -168,10 +195,10 @@ export default async function ModerationPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+          <div className="text-center py-16 bg-white/5 rounded-xl border border-white/10">
             <div className="text-4xl mb-4">💬</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No flagged comments</h3>
-            <p className="text-gray-500 text-sm">All comments are clean.</p>
+            <h3 className="text-lg font-medium text-white mb-2">No flagged comments</h3>
+            <p className="text-white/50 text-sm">All comments are clean.</p>
           </div>
         )}
 
@@ -179,4 +206,3 @@ export default async function ModerationPage() {
     </main>
   )
 }
-

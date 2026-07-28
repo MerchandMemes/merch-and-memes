@@ -1,5 +1,35 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  S3Client,
+  PutObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3'
+
+// Requires: npm install @aws-sdk/client-s3
+//
+// Env vars needed (add to .env.local and Vercel):
+//   FILEBASE_ACCESS_KEY_ID
+//   FILEBASE_SECRET_ACCESS_KEY
+//   FILEBASE_BUCKET_NAME
+//
+// Filebase exposes an S3-compatible API. When the target bucket is configured
+// as an IPFS-network bucket, each PutObject is automatically pinned to IPFS,
+// and the resulting CID is attached as object metadata ("cid"), retrievable
+// via HeadObject.
+const filebase = new S3Client({
+  region: 'auto',
+  endpoint: 'https://s3.filebase.io',
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: process.env.FILEBASE_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.FILEBASE_SECRET_ACCESS_KEY!,
+  },
+  requestChecksumCalculation: 'WHEN_REQUIRED',
+  responseChecksumValidation: 'WHEN_REQUIRED',
+})
+
+const FILEBASE_BUCKET = process.env.FILEBASE_BUCKET_NAME!
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,8 +52,6 @@ export async function POST(request: NextRequest) {
         .eq('id', submissionId)
         .single()
 
-      let publicPath = null
-
       if (submission?.staging_path) {
         // Download from staging
         const { data: fileData } = await supabase.storage
@@ -31,37 +59,57 @@ export async function POST(request: NextRequest) {
           .download(submission.staging_path)
 
         if (fileData) {
-          // Upload to public artefacts bucket
-          const { data: uploadData } = await supabase.storage
-            .from('artefacts')
-            .upload(submission.staging_path, fileData, {
-              upsert: true,
-            })
+          const key = submission.staging_path
+          const buffer = Buffer.from(await fileData.arrayBuffer())
 
-          if (uploadData) {
-  publicPath = uploadData.path
+          try {
+            // Upload to Filebase — auto-pins to IPFS on IPFS-network buckets
+            await filebase.send(
+              new PutObjectCommand({
+                Bucket: FILEBASE_BUCKET,
+                Key: key,
+                Body: buffer,
+                ContentType: fileData.type || 'application/octet-stream',
+              })
+            )
 
-  // Get public URL
-  const { data: urlData } = supabase.storage
-    .from('artefacts')
-    .getPublicUrl(publicPath)
+            // Retrieve the CID Filebase assigned to the pinned object
+            const head = await filebase.send(
+              new HeadObjectCommand({
+                Bucket: FILEBASE_BUCKET,
+                Key: key,
+              })
+            )
+            const cid = head.Metadata?.cid
 
-  console.log('Public URL:', urlData.publicUrl)
-  console.log('Artefact ID:', artefactId)
+            if (!cid) {
+              throw new Error('Filebase did not return a CID for the uploaded object')
+            }
 
-  // Update media asset with public URL
-  const { error: updateError } = await supabase
-    .from('media_assets')
-    .update({ ipfs_cid: urlData.publicUrl })
-    .eq('artefact_id', artefactId)
+            console.log('IPFS CID:', cid)
+            console.log('Artefact ID:', artefactId)
 
-  console.log('Update error:', updateError)
+            // Store the raw CID (not a full URL) on the media asset
+            const { error: updateError } = await supabase
+              .from('media_assets')
+              .update({ ipfs_cid: cid })
+              .eq('artefact_id', artefactId)
 
-  // Delete from staging
-  await supabase.storage
-    .from('staging')
-    .remove([submission.staging_path])
-}
+            if (updateError) {
+              throw updateError
+            }
+
+            // Only remove from staging once the Filebase upload + CID are confirmed
+            await supabase.storage.from('staging').remove([submission.staging_path])
+          } catch (filebaseError) {
+            // Abort the approval entirely rather than publishing with a broken
+            // or missing image. Submission stays 'pending' for retry.
+            console.error('Filebase upload failed:', filebaseError)
+            return NextResponse.json(
+              { error: 'Filebase upload failed. Approval aborted; submission remains pending.' },
+              { status: 502 }
+            )
+          }
         }
       }
 
