@@ -1,6 +1,19 @@
 import Link from 'next/link'
 
 export default function AboutPage() {
+  const principles = [
+    { title: 'Community-driven', text: 'The platform exists to enable the Web3 community to document and preserve its own cultural history.' },
+    { title: 'Open and accessible', text: 'Barriers to participation are minimised while maintaining the quality and integrity of the archive.' },
+    { title: 'Authenticity', text: 'Contributions represent genuine artefacts, experiences, and memories.' },
+    { title: 'Context matters', text: 'An artefact without its story is only part of the historical record.' },
+    { title: 'Long-term preservation', text: 'The platform prioritises technologies that maximise long-term availability.' },
+    { title: 'Openness', text: 'The project is developed as open-source software wherever practical.' },
+    { title: 'Privacy', text: 'Only the minimum information necessary for operation is collected.' },
+    { title: 'Decentralisation', text: 'Where practical, the platform favours decentralised technologies and open standards.' },
+    { title: 'Respectful stewardship', text: 'Moderation exists to protect quality, authenticity, and accessibility, not to shape historical narrative.' },
+    { title: 'Evolution', text: 'The platform is intended to evolve alongside the community it serves.' },
+  ]
+
   return (
     <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
 
@@ -35,6 +48,25 @@ export default function AboutPage() {
         </p>
 
         <h2 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '24px' }}>
+          Principles
+        </h2>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '24px' }}>
+          This archive is built on a defined set of principles:
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
+          {principles.map((p) => (
+            <div key={p.title} style={{ display: 'flex', gap: '10px', alignItems: 'baseline' }}>
+              <span style={{ color: '#627EEA', flexShrink: 0 }}>&bull;</span>
+              <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
+                <strong style={{ color: 'white' }}>{p.title}:</strong> {p.text}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '24px' }}>
           How it works
         </h2>
 
@@ -65,9 +97,29 @@ export default function AboutPage() {
         </h2>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
-          Merch&Memes is open source, ENS-native, and IPFS-first. The archive lives at{' '}
-          <span style={{ fontWeight: 600, color: '#F5F5F5' }}>merchandmemes.eth</span> and is accessible through any ENS-compatible browser or via{' '}
+          Merch&Memes is open source. The archive&apos;s domain identity is ENS-native: it is reachable at{' '}
+          <span style={{ fontWeight: 600, color: '#F5F5F5' }}>merchandmemes.eth</span> through any ENS-compatible browser or gateway, including{' '}
           <a href="https://merchandmemes.eth.limo" style={{ color: '#627EEA' }}>merchandmemes.eth.limo</a>.
+        </p>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
+          Decentralisation is applied where it is currently practical, consistent with the principle above, rather than uniformly across every layer of the platform:
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px', paddingLeft: '4px' }}>
+          <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
+            <strong style={{ color: 'white' }}>Artefact images</strong> are stored on IPFS, a decentralised, content-addressed network, via Filebase.
+          </p>
+          <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
+            <strong style={{ color: 'white' }}>Domain identity</strong> is decentralised via ENS.
+          </p>
+          <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
+            <strong style={{ color: 'white' }}>The application itself</strong>, the website, submission and moderation workflow, search, reactions, and comments, currently runs on conventional, centrally-hosted infrastructure (Vercel and Supabase).
+          </p>
+        </div>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
+          This reflects the current build stage, not a ceiling. Decentralising a domain name and static content is well-supported and low-risk to build on today. Decentralising the interactive parts of an application, the database, moderation, search, and real-time features, requires a substantially different architecture: on-chain announcements, peer-to-peer storage networks such as Swarm, and independently operated indexing or curation services. This was evaluated and set aside for the initial build as disproportionate to what a solo-maintained MVP can sustain, not because it conflicts with the project&apos;s principles.
         </p>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '48px' }}>
@@ -91,11 +143,11 @@ export default function AboutPage() {
         </p>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '20px' }}>
-          There is a roadmap. It includes community governance, a full meme archive, event tagging, contributor profiles, and permanent archival storage on decentralised networks designed to outlast any single organisation or platform. If any of that interests you, we want to hear from you. Use the feedback button on any page.
+          There is a roadmap. It includes community governance, a full meme archive, event tagging, contributor profiles, and evaluation of further decentralisation of the application&apos;s data and interactive layers, for example, moving discovery, moderation, or storage onto peer-to-peer networks such as Swarm, following patterns already demonstrated by other decentralised applications. Whether and when that step is taken depends on community interest and available contributor capacity. If this direction interests you, use the feedback button on any page.
         </p>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '48px' }}>
-          What will not change: the archive will always be decentralised, free to access, privacy-respecting, and owned by the community that built it. No ads, no paywalls, no data harvesting. Just Web3 culture, preserved for the people who lived it, and open to everyone who is curious about it.
+          What will not change: the archive&apos;s content and domain identity will remain decentralised and permanent by design (IPFS, ENS), access will remain free, and the platform will remain privacy-respecting and community-owned. No ads, no paywalls, no data harvesting.
         </p>
 
         <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '32px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>

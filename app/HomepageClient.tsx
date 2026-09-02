@@ -175,7 +175,7 @@ export default function HomepageClient({
               }}
             >
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#627EEA', display: 'inline-block' }} className="animate-pulse" />
-              ENS-native, IPFS-first, Open source
+              ENS-native, IPFS-stored artefacts, open source
             </motion.div>
 
             <motion.h1
@@ -309,7 +309,7 @@ export default function HomepageClient({
                     <Link href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
                       <div style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', marginBottom: '10px', background: '#1A1A1A', border: '1px solid #2A2A2A' }}>
                         {(artefact.media_assets as any[])?.[0]?.ipfs_cid ? (
-                          <img src={(artefact.media_assets as any[])[0].ipfs_cid} alt={artefact.title}
+                          <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any[])[0].ipfs_cid}`} alt={artefact.title}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>🏷️</div>
