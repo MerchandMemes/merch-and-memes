@@ -2,7 +2,15 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 
 const cardHoverStyle = `
-  .artefact-card { 
+  @media (max-width: 720px) {
+    .browse-layout { flex-direction: column !important; }
+    .browse-sidebar { width: 100% !important; }
+    .browse-nav { padding-left: 12px !important; padding-right: 12px !important; }
+    .browse-wordmark { display: none !important; }
+    .browse-nav-links { gap: 6px !important; }
+    .browse-nav-links a { padding-left: 8px !important; padding-right: 8px !important; font-size: 0.78rem !important; }
+  }
+  .artefact-card {
     background: white; 
     border-radius: 4px; 
     overflow: hidden; 
@@ -139,22 +147,16 @@ export default async function BrowsePage({
     <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
 
       {/* Navigation */}
-      <nav style={{
-        borderBottom: '1px solid #2A2A2A',
-background: 'rgba(13,13,13,0.95)',
-        padding: '14px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
+      <nav className="browse-nav" style={{
+        borderBottom: '1px solid #2A2A2A', background: 'rgba(13,13,13,0.95)',
+        padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(8px)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
-          <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
+          <span className="browse-wordmark" style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="browse-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
           <Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
           <Link href="/submit" style={{
@@ -213,10 +215,10 @@ WebkitAppearance: 'none', appearance: 'none',
           </form>
         </div>
 
-        <div style={{ display: 'flex', gap: '32px' }}>
+        <div className="browse-layout" style={{ display: 'flex', gap: '32px' }}>
 
           {/* Sidebar */}
-          <aside style={{ width: '200px', flexShrink: 0 }}>
+          <aside className="browse-sidebar" style={{ width: '200px', flexShrink: 0 }}>
             <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>
               Categories
             </p>
