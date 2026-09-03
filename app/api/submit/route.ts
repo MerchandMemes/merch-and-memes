@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get category from database
+    console.log('Received categorySlug (raw):', JSON.stringify(categorySlug))
     const { data: category, error: catError } = await supabase
       .from('categories')
       .select('id, licence_type')
