@@ -64,14 +64,47 @@ export default function SubmitPage() {
     setRightsConfirmed(false); setFile(null); setNotificationEmail('')
   }
 
+  const compressImage = (input: File): Promise<File> => {
+    return new Promise((resolve) => {
+      if (input.type === 'application/pdf') { resolve(input); return }
+      const img = new window.Image()
+      const reader = new FileReader()
+      reader.onload = () => {
+        img.onload = () => {
+          const maxDimension = 1920
+          let { width, height } = img
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) { height = Math.round((height * maxDimension) / width); width = maxDimension }
+            else { width = Math.round((width * maxDimension) / height); height = maxDimension }
+          }
+          const canvas = document.createElement('canvas')
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          if (!ctx) { resolve(input); return }
+          ctx.drawImage(img, 0, 0, width, height)
+          canvas.toBlob((blob) => {
+            if (!blob) { resolve(input); return }
+            resolve(new File([blob], input.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+          }, 'image/jpeg', 0.82)
+        }
+        img.onerror = () => resolve(input)
+        img.src = reader.result as string
+      }
+      reader.onerror = () => resolve(input)
+      reader.readAsDataURL(input)
+    })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!rightsConfirmed) { setError('Please confirm you have the rights to submit this content.'); return }
     if (!file) { setError('Please select an image to upload.'); return }
     setSubmitting(true); setError('')
     try {
+      const uploadFile = await compressImage(file)
       const formData = new FormData()
-      formData.append('file', file)
+      formData.append('file', uploadFile)
       formData.append('title', title)
       formData.append('description', description)
       formData.append('story', story)
