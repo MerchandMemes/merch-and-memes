@@ -42,6 +42,11 @@ const labelStyle = {
 
 export default function SubmitPage() {
   const [step, setStep] = useState(1)
+
+  const goToStep = (n: number) => {
+    setStep(n)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
   const [selectedCategory, setSelectedCategory] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -193,7 +198,7 @@ export default function SubmitPage() {
               {s < 3 && <div style={{ width: '48px', height: '1px', background: step > s ? '#627EEA' : '#2A2A2A' }} />}
             </div>
           ))}
-          <span style={{ fontSize: '0.85rem', color: '#666', marginLeft: '8px' }}>
+          <span style={{ fontSize: '0.85rem', color:999', marginLeft: '8px' }}>
             {step === 1 ? 'Choose category' : step === 2 ? 'Add details' : 'Confirm & submit'}
           </span>
         </div>
@@ -205,10 +210,10 @@ export default function SubmitPage() {
               What are you contributing?
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
-              {CATEGORIES.map((cat) => (
+                            {CATEGORIES.map((cat) => (
                 <button
                   key={cat.slug}
-                  onClick={() => setSelectedCategory(cat.slug)}
+                  onClick={() => { setSelectedCategory(cat.slug); goToStep(2) }}
                   style={{
                     textAlign: 'left', padding: '14px 16px', borderRadius: '12px', cursor: 'pointer',
                     border: selectedCategory === cat.slug ? '2px solid #627EEA' : '1px solid #2A2A2A',
@@ -225,24 +230,12 @@ export default function SubmitPage() {
                 </button>
               ))}
             </div>
-            <button
-              onClick={() => selectedCategory && setStep(2)}
-              disabled={!selectedCategory}
-              style={{
-                width: '100%', padding: '14px', borderRadius: '12px', fontSize: '1rem', fontWeight: 700,
-                border: 'none', cursor: selectedCategory ? 'pointer' : 'not-allowed',
-                background: selectedCategory ? 'linear-gradient(135deg, #627EEA, #DC1FFF)' : '#1A1A1A',
-                color: selectedCategory ? 'white' : '#444',
-              }}
-            >
-              Continue
-            </button>
-          </div>
+                      </div>
         )}
 
         {/* Step 2 */}
         {step === 2 && (
-          <form onSubmit={(e) => { e.preventDefault(); setStep(3) }}>
+          <form onSubmit={(e) => { e.preventDefault(); goToStep(3) }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
               <div>
@@ -284,7 +277,7 @@ export default function SubmitPage() {
                 <input type="file" accept="image/*,.heic,.heif,application/pdf"
                   onChange={e => setFile(e.target.files?.[0] || null)}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
-                <p style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px' }}>
+                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
                   JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.
                 </p>
               </div>
@@ -296,7 +289,7 @@ export default function SubmitPage() {
                 <input type="email" value={notificationEmail} onChange={e => setNotificationEmail(e.target.value)}
                   placeholder="Reaction notifications coming soon, leave your email to be first"
                   style={inputStyle} />
-                <p style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px' }}>
+                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
                   Only used for reaction notifications. Never shared or used for anything else.
                 </p>
               </div>
@@ -304,7 +297,7 @@ export default function SubmitPage() {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-              <button type="button" onClick={() => setStep(1)} style={{
+              <button type="button" onClick={() => goToStep(1)} style={{
                 flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
                 border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
               }}>Back</button>
@@ -330,7 +323,7 @@ export default function SubmitPage() {
                   file ? { label: 'Image', value: file.name } : null,
                 ].filter(Boolean).map((item: any) => (
                   <div key={item.label} style={{ display: 'flex', gap: '8px', fontSize: '0.9rem' }}>
-                    <span style={{ color: '#555', minWidth: '80px' }}>{item.label}:</span>
+                    <span style={{ color: '#999', minWidth: '80px' }}>{item.label}:</span>
                     <span style={{ color: '#F5F5F5', fontWeight: 500 }}>{item.value}</span>
                   </div>
                 ))}
@@ -347,7 +340,7 @@ export default function SubmitPage() {
                   ? <span style={{ color: '#666' }}> — no rights reserved, free for anyone to use</span>
                   : <span style={{ color: '#666' }}> — free to share with attribution to you</span>}.
               </p>
-              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.6, marginBottom: '16px' }}>
+              <p style={{ fontSize: '0.8rem', color: '#999', lineHeight: 1.6, marginBottom: '16px' }}>
                 Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
               </p>
               <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
@@ -359,7 +352,7 @@ export default function SubmitPage() {
             {error && <p style={{ color: '#FF4444', fontSize: '0.9rem', marginBottom: '16px' }}>{error}</p>}
 
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button type="button" onClick={() => setStep(2)} style={{
+              <button type="button" onClick={() => goToStep(2)} style={{
                 flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
                 border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
               }}>Back</button>

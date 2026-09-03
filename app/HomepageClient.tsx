@@ -91,7 +91,7 @@ export default function HomepageClient({
             </motion.div>
             <div className="home-wordmark" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ color: 'white', fontSize: '1.2rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
-              <span style={{ color: '#666', fontSize: '0.85rem' }} className="hidden sm:inline">the web3 archive</span>
+              <span style={{ color: '#999', fontSize: '0.85rem' }} className="hidden sm:inline">the web3 archive</span>
             </div>
           </Link>
           <div className="home-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -281,7 +281,7 @@ export default function HomepageClient({
                 <div style={{ fontSize: '3rem', fontWeight: 700, marginBottom: '8px', fontFamily: 'Space Grotesk, sans-serif', color: stat.color }}>
                   {stat.isCount ? <CountUp target={stat.value} /> : stat.value}
                 </div>
-                <div style={{ color: '#666', fontSize: '1rem' }}>{stat.label}</div>
+                <div style={{ color: '#999', fontSize: '1rem' }}>{stat.label}</div>
               </motion.div>
             ))}
           </div>

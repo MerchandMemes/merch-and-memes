@@ -172,7 +172,7 @@ export default async function ArtefactPage({
 
             {/* Licence info */}
             <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '16px', marginTop: '24px' }}>
-              <p style={{ fontSize: '0.8rem', color: '#555', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.8rem', color: '#999', lineHeight: 1.6 }}>
                 {artefact.licence_type === 'CC0'
                   ? 'This artefact has been dedicated to the public domain under CC0. No rights reserved, free for anyone to use, share, or build upon without restriction.'
                   : 'This artefact is shared under CC BY 4.0. You may use, share, or adapt it provided you give appropriate credit to the contributor.'}

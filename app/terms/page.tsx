@@ -21,7 +21,7 @@ export default function TermsPage() {
         <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '8px' }}>
           Terms of Service
         </h1>
-        <p style={{ fontSize: '0.85rem', color: '#555', marginBottom: '48px' }}>
+        <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '48px' }}>
           Last updated July 2026 · This is a minimal terms of service for the MVP phase and will be extended.
         </p>
 

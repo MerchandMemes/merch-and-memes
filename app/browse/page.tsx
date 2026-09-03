@@ -2,9 +2,11 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 
 const cardHoverStyle = `
+  .browse-category-dropdown { display: none !important; }
   @media (max-width: 720px) {
     .browse-layout { flex-direction: column !important; }
-    .browse-sidebar { width: 100% !important; }
+    .browse-sidebar { display: none !important; }
+    .browse-category-dropdown { display: flex !important; }
     .browse-nav { padding-left: 12px !important; padding-right: 12px !important; }
     .browse-wordmark { display: none !important; }
     .browse-nav-links { gap: 6px !important; }
@@ -147,15 +149,7 @@ export default async function BrowsePage({
     <main style={{ background: '#0D0D0D', minHeight: '100vh', color: '#F5F5F5' }}>
 
       {/* Navigation */}
-      <nav className="browse-nav" style={{
-        borderBottom: '1px solid #2A2A2A', background: 'rgba(13,13,13,0.95)',
-        padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(8px)',
-      }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
-          <span className="browse-wordmark" style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
-        </Link>
+      
         <div className="browse-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
           <Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
@@ -215,7 +209,26 @@ WebkitAppearance: 'none', appearance: 'none',
           </form>
         </div>
 
-        <div className="browse-layout" style={{ display: 'flex', gap: '32px' }}>
+                <div className="browse-layout" style={{ display: 'flex', gap: '32px' }}>
+
+          {/* Mobile category dropdown */}
+          <form method="GET" action="/browse" className="browse-category-dropdown" style={{ gap: '8px', marginBottom: '20px' }}>
+            {sort && <input type="hidden" name="sort" value={sort} />}
+            <select name="category" defaultValue={category || ''} style={{
+              flex: 1, border: '1px solid #2A2A2A', borderRadius: '10px', padding: '12px 16px',
+              fontSize: '0.9rem', background: '#1A1A1A', color: '#F5F5F5', outline: 'none',
+              WebkitAppearance: 'none', appearance: 'none',
+            }}>
+              <option value="">All artefacts</option>
+              {categories?.map((cat) => (
+                <option key={cat.id} value={cat.slug}>{cat.name}</option>
+              ))}
+            </select>
+            <button type="submit" style={{
+              padding: '10px 16px', borderRadius: '10px', background: '#111', color: 'white',
+              border: 'none', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+            }}>Go</button>
+          </form>
 
           {/* Sidebar */}
           <aside className="browse-sidebar" style={{ width: '200px', flexShrink: 0 }}>
@@ -307,7 +320,7 @@ color: category === cat.slug ? 'white' : '#888',
               <div style={{ textAlign: 'center', padding: '96px 24px' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '16px' }}>📦</div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '8px' }}>No artefacts yet</h3>
-                <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '24px' }}>Be the first to contribute to the archive.</p>
+                <p style={{ color: '#999', fontSize: '0.9rem', marginBottom: '24px' }}>Be the first to contribute to the archive.</p>
                 <Link href="/submit" style={{
                   padding: '10px 24px', borderRadius: '10px', background: '#111', color: 'white',
                   textDecoration: 'none', fontSize: '0.9rem', fontWeight: 600,
