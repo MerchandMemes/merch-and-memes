@@ -62,12 +62,18 @@ export default function HomepageClient({
         body { background: #0D0D0D; }
         .cat-card:hover { border-color: #627EEA !important; background: rgba(98,126,234,0.15) !important; }
         .cat-card:hover span:last-child { color: #F5F5F5 !important; }
+        @media (max-width: 720px) {
+          .home-nav { padding-left: 12px !important; padding-right: 12px !important; }
+          .home-wordmark { display: none !important; }
+          .home-nav-links { gap: 6px !important; }
+          .home-nav-links a { padding: 8px 12px !important; font-size: 0.85rem !important; }
+        }
       `}</style>
 
       <main style={{ background: '#0D0D0D', color: '#F5F5F5', minHeight: '100vh' }}>
 
         {/* Navigation */}
-        <nav style={{
+        <nav className="home-nav" style={{
           borderBottom: '1px solid #2A2A2A',
           background: 'rgba(13,13,13,0.95)',
           position: 'sticky',
@@ -83,12 +89,12 @@ export default function HomepageClient({
             <motion.div whileHover={{ scale: 1.1, rotate: 5 }} whileTap={{ scale: 0.95 }}>
               <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
             </motion.div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="home-wordmark" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ color: 'white', fontSize: '1.2rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
               <span style={{ color: '#666', fontSize: '0.85rem' }} className="hidden sm:inline">the web3 archive</span>
             </div>
           </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="home-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/browse" style={{
                 fontSize: '0.95rem', fontWeight: 600, padding: '10px 20px', borderRadius: '12px',
