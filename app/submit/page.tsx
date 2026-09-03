@@ -282,6 +282,7 @@ export default function SubmitPage() {
               <div>
                 <label style={labelStyle}>Image <span style={{ color: '#DC1FFF' }}>*</span></label>
                 <input type="file" accept="image/*,.heic,.heif,application/pdf"
+                  capture="environment"
                   onChange={e => setFile(e.target.files?.[0] || null)}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
                 <p style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px' }}>
