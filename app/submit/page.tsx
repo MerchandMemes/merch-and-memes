@@ -40,6 +40,12 @@ const labelStyle = {
   marginBottom: '6px',
 }
 
+const submitResponsiveStyle = `
+  @media (max-width: 420px) {
+    .submit-category-grid { grid-template-columns: 1fr !important; }
+  }
+`
+
 export default function SubmitPage() {
   const [step, setStep] = useState(1)
 
@@ -209,7 +215,8 @@ export default function SubmitPage() {
             <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', marginBottom: '20px' }}>
               What are you contributing?
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
+                        <style>{submitResponsiveStyle}</style>
+            <div className="submit-category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
                             {CATEGORIES.map((cat) => (
                 <button
                   key={cat.slug}
