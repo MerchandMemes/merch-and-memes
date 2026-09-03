@@ -284,8 +284,8 @@ export default function SubmitPage() {
                 <input type="file" accept="image/*,.heic,.heif,application/pdf"
                   onChange={e => setFile(e.target.files?.[0] || null)}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
-                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
-                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB.
+                                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
+                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB. Currently one image per submission, support for multiple images is coming soon.
                 </p>
               </div>
 
