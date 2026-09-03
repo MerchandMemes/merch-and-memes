@@ -34,6 +34,8 @@ export async function POST(request: NextRequest) {
       .eq('slug', categorySlug)
       .single()
 
+    console.log('Category lookup result:', JSON.stringify({ category, catError }))
+
     if (catError || !category) {
       return NextResponse.json(
         { error: 'Invalid category' },
