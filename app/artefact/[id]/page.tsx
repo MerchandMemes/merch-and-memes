@@ -6,6 +6,12 @@ import Comments from './Comments'
 
 export const dynamic = 'force-dynamic'
 
+const artefactResponsiveStyle = `
+  @media (max-width: 720px) {
+    .artefact-layout { grid-template-columns: 1fr !important; }
+  }
+`
+
 export default async function ArtefactPage({
   params,
 }: {
@@ -69,8 +75,9 @@ export default async function ArtefactPage({
         </Link>
       </nav>
 
+      <style>{artefactResponsiveStyle}</style>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
+        <div className="artefact-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
 
           {/* Image — polaroid style */}
           <div style={{
