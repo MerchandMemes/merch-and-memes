@@ -198,7 +198,7 @@ export default function SubmitPage() {
               {s < 3 && <div style={{ width: '48px', height: '1px', background: step > s ? '#627EEA' : '#2A2A2A' }} />}
             </div>
           ))}
-          <span style={{ fontSize: '0.85rem', color:999', marginLeft: '8px' }}>
+          <span style={{ fontSize: '0.85rem', color:'#999', marginLeft: '8px' }}>
             {step === 1 ? 'Choose category' : step === 2 ? 'Add details' : 'Confirm & submit'}
           </span>
         </div>
