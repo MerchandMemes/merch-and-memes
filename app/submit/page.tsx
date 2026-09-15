@@ -55,12 +55,10 @@ export default function SubmitPage() {
   }
   const [selectedCategory, setSelectedCategory] = useState('')
   const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [story, setStory] = useState('')
+    const [story, setStory] = useState('')
   const [year, setYear] = useState('')
   const [source, setSource] = useState('')
   const [notificationEmail, setNotificationEmail] = useState('')
-  const [rightsConfirmed, setRightsConfirmed] = useState(false)
   const [files, setFiles] = useState<File[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -71,8 +69,7 @@ export default function SubmitPage() {
 
     const resetForm = () => {
     setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
-    setDescription(''); setStory(''); setYear(''); setSource('')
-    setRightsConfirmed(false); setFiles([]); setNotificationEmail('')
+  const [story, setStory] = useState('')
   }
 
   const compressImage = (input: File): Promise<File> => {
@@ -109,15 +106,13 @@ export default function SubmitPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-        if (!rightsConfirmed) { setError('Please confirm you have the rights to submit this content.'); return }
-    if (files.length === 0) { setError('Please select at least one image to upload.'); return }
+            if (files.length === 0) { setError('Please select at least one image to upload.'); return }
     setSubmitting(true); setError('')
     try {
       const uploadFiles = await Promise.all(files.map(compressImage))
       const formData = new FormData()
       uploadFiles.forEach((f) => formData.append('files', f))
-      formData.append('title', title)
-      formData.append('description', description)
+            formData.append('title', title)
       formData.append('story', story)
       formData.append('category', selectedCategory)
       formData.append('year', year)
@@ -251,18 +246,11 @@ export default function SubmitPage() {
                   placeholder="e.g. Devcon IV Hoodie, Berlin 2018" style={inputStyle} />
               </div>
 
-              <div>
-                <label style={labelStyle}>Description</label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)}
-                  placeholder="Brief description of the artefact" rows={3}
-                  style={{ ...inputStyle, resize: 'none' }} />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Your story</label>
+                            <div>
+                <label style={labelStyle}>Tell us about this artefact</label>
                 <textarea value={story} onChange={e => setStory(e.target.value)}
-                  placeholder="Tell us the story behind this artefact. Where did you get it? What does it mean to you?"
-                  rows={4} style={{ ...inputStyle, resize: 'none' }} />
+                  placeholder="What is it? Where did you get it? What does it mean to you?"
+                  rows={5} style={{ ...inputStyle, resize: 'none' }} />
               </div>
 
               <div>
@@ -356,7 +344,7 @@ export default function SubmitPage() {
             <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
               <p style={{ fontSize: '0.9rem', color: '#999', lineHeight: 1.7, marginBottom: '12px' }}>
                 By submitting you confirm that you have the right to share this content and agree to the{' '}
-                <Link href="/terms" style={{ color: '#627EEA' }}>Terms of Service</Link>.
+                <Link href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#627EEA' }}>Terms of Service</Link>.
                 This artefact will be published under{' '}
                 <span style={{ fontWeight: 600, color: '#F5F5F5' }}>{selectedCat?.licence}</span>
                 {selectedCat?.licence === 'CC0'
@@ -366,11 +354,7 @@ export default function SubmitPage() {
               <p style={{ fontSize: '0.8rem', color: '#999', lineHeight: 1.6, marginBottom: '16px' }}>
                 Once approved, your artefact will be stored on IPFS and may remain accessible even if later removed from this site. This is a feature, not a bug — it is how the archive ensures long-term preservation.
               </p>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={rightsConfirmed} onChange={e => setRightsConfirmed(e.target.checked)} />
-                <span style={{ fontSize: '0.9rem', color: '#ccc' }}>I understand and agree</span>
-              </label>
-            </div>
+                          </div>
 
             {error && <p style={{ color: '#FF4444', fontSize: '0.9rem', marginBottom: '16px' }}>{error}</p>}
 
@@ -379,12 +363,12 @@ export default function SubmitPage() {
                 flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 600, cursor: 'pointer',
                 border: '1px solid #2A2A2A', background: 'transparent', color: '#F5F5F5', fontSize: '0.95rem',
               }}>Back</button>
-              <button type="submit" disabled={submitting || !rightsConfirmed} style={{
+                            <button type="submit" disabled={submitting} style={{
                 flex: 1, padding: '14px', borderRadius: '12px', fontWeight: 700,
                 border: 'none', fontSize: '0.95rem', color: 'white',
                 background: 'linear-gradient(135deg, #627EEA, #DC1FFF)',
-                cursor: submitting || !rightsConfirmed ? 'not-allowed' : 'pointer',
-                opacity: submitting || !rightsConfirmed ? 0.4 : 1,
+                cursor: submitting ? 'not-allowed' : 'pointer',
+                opacity: submitting ? 0.4 : 1,
               }}>
                 {submitting ? 'Submitting...' : 'Submit to archive'}
               </button>
