@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const formData = await request.formData()
-    const file = formData.get('file') as File
+        const formData = await request.formData()
+    const files = formData.getAll('files') as File[]
     const title = formData.get('title') as string
     const description = formData.get('description') as string
     const story = formData.get('story') as string
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const year = formData.get('year') as string
     const source = formData.get('source') as string
 
-    if (!file || !title || !categorySlug) {
+       if (!files || files.length === 0 || !title || !categorySlug) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -43,23 +43,27 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Upload file to staging bucket
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const fileBuffer = await file.arrayBuffer()
+        // Upload all files to staging bucket
+    const uploadedFiles: { path: string; mimeType: string; size: number }[] = []
+    for (const f of files) {
+      const fileExt = f.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const fileBuffer = await f.arrayBuffer()
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('staging')
-      .upload(fileName, fileBuffer, {
-        contentType: file.type,
-        upsert: false,
-      })
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('staging')
+        .upload(fileName, fileBuffer, {
+          contentType: f.type,
+          upsert: false,
+        })
 
-    if (uploadError) {
-      return NextResponse.json(
-        { error: 'Failed to upload file' },
-        { status: 500 }
-      )
+      if (uploadError) {
+        return NextResponse.json(
+          { error: 'Failed to upload file' },
+          { status: 500 }
+        )
+      }
+      uploadedFiles.push({ path: uploadData.path, mimeType: f.type, size: f.size })
     }
 
     // Create artefact record
@@ -82,14 +86,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create media asset record
-    await supabase.from('media_assets').insert({
-      artefact_id: artefact.id,
-      staging_path: uploadData.path,
-      mime_type: file.type,
-      file_size_bytes: file.size,
-      is_primary: true,
-    })
+        // Create a media asset record for each uploaded image
+    await supabase.from('media_assets').insert(
+      uploadedFiles.map((uf, i) => ({
+        artefact_id: artefact.id,
+        staging_path: uf.path,
+        mime_type: uf.mimeType,
+        file_size_bytes: uf.size,
+        is_primary: i === 0,
+      }))
+    )
 
     // Create story if provided
     if (story) {
@@ -99,12 +105,12 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create submission record
+        // Create submission record (staging_path kept as the primary image for backward compatibility)
     await supabase.from('submissions').insert({
       artefact_id: artefact.id,
       status: 'pending',
       rights_declared: true,
-      staging_path: uploadData.path,
+      staging_path: uploadedFiles[0].path,
     })
 
     // Log to audit log

@@ -19,14 +19,15 @@ export default async function ModerationPage() {
       status,
       submitted_at,
       staging_path,
-      artefacts(
+            artefacts(
         id,
         title,
         description,
         year_approx,
         licence_type,
         categories(name),
-        stories(content)
+        stories(content),
+        media_assets(staging_path, is_primary)
       )
     `)
     .eq('status', 'pending')
@@ -48,17 +49,23 @@ export default async function ModerationPage() {
     .eq('is_visible', true)
     .order('flag_count', { ascending: false })
 
-  // Generate signed URLs
+    // Generate signed URLs for every image belonging to each submission
   const submissionsWithUrls = await Promise.all(
     (submissions || []).map(async (submission) => {
-      let signedUrl = null
-      if (submission.staging_path) {
-        const { data } = await supabase.storage
-          .from('staging')
-          .createSignedUrl(submission.staging_path, 3600)
-        signedUrl = data?.signedUrl || null
-      }
-      return { ...submission, signedUrl }
+      const mediaAssets = ((submission.artefacts as any)?.media_assets || []) as { staging_path: string; is_primary: boolean }[]
+      const sortedAssets = [...mediaAssets].sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
+      const signedUrls = (
+        await Promise.all(
+          sortedAssets.map(async (asset) => {
+            if (!asset.staging_path) return null
+            const { data } = await supabase.storage
+              .from('staging')
+              .createSignedUrl(asset.staging_path, 3600)
+            return data?.signedUrl || null
+          })
+        )
+      ).filter((u): u is string => !!u)
+      return { ...submission, signedUrls }
     })
   )
 
@@ -106,16 +113,23 @@ export default async function ModerationPage() {
                   key={submission.id}
                   className="bg-white rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
                 >
-                  <div className="flex gap-6 p-6">
-                    <div className="w-48 h-48 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
-                      {submission.signedUrl ? (
-                        <img
-                          src={submission.signedUrl}
-                          alt={artefact?.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl">🏷️</div>
+                                    <div className="flex flex-col sm:flex-row gap-6 p-6">
+                                      <div className="flex flex-col sm:flex-row gap-6 p-6">
+                    <div className="flex-shrink-0">
+                      <div className="w-full sm:w-48 h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        {submission.signedUrls?.[0] ? (
+                          <img src={submission.signedUrls[0]} alt={artefact?.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-4xl">🏷️</div>
+                        )}
+                      </div>
+                      {submission.signedUrls?.length > 1 && (
+                        <div className="flex gap-2 mt-2 flex-wrap sm:w-48">
+                          {submission.signedUrls.slice(1).map((url: string, i: number) => (
+                            <img key={i} src={url} alt={`${artefact?.title} extra ${i + 2}`}
+                              className="w-10 h-10 rounded object-cover border border-gray-200" />
+                          ))}
+                        </div>
                       )}
                     </div>
                     <div className="flex-1">

@@ -61,7 +61,7 @@ export default function SubmitPage() {
   const [source, setSource] = useState('')
   const [notificationEmail, setNotificationEmail] = useState('')
   const [rightsConfirmed, setRightsConfirmed] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -69,10 +69,10 @@ export default function SubmitPage() {
   const selectedCat = CATEGORIES.find(c => c.slug === selectedCategory)
   const isMeme = ['memes', 'photography', 'artwork-illustrations', 'screenshots'].includes(selectedCategory)
 
-  const resetForm = () => {
+    const resetForm = () => {
     setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
     setDescription(''); setStory(''); setYear(''); setSource('')
-    setRightsConfirmed(false); setFile(null); setNotificationEmail('')
+    setRightsConfirmed(false); setFiles([]); setNotificationEmail('')
   }
 
   const compressImage = (input: File): Promise<File> => {
@@ -109,13 +109,13 @@ export default function SubmitPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!rightsConfirmed) { setError('Please confirm you have the rights to submit this content.'); return }
-    if (!file) { setError('Please select an image to upload.'); return }
+        if (!rightsConfirmed) { setError('Please confirm you have the rights to submit this content.'); return }
+    if (files.length === 0) { setError('Please select at least one image to upload.'); return }
     setSubmitting(true); setError('')
     try {
-      const uploadFile = await compressImage(file)
+      const uploadFiles = await Promise.all(files.map(compressImage))
       const formData = new FormData()
-      formData.append('file', uploadFile)
+      uploadFiles.forEach((f) => formData.append('files', f))
       formData.append('title', title)
       formData.append('description', description)
       formData.append('story', story)
@@ -279,14 +279,30 @@ export default function SubmitPage() {
                 </div>
               )}
 
-              <div>
-                <label style={labelStyle}>Image <span style={{ color: '#DC1FFF' }}>*</span></label>
-                <input type="file" accept="image/*,.heic,.heif,application/pdf"
-                  onChange={e => setFile(e.target.files?.[0] || null)}
+                            <div>
+                <label style={labelStyle}>Images <span style={{ color: '#DC1FFF' }}>*</span></label>
+                <input type="file" accept="image/*,.heic,.heif,application/pdf" multiple
+                  onChange={e => setFiles(Array.from(e.target.files || []).slice(0, 5))}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
-                                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
-                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB. Currently one image per submission, support for multiple images is coming soon.
+                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
+                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB each, up to 5 images.
                 </p>
+                {files.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                    {files.map((f, i) => (
+                      <div key={i} style={{ position: 'relative', width: '64px', height: '64px' }}>
+                        <img src={URL.createObjectURL(f)} alt={f.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px', border: '1px solid #2A2A2A' }} />
+                        <button type="button" onClick={() => setFiles(prev => prev.filter((_, idx) => idx !== i))}
+                          style={{
+                            position: 'absolute', top: '-6px', right: '-6px', width: '20px', height: '20px',
+                            borderRadius: '50%', background: '#DC1FFF', color: 'white', border: 'none',
+                            fontSize: '0.7rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '20px' }}>
@@ -326,8 +342,8 @@ export default function SubmitPage() {
                   { label: 'Category', value: selectedCat?.name },
                   { label: 'Licence', value: selectedCat?.licence },
                   { label: 'Title', value: title },
-                  year ? { label: 'Year', value: year } : null,
-                  file ? { label: 'Image', value: file.name } : null,
+                                    year ? { label: 'Year', value: year } : null,
+                  files.length > 0 ? { label: 'Images', value: `${files.length} selected` } : null,
                 ].filter(Boolean).map((item: any) => (
                   <div key={item.label} style={{ display: 'flex', gap: '8px', fontSize: '0.9rem' }}>
                     <span style={{ color: '#999', minWidth: '80px' }}>{item.label}:</span>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Reactions from './Reactions'
 import Comments from './Comments'
+import ArtefactGallery from './ArtefactGallery'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,7 +44,7 @@ export default async function ArtefactPage({
 
   if (!artefact) notFound()
 
-  const image = (artefact.media_assets as any[])?.[0]
+  const images = ((artefact.media_assets as any[]) || []).sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0))
   const story = (artefact.stories as any[])?.[0]
   const category = artefact.categories as any
 
@@ -80,28 +81,7 @@ export default async function ArtefactPage({
         <div className="artefact-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'start' }}>
 
           {/* Image — polaroid style */}
-          <div style={{
-            background: 'white',
-            padding: '16px 16px 56px 16px',
-            borderRadius: '4px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
-            transform: 'rotate(-1deg)',
-          }}>
-            <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#f0f0f0' }}>
-              {image?.ipfs_cid ? (
-  <img
-    src={`https://ipfs.filebase.io/ipfs/${image.ipfs_cid}`}
-    alt={artefact.title}
-    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-  />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>🏷️</div>
-              )}
-            </div>
-            <p style={{ textAlign: 'center', marginTop: '16px', color: '#333', fontSize: '0.85rem', fontFamily: 'Space Grotesk, sans-serif' }}>
-              {artefact.title}
-            </p>
-          </div>
+                   <ArtefactGallery images={images} title={artefact.title} />
 
           {/* Details */}
           <div>
