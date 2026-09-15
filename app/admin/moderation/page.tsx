@@ -109,12 +109,11 @@ export default async function ModerationPage() {
               const story = artefact?.stories?.[0]?.content
 
               return (
-                <div
+                                <div
                   key={submission.id}
                   className="bg-white rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
                 >
-                                    <div className="flex flex-col sm:flex-row gap-6 p-6">
-                                      <div className="flex flex-col sm:flex-row gap-6 p-6">
+                  <div className="flex flex-col sm:flex-row gap-6 p-6">
                     <div className="flex-shrink-0">
                       <div className="w-full sm:w-48 h-48 bg-gray-100 rounded-lg overflow-hidden">
                         {submission.signedUrls?.[0] ? (
