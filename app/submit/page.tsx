@@ -67,9 +67,10 @@ export default function SubmitPage() {
   const selectedCat = CATEGORIES.find(c => c.slug === selectedCategory)
   const isMeme = ['memes', 'photography', 'artwork-illustrations', 'screenshots'].includes(selectedCategory)
 
-    const resetForm = () => {
+      const resetForm = () => {
     setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
-  const [story, setStory] = useState('')
+    setStory(''); setYear(''); setSource('')
+    setFiles([]); setNotificationEmail('')
   }
 
   const compressImage = (input: File): Promise<File> => {
