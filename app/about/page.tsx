@@ -118,8 +118,12 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
+                <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
           This reflects the current build stage, not a ceiling. Decentralising a domain name and static content is well-supported and low-risk to build on today. Decentralising the interactive parts of an application, the database, moderation, search, and real-time features, requires a substantially different architecture: on-chain announcements, peer-to-peer storage networks such as Swarm, and independently operated indexing or curation services. This was evaluated and set aside for the initial build as disproportionate to what a solo-maintained MVP can sustain, not because it conflicts with the project&apos;s principles.
+        </p>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
+          The intention behind this project is to build on genuine Web3 capabilities wherever that is practical. For now, that means IPFS, for the reasons above, an already well-supported, low-risk foundation for an MVP. A move to Swarm remains something to work towards, not something ruled out, it is simply not proportionate to build today. Browsers built for this kind of decentralised application, such as Freedom Browser, are still young and evolving quickly, and that progress is genuinely encouraging. Their development is being watched closely, and this project intends to adjust as they, and the wider ecosystem around them, mature.
         </p>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '48px' }}>
