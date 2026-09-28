@@ -6,9 +6,7 @@ import {
   HeadObjectCommand,
 } from '@aws-sdk/client-s3'
 
-// Requires: npm install @aws-sdk/client-s3
-//
-// Env vars needed (add to .env.local and Vercel):
+// Env vars needed (in .env.local and Vercel):
 //   FILEBASE_ACCESS_KEY_ID
 //   FILEBASE_SECRET_ACCESS_KEY
 //   FILEBASE_BUCKET_NAME
@@ -44,72 +42,78 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    if (action === 'approve') {
-      // Get staging path
-      const { data: submission } = await supabase
-        .from('submissions')
-        .select('staging_path')
-        .eq('id', submissionId)
-        .single()
+    // All image records for this artefact (one row per uploaded image)
+    const { data: mediaAssets } = await supabase
+      .from('media_assets')
+      .select('id, staging_path, ipfs_cid')
+      .eq('artefact_id', artefactId)
 
-      if (submission?.staging_path) {
-        // Download from staging
+    if (action === 'approve') {
+      for (const asset of mediaAssets || []) {
+        // Skip images already pinned on an earlier attempt, or without a staged file
+        if (asset.ipfs_cid || !asset.staging_path) continue
+
         const { data: fileData } = await supabase.storage
           .from('staging')
-          .download(submission.staging_path)
+          .download(asset.staging_path)
 
-        if (fileData) {
-          const key = submission.staging_path
-          const buffer = Buffer.from(await fileData.arrayBuffer())
+        if (!fileData) {
+          return NextResponse.json(
+            { error: 'A staged image file is missing. Approval aborted; submission remains pending.' },
+            { status: 500 }
+          )
+        }
 
-          try {
-            // Upload to Filebase — auto-pins to IPFS on IPFS-network buckets
-            await filebase.send(
-              new PutObjectCommand({
-                Bucket: FILEBASE_BUCKET,
-                Key: key,
-                Body: buffer,
-                ContentType: fileData.type || 'application/octet-stream',
-              })
-            )
+        // The Filebase object key equals the staging path (kept on the row for later deletion)
+        const key = asset.staging_path
+        const buffer = Buffer.from(await fileData.arrayBuffer())
 
-            // Retrieve the CID Filebase assigned to the pinned object
-            const head = await filebase.send(
-              new HeadObjectCommand({
-                Bucket: FILEBASE_BUCKET,
-                Key: key,
-              })
-            )
-            const cid = head.Metadata?.cid
+        try {
+          // Upload to Filebase, which pins to IPFS on IPFS-network buckets
+          await filebase.send(
+            new PutObjectCommand({
+              Bucket: FILEBASE_BUCKET,
+              Key: key,
+              Body: buffer,
+              ContentType: fileData.type || 'application/octet-stream',
+            })
+          )
 
-            if (!cid) {
-              throw new Error('Filebase did not return a CID for the uploaded object')
-            }
+          // Retrieve the CID Filebase assigned to the pinned object
+          const head = await filebase.send(
+            new HeadObjectCommand({
+              Bucket: FILEBASE_BUCKET,
+              Key: key,
+            })
+          )
+          const cid = head.Metadata?.cid
 
-            console.log('IPFS CID:', cid)
-            console.log('Artefact ID:', artefactId)
-
-            // Store the raw CID (not a full URL) on the media asset
-            const { error: updateError } = await supabase
-              .from('media_assets')
-              .update({ ipfs_cid: cid })
-              .eq('artefact_id', artefactId)
-
-            if (updateError) {
-              throw updateError
-            }
-
-            // Only remove from staging once the Filebase upload + CID are confirmed
-            await supabase.storage.from('staging').remove([submission.staging_path])
-          } catch (filebaseError) {
-            // Abort the approval entirely rather than publishing with a broken
-            // or missing image. Submission stays 'pending' for retry.
-            console.error('Filebase upload failed:', filebaseError)
-            return NextResponse.json(
-              { error: 'Filebase upload failed. Approval aborted; submission remains pending.' },
-              { status: 502 }
-            )
+          if (!cid) {
+            throw new Error('Filebase did not return a CID for the uploaded object')
           }
+
+          console.log('IPFS CID:', cid, 'for media asset:', asset.id)
+
+          // Store the raw CID on this specific image row
+          const { error: updateError } = await supabase
+            .from('media_assets')
+            .update({ ipfs_cid: cid })
+            .eq('id', asset.id)
+
+          if (updateError) {
+            throw updateError
+          }
+
+          // Remove from staging only once the upload and CID are confirmed
+          await supabase.storage.from('staging').remove([asset.staging_path])
+        } catch (filebaseError) {
+          // Abort the approval rather than publish with a broken or missing image.
+          // Images already pinned keep their CID and are skipped on retry.
+          console.error('Filebase upload failed:', filebaseError)
+          return NextResponse.json(
+            { error: 'Filebase upload failed. Approval aborted; submission remains pending.' },
+            { status: 502 }
+          )
         }
       }
 
@@ -138,18 +142,25 @@ export async function POST(request: NextRequest) {
       })
 
     } else if (action === 'reject') {
-      // Get staging path to delete file
+      // Collect every staged file belonging to this submission
+      const stagingPaths = new Set<string>()
+      for (const asset of mediaAssets || []) {
+        if (asset.staging_path) stagingPaths.add(asset.staging_path)
+      }
+
       const { data: submission } = await supabase
         .from('submissions')
         .select('staging_path')
         .eq('id', submissionId)
         .single()
 
+      if (submission?.staging_path) stagingPaths.add(submission.staging_path)
+
       // Delete from staging bucket
-      if (submission?.staging_path) {
+      if (stagingPaths.size > 0) {
         await supabase.storage
           .from('staging')
-          .remove([submission.staging_path])
+          .remove(Array.from(stagingPaths))
       }
 
       // Update submission status
