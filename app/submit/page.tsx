@@ -269,11 +269,19 @@ export default function SubmitPage() {
 
                             <div>
                 <label style={labelStyle}>Images <span style={{ color: '#DC1FFF' }}>*</span></label>
-                <input type="file" accept="image/*,.heic,.heif,application/pdf" multiple
-                  onChange={e => setFiles(Array.from(e.target.files || []).slice(0, 5))}
+                                <input type="file" accept="image/*,.heic,.heif,application/pdf" multiple
+                  onChange={e => {
+                    const picked = Array.from(e.target.files || [])
+                    e.target.value = ''
+                    setFiles(prev => {
+                      const seen = new Set(prev.map(f => `${f.name}-${f.size}-${f.lastModified}`))
+                      const additions = picked.filter(f => !seen.has(`${f.name}-${f.size}-${f.lastModified}`))
+                      return [...prev, ...additions].slice(0, 5)
+                    })
+                  }}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
                 <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
-                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB each, up to 5 images.
+                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB each. Tap the field again to add more images ({files.length}/5).
                 </p>
                 {files.length > 0 && (
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
