@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 
 const CATEGORIES = [
   { name: 'Hoodies & Sweatshirts', slug: 'hoodies-sweatshirts', licence: 'CC0' },
@@ -122,6 +123,7 @@ export default function SubmitPage() {
       if (!res.ok) { const data = await res.json(); throw new Error(data.error || 'Submission failed') }
       setSubmitted(true)
     } catch (err) {
+      Sentry.captureException(err, { extra: { fileCount: files.length, category: selectedCategory } })
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setSubmitting(false)
