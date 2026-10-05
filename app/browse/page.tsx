@@ -160,7 +160,8 @@ export default async function BrowsePage({
         </Link>
         <div className="browse-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
-          <Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
+          <Link href="/wanted" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>Anyone has...?</Link>
+<Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
           <Link href="/submit" style={{
             fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
             background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
