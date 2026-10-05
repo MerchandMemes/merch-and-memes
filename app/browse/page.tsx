@@ -272,21 +272,25 @@ color: category === cat.slug ? 'white' : '#888',
           {/* Main content */}
           <div style={{ flex: 1 }}>
             {sortedArtefacts.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '16px' }}>
                 {sortedArtefacts.map((artefact) => {
                   const reactions = reactionMap[artefact.id] || {}
                   const hasReactions = Object.values(reactions).some((n: any) => n > 0)
                   return (
                     <Link key={artefact.id} href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
                       <div className="artefact-card">
-                        <div style={{ aspectRatio: '1', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                          {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
-  <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any)[0].ipfs_cid}`} alt={artefact.title}
-    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <span style={{ fontSize: '2.5rem' }}>🏷️</span>
-                          )}
-                        </div>
+                        <div style={{ aspectRatio: '1', background: '#F5F5F5', position: 'relative', overflow: 'hidden' }}>
+  {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
+    <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any)[0].ipfs_cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  ) : (
+    <span style={{ fontSize: '2.5rem' }}>🏷️</span>
+  )}
+  {(artefact.media_assets as any)?.length > 1 && (
+    <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
+      +{(artefact.media_assets as any).length - 1}
+    </div>
+  )}
+</div>
                         <div style={{ padding: '14px' }}>
                           <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: '4px' }}>
                             {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
