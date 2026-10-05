@@ -1,17 +1,69 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+type WantedResponse = {
+  id: string
+  content: string
+  created_at: string
+}
+
+type WantedPost = {
+  id: string
+  title: string
+  description: string
+  image_url: string | null
+  created_at: string
+  wanted_responses: WantedResponse[]
+}
+
 export default function WantedPage() {
+  const [posts, setPosts] = useState<WantedPost[]>([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [image, setImage] = useState<File | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [responseText, setResponseText] = useState<{ [key: string]: string }>({})
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const fetchPosts = async () => {
+    const res = await fetch('/api/wanted')
+    const data = await res.json()
+    setPosts(data)
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+   const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  try {
+    const res = await fetch('/api/wanted', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description })
+    })
+    const data = await res.json()
+    console.log('Response:', data)
     setSubmitted(true)
+    fetchPosts()
+  } catch (err) {
+    console.error('Error:', err)
+  }
+}
+
+  const handleRespond = async (postId: string) => {
+    const content = responseText[postId]
+    if (!content) return
+    await fetch('/api/wanted/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ post_id: postId, content })
+    })
+    setResponseText(prev => ({ ...prev, [postId]: '' }))
+    fetchPosts()
   }
 
   return (
@@ -50,7 +102,7 @@ export default function WantedPage() {
               <div style={{ fontSize: '2rem', marginBottom: '12px' }}>✅</div>
               <p style={{ color: 'white', fontWeight: 600, marginBottom: '8px' }}>Request posted!</p>
               <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '16px' }}>Check back here to see if someone responds.</p>
-              <button onClick={() => { setTitle(''); setDescription(''); setImage(null); setSubmitted(false) }}
+              <button onClick={() => { setTitle(''); setDescription(''); setSubmitted(false) }}
                 style={{ background: '#2A2A2A', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
                 Post another request
               </button>
@@ -71,7 +123,7 @@ export default function WantedPage() {
                 />
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
+              <div style={{ marginBottom: '24px' }}>
                 <label style={{ color: '#999', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Tell us more</label>
                 <textarea
                   value={description}
@@ -82,16 +134,6 @@ export default function WantedPage() {
                 />
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ color: '#999', fontSize: '0.85rem', display: 'block', marginBottom: '6px' }}>Upload a picture of what you're looking for (optional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={e => setImage(e.target.files?.[0] || null)}
-                  style={{ color: '#888', fontSize: '0.85rem' }}
-                />
-              </div>
-
               <button type="submit"
                 style={{ background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '10px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer' }}>
                 Post request
@@ -99,9 +141,45 @@ export default function WantedPage() {
             </form>
           )}
 
-          <div style={{ color: '#555', textAlign: 'center', fontSize: '0.9rem' }}>
-            No requests yet. Be the first to post one.
-          </div>
+          {loading ? (
+            <p style={{ color: '#555', textAlign: 'center' }}>Loading requests...</p>
+          ) : posts.length === 0 ? (
+            <p style={{ color: '#555', textAlign: 'center' }}>No requests yet. Be the first to post one.</p>
+          ) : (
+            posts.map(post => (
+              <div key={post.id} style={{ background: '#1A1A1A', borderRadius: '12px', padding: '24px', marginBottom: '24px', border: '1px solid #2A2A2A' }}>
+                <p style={{ color: '#555', fontSize: '0.8rem', marginBottom: '8px' }}>{new Date(post.created_at).toLocaleDateString()}</p>
+                <h3 style={{ color: 'white', fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px' }}>{post.title}</h3>
+                {post.description && <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '16px', lineHeight: 1.6 }}>{post.description}</p>}
+
+                {post.wanted_responses.length > 0 && (
+                  <div style={{ borderTop: '1px solid #2A2A2A', paddingTop: '16px', marginBottom: '16px' }}>
+                    <p style={{ color: '#555', fontSize: '0.8rem', marginBottom: '12px' }}>Responses:</p>
+                    {post.wanted_responses.map(response => (
+                      <div key={response.id} style={{ background: '#0D0D0D', borderRadius: '8px', padding: '12px', marginBottom: '8px' }}>
+                        <p style={{ color: '#ccc', fontSize: '0.9rem' }}>{response.content}</p>
+                        <p style={{ color: '#555', fontSize: '0.75rem', marginTop: '6px' }}>{new Date(response.created_at).toLocaleDateString()}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder="Write a response..."
+                    value={responseText[post.id] || ''}
+                    onChange={e => setResponseText(prev => ({ ...prev, [post.id]: e.target.value }))}
+                    style={{ flex: 1, background: '#0D0D0D', border: '1px solid #2A2A2A', borderRadius: '8px', padding: '8px 12px', color: 'white', fontSize: '0.9rem' }}
+                  />
+                  <button onClick={() => handleRespond(post.id)}
+                    style={{ background: '#2A2A2A', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>
+                    Reply
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </main>
     </>

@@ -12,19 +12,25 @@ export async function GET() {
     .select('*, wanted_responses(*)')
     .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json(data)
+  if (error) {
+    console.error('Supabase error:', error)
+    return NextResponse.json([], { status: 200 })
+  }
+  return NextResponse.json(data ?? [])
 }
 
 export async function POST(request: Request) {
-  const { title, description, image_url } = await request.json()
+  const { title, description } = await request.json()
 
   const { data, error } = await supabase
     .from('wanted_posts')
-    .insert({ title, description, image_url })
+    .insert({ title, description })
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('Supabase error:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
   return NextResponse.json(data)
 }
