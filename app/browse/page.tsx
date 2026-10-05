@@ -278,52 +278,38 @@ color: category === cat.slug ? 'white' : '#888',
                   const hasReactions = Object.values(reactions).some((n: any) => n > 0)
                   return (
                     <Link key={artefact.id} href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
-                      <div className="artefact-card">
-                        <div style={{ aspectRatio: '1', background: '#F5F5F5', position: 'relative', overflow: 'hidden' }}>
-  {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
-    <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any)[0].ipfs_cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-  ) : (
-    <span style={{ fontSize: '2.5rem' }}>🏷️</span>
-  )}
-  {(artefact.media_assets as any)?.length > 1 && (
-    <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
-      +{(artefact.media_assets as any).length - 1}
+                      <div style={{ background: 'transparent' }}>
+  <div style={{ aspectRatio: '1', position: 'relative', overflow: 'hidden', borderRadius: '10px' }}>
+    {(artefact.media_assets as any)?.[0]?.ipfs_cid ? (
+      <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any)[0].ipfs_cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    ) : (
+      <span style={{ fontSize: '2.5rem' }}>🏷️</span>
+    )}
+    {(artefact.media_assets as any)?.length > 1 && (
+      <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
+        +{(artefact.media_assets as any).length - 1}
+      </div>
+    )}
+  </div>
+  <div style={{ padding: '6px 4px' }}>
+    <div style={{ fontSize: '0.7rem', color: '#999', marginBottom: '2px' }}>
+      {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
     </div>
-  )}
+    <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.85rem', lineHeight: 1.3, marginBottom: '4px' }}>
+      {artefact.title}
+    </div>
+    <div style={{ display: 'flex', gap: '4px' }}>
+      {hasReactions && EMOJIS.map(emoji => reactions[emoji] ? (
+        <span key={emoji} style={{ fontSize: '0.75rem', color: '#666' }}>
+          {emoji}{reactions[emoji]}
+        </span>
+      ) : null)}
+      {commentMap[artefact.id] > 0 && (
+        <span style={{ fontSize: '0.75rem', color: '#666' }}>💬{commentMap[artefact.id]}</span>
+      )}
+    </div>
+  </div>
 </div>
-                        <div style={{ padding: '14px' }}>
-                          <div style={{ fontSize: '0.75rem', color: '#999', marginBottom: '4px' }}>
-                            {(artefact.categories as any)?.name} · {artefact.year_approx || 'Year unknown'}
-                          </div>
-                          <div style={{ fontWeight: 600, color: '#111', fontSize: '0.9rem', lineHeight: 1.4, marginBottom: '10px' }}>
-                            {artefact.title}
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{
-                              fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px',
-                              background: artefact.licence_type === 'CC0' ? '#F0FDF4' : '#EFF6FF',
-                              color: artefact.licence_type === 'CC0' ? '#15803D' : '#1D4ED8',
-                              fontWeight: 600,
-                            }}>
-                              {artefact.licence_type === 'CC0' ? 'CC0' : 'CC BY 4.0'}
-                            </span>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                              {hasReactions && (
-                                <div style={{ display: 'flex', gap: '4px' }}>
-                                  {EMOJIS.map(emoji => reactions[emoji] ? (
-                                    <span key={emoji} style={{ fontSize: '0.75rem', color: '#666' }}>
-                                      {emoji}{reactions[emoji]}
-                                    </span>
-                                  ) : null)}
-                                </div>
-                              )}
-                              {commentMap[artefact.id] > 0 && (
-                                <span style={{ fontSize: '0.75rem', color: '#666' }}>💬{commentMap[artefact.id]}</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </Link>
                   )
                 })}
