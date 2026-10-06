@@ -11,7 +11,9 @@ const cardHoverStyle = `
     .browse-wordmark { display: none !important; }
     .browse-nav-links { gap: 6px !important; }
     .browse-nav-links a { padding-left: 8px !important; padding-right: 8px !important; font-size: 0.78rem !important; }
-  }
+  @media (max-width: 720px) {
+  .browse-nav-links a:not(:last-child) { display: none !important; }
+}
   .artefact-card {
     background: white; 
     border-radius: 4px; 
@@ -159,14 +161,14 @@ export default async function BrowsePage({
           <span className="browse-wordmark" style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
         <div className="browse-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Browse</Link>
-          <Link href="/wanted" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>Anyone has...?</Link>
-<Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
-          <Link href="/submit" style={{
-            fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
-          }}>Contribute</Link>
-        </div>
+  <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>Browse</Link>
+  <Link href="/wanted" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>Anyone has...?</Link>
+  <Link href="/about" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>About</Link>
+  <Link href="/submit" style={{
+    fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
+    background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
+  }}>Contribute</Link>
+</div>
       </nav>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px' }}>

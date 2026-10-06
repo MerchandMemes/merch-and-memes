@@ -77,15 +77,15 @@ export default function WantedPage() {
           <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
           <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Link href="/browse" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>Browse</Link>
-          <Link href="/wanted" style={{ fontSize: '0.9rem', fontWeight: 600, color: 'white', textDecoration: 'none' }}>Anyone has...?</Link>
-          <Link href="/about" style={{ fontSize: '0.9rem', color: '#888', textDecoration: 'none' }}>About</Link>
-          <Link href="/submit" style={{
-            fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
-          }}>Contribute</Link>
-        </div>
+        <div className="wanted-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+  <Link href="/browse" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>Browse</Link>
+  <Link href="/wanted" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>Anyone has...?</Link>
+  <Link href="/about" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#A78BFA', textDecoration: 'none' }}>About</Link>
+  <Link href="/submit" style={{
+    fontSize: '0.9rem', fontWeight: 700, padding: '8px 18px', borderRadius: '10px',
+    background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
+  }}>Contribute</Link>
+</div>
       </nav>
 
       <main style={{ background: '#0D0D0D', minHeight: '100vh', padding: '40px 24px' }}>
@@ -218,6 +218,11 @@ export default function WantedPage() {
           }
         }
       `}</style>
+    <style>{`
+  @media (max-width: 720px) {
+    .wanted-nav-links a:not(:last-child) { display: none !important; }
+  }
+`}</style>
     </>
   )
 }
