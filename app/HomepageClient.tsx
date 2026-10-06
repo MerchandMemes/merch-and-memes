@@ -97,22 +97,29 @@ export default function HomepageClient({
           <div className="home-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/browse" style={{
-                fontSize: '0.95rem', fontWeight: 600, padding: '10px 20px', borderRadius: '12px',
-                border: '1px solid #2A2A2A', color: '#F5F5F5', background: 'rgba(255,255,255,0.05)',
-                textDecoration: 'none', display: 'inline-block'
-              }}>Browse</Link>
+  fontSize: '0.95rem', fontWeight: 600, padding: '10px 20px', borderRadius: '12px',
+  border: '1px solid #2A2A2A', color: '#A78BFA', background: 'rgba(255,255,255,0.05)',
+  textDecoration: 'none', display: 'inline-block'
+}}>Browse</Link>
+</motion.div>
+<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+<Link href="/wanted" style={{
+  fontSize: '0.95rem', fontWeight: 600, padding: '10px 20px', borderRadius: '12px',
+  border: '1px solid #2A2A2A', color: '#A78BFA', background: 'rgba(255,255,255,0.05)',
+  textDecoration: 'none', display: 'inline-block'
+}}>Anyone has...?</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/about" style={{
                 fontSize: '0.95rem', fontWeight: 600, padding: '10px 20px', borderRadius: '12px',
-                border: '1px solid #2A2A2A', color: '#F5F5F5', background: 'rgba(255,255,255,0.05)',
+                border: '1px solid #2A2A2A', color: '#A78BFA', background: 'rgba(255,255,255,0.05)',
                 textDecoration: 'none', display: 'inline-block'
               }}>About</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/submit" style={{
                 fontSize: '0.95rem', fontWeight: 700, padding: '10px 22px', borderRadius: '12px',
-                background: 'linear-gradient(135deg, #627EEA, #DC1FFF)',
+                background: 'linear-gradient(135deg, #627EEA, #ed52f5)',
                 color: 'white', textDecoration: 'none', display: 'inline-block'
               }}>Contribute</Link>
             </motion.div>
@@ -244,6 +251,15 @@ export default function HomepageClient({
                   ✦ Contribute an artefact
                 </Link>
               </motion.div>
+              <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+  <Link href="/wanted" style={{
+    display: 'inline-flex', alignItems: 'center', gap: '8px',
+    padding: '18px 40px', borderRadius: '16px', fontSize: '1.1rem', fontWeight: 700,
+    background: 'linear-gradient(135deg, #627EEA, #DC1FFF)', color: 'white', textDecoration: 'none',
+  }}>
+    Anyone has...? 🔍
+  </Link>
+</motion.div>
               <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
                 <Link href="/browse" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '8px',
