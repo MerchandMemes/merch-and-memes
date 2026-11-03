@@ -1,8 +1,14 @@
 import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { corsHeaders, preflight } from '@/lib/lib/cors'
+
+export async function OPTIONS(request: NextRequest) {
+  return preflight(request)
+}
 
 export async function POST(request: NextRequest) {
+  const cors = corsHeaders(request)
   try {
     // Use service role key for server-side operations
     const supabase = createClient(
@@ -22,7 +28,7 @@ export async function POST(request: NextRequest) {
        if (!files || files.length === 0 || !title || !categorySlug) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400, headers: cors }
       )
     }
 
@@ -39,7 +45,7 @@ export async function POST(request: NextRequest) {
     if (catError || !category) {
       return NextResponse.json(
         { error: 'Invalid category' },
-        { status: 400 }
+        { status: 400, headers: cors }
       )
     }
 
@@ -60,7 +66,7 @@ export async function POST(request: NextRequest) {
       if (uploadError) {
         return NextResponse.json(
           { error: 'Failed to upload file' },
-          { status: 500 }
+          { status: 500, headers: cors }
         )
       }
       uploadedFiles.push({ path: uploadData.path, mimeType: f.type, size: f.size })
@@ -82,7 +88,7 @@ export async function POST(request: NextRequest) {
     if (artefactError || !artefact) {
       return NextResponse.json(
         { error: 'Failed to create artefact record' },
-        { status: 500 }
+        { status: 500, headers: cors }
       )
     }
 
@@ -143,13 +149,13 @@ try {
   // Do not fail the submission if email fails
 }
 
-return NextResponse.json({ success: true, id: artefact.id })
+return NextResponse.json({ success: true, id: artefact.id }, { headers: cors })
 
   } catch (error) {
     console.error('Submission error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: cors }
     )
   }
 }
