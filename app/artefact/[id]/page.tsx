@@ -6,7 +6,7 @@ import Reactions from './Reactions'
 import Comments from './Comments'
 import ArtefactGallery from './ArtefactGallery'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 export async function generateStaticParams() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
