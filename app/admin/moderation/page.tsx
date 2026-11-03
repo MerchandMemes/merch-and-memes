@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import ModerationActions from './ModerationActions'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function ModerationPage() {
   const supabase = createClient(
