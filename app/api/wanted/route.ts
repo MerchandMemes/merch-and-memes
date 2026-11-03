@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { corsHeaders, preflight } from '@/lib/lib/cors'
+// A static export needs an explicit caching mode on GET routes.
+// revalidate 0 keeps the list fresh on Vercel.
+export const dynamic = 'force-static'
+export const revalidate = 0
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
