@@ -29,7 +29,7 @@ const cardHoverStyle = `
   .artefact-card .card-title { color: #111 !important; }
   .artefact-card .card-meta { color: #666 !important; }
 `
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function BrowsePage({
   searchParams,
