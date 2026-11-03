@@ -1,11 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 
 export default function AdminLogin() {
-  const params = useSearchParams()
-  const next = params.get('next') || '/admin/moderation'
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -20,9 +17,10 @@ export default function AdminLogin() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
-      window.location.href = next
+      const next = new URLSearchParams(window.location.search).get('next')
+      window.location.href = next && next.startsWith('/') ? next : '/admin/moderation'
     } else {
-      setError('Wrong password.')
+      setError(res.status === 500 ? 'ADMIN_PASSWORD is not set on the server.' : 'Wrong password.')
       setBusy(false)
     }
   }
