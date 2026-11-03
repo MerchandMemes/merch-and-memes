@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { apiUrl } from '@/lib/lib/api'
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false)
