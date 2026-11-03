@@ -10,6 +10,19 @@ export const dynamic = 'force-dynamic'
 export async function generateMetadata({
   params,
 }: {
+  export async function generateStaticParams() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data } = await supabase
+    .from('artefacts')
+    .select('id')
+    .not('published_at', 'is', null)
+
+  return (data ?? []).map((a) => ({ id: a.id }))
+}
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
