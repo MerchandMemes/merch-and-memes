@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import HomepageClient from './HomepageClient'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function Home() {
   const { count: artefactCount } = await supabase
