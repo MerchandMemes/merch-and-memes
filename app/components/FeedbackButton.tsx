@@ -18,7 +18,7 @@ export default function FeedbackButton() {
     setError('')
 
     try {
-      const res = await fetch('/api/feedback', {
+      const res = await fetch(apiUrl('/api/feedback'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, email }),
