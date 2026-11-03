@@ -7,10 +7,7 @@ import Comments from './Comments'
 import ArtefactGallery from './ArtefactGallery'
 
 export const dynamic = 'force-dynamic'
-export async function generateMetadata({
-  params,
-}: {
-  export async function generateStaticParams() {
+export async function generateStaticParams() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -23,6 +20,10 @@ export async function generateMetadata({
 
   return (data ?? []).map((a) => ({ id: a.id }))
 }
+
+export async function generateMetadata({
+  params,
+}: {
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
