@@ -1,16 +1,20 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { corsHeaders, preflight } from '@/lib/lib/cors'
+
+export async function OPTIONS(request: NextRequest) {
+  return preflight(request)
+}
 
 export async function POST(request: NextRequest) {
+  const cors = corsHeaders(request)
   try {
     const { message, email } = await request.json()
 
     if (!message?.trim()) {
-      return NextResponse.json({ error: 'Message is required' }, { status: 400 })
+      return NextResponse.json({ error: 'Message is required' }, { status: 400, headers: cors })
     }
 
-    // Send email notification
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
       from: 'onboarding@resend.dev',
@@ -23,10 +27,10 @@ export async function POST(request: NextRequest) {
       `,
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: cors })
 
   } catch (error) {
     console.error('Feedback error:', error)
-    return NextResponse.json({ error: 'Failed to send feedback' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to send feedback' }, { status: 500, headers: cors })
   }
 }
