@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { corsHeaders, preflight } from '@/lib/lib/cors'
+
+export async function OPTIONS(request: NextRequest) {
+  return preflight(request)
+}
 
 export async function POST(request: NextRequest) {
+  const cors = corsHeaders(request)
   try {
     const { commentId } = await request.json()
 
@@ -11,17 +17,15 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Get comment details
     const { data: comment } = await supabase
       .from('comments')
       .select('content, display_name, flag_count, artefact_id, artefacts(title)')
       .eq('id', commentId)
       .single()
 
-    if (!comment) return NextResponse.json({ success: true })
+    if (!comment) return NextResponse.json({ success: true }, { headers: cors })
 
-    // Only notify on first flag
-    if (comment.flag_count !== 1) return NextResponse.json({ success: true })
+    if (comment.flag_count !== 1) return NextResponse.json({ success: true }, { headers: cors })
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
@@ -37,10 +41,10 @@ export async function POST(request: NextRequest) {
       `,
     })
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: cors })
 
   } catch (error) {
     console.error('Flag notification error:', error)
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: cors })
   }
 }
