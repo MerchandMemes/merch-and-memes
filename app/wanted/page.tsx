@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { apiUrl } from '@/lib/lib/api'
 
 type WantedResponse = {
   id: string
@@ -27,7 +28,7 @@ export default function WantedPage() {
   const [responseText, setResponseText] = useState<{ [key: string]: string }>({})
 
   const fetchPosts = async () => {
-    const res = await fetch('/api/wanted')
+    const res = await fetch(apiUrl('/api/wanted'))
     const data = await res.json()
     setPosts(data)
     setLoading(false)
@@ -40,7 +41,7 @@ export default function WantedPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch('/api/wanted', {
+      const res = await fetch(apiUrl('/api/wanted'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title, description })
@@ -57,7 +58,7 @@ export default function WantedPage() {
   const handleRespond = async (postId: string) => {
     const content = responseText[postId]
     if (!content) return
-    await fetch('/api/wanted/respond', {
+    await fetch(apiUrl('/api/wanted/respond'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ post_id: postId, content })
