@@ -1,12 +1,19 @@
 import { createClient } from '@supabase/supabase-js'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { corsHeaders, preflight } from '@/lib/lib/cors'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function GET() {
+export async function OPTIONS(request: NextRequest) {
+  return preflight(request)
+}
+
+export async function GET(request: NextRequest) {
+  const cors = corsHeaders(request)
+
   const { data, error } = await supabase
     .from('wanted_posts')
     .select('*, wanted_responses(*)')
@@ -14,12 +21,13 @@ export async function GET() {
 
   if (error) {
     console.error('Supabase error:', error)
-    return NextResponse.json([], { status: 200 })
+    return NextResponse.json([], { status: 200, headers: cors })
   }
-  return NextResponse.json(data ?? [])
+  return NextResponse.json(data ?? [], { headers: cors })
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const cors = corsHeaders(request)
   const { title, description } = await request.json()
 
   const { data, error } = await supabase
@@ -30,7 +38,7 @@ export async function POST(request: Request) {
 
   if (error) {
     console.error('Supabase error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message }, { status: 500, headers: cors })
   }
-  return NextResponse.json(data)
+  return NextResponse.json(data, { headers: cors })
 }
