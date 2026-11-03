@@ -4,8 +4,16 @@ import FeedbackButton from './components/FeedbackButton'
 import Footer from './components/Footer'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://merchandmemes.eth.limo'),
   title: 'Merch&Memes — the web3 archive',
   description: 'A community-driven archive of Web3 cultural history. Every hoodie, sticker, meme, POAP, and badge tells a piece of the story.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    siteName: 'Merch&Memes',
+    type: 'website',
+  },
 }
 
 export default function RootLayout({
