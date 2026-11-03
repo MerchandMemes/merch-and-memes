@@ -1,11 +1,63 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import Reactions from './Reactions'
 import Comments from './Comments'
 import ArtefactGallery from './ArtefactGallery'
 
 export const dynamic = 'force-dynamic'
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const { data } = await supabase
+    .from('artefacts')
+    .select('title, description, media_assets(ipfs_cid, is_primary)')
+    .eq('id', id)
+    .single()
+
+  if (!data) {
+    return { title: 'Artefact not found — Merch&Memes' }
+  }
+
+  const primary = ((data.media_assets as any[]) || []).sort(
+    (a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0)
+  )[0]
+  const image = primary?.ipfs_cid
+    ? `https://ipfs.filebase.io/ipfs/${primary.ipfs_cid}`
+    : undefined
+  const description = (
+    data.description ||
+    'An artefact from the Merch&Memes archive of Web3 cultural history.'
+  ).slice(0, 200)
+
+  return {
+    title: `${data.title} — Merch&Memes`,
+    description,
+    alternates: { canonical: `/artefact/${id}` },
+    openGraph: {
+      title: data.title,
+      description,
+      type: 'article',
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: data.title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  }
+}
 
 const artefactResponsiveStyle = `
   @media (max-width: 720px) {
