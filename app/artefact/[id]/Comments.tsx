@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { apiUrl } from '@/lib/lib/api'
 function CommentReactions({ commentId }: { commentId: string }) {
   const [counts, setCounts] = useState<Record<string, number>>({})
   const [mine, setMine] = useState<Set<string>>(new Set())
@@ -103,7 +104,7 @@ export default function Comments({ artefactId }: { artefactId: string }) {
   const handleFlag = async (commentId: string) => {
     if (flagged.has(commentId)) return
     await supabase.rpc('increment_comment_flag', { comment_id: commentId })
-    await fetch('/api/flag-comment', {
+    await fetch(apiUrl('/api/flag-comment'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ commentId }),
