@@ -96,6 +96,7 @@ export default async function ArtefactPage({
     .select(`
       id,
       title,
+      credit_as,
       description,
       year_approx,
       licence_type,
@@ -181,6 +182,11 @@ export default async function ArtefactPage({
             }}>
               {artefact.title}
             </h1>
+            {artefact.credit_as && (
+              <p style={{ color: '#777', fontSize: '0.9rem', marginBottom: '12px' }}>
+                Contributed by {artefact.credit_as}
+              </p>
+            )}
 
             {/* Year */}
             {artefact.year_approx && (
