@@ -134,12 +134,29 @@ export async function POST(request: NextRequest) {
         .eq('id', submissionId)
 
       // Log action
+     // Log action
       await supabase.from('audit_log').insert({
         action: 'submission_approved',
         entity_type: 'submission',
         entity_id: submissionId,
         note: note || 'Approved',
       })
+
+      // Rebuild the public shell and repoint ENS. A failure here must not
+      // undo the approval, so it is swallowed.
+      try {
+        await fetch('https://api.github.com/repos/MerchandMemes/merch-and-memes/dispatches', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.GITHUB_DISPATCH_TOKEN}`,
+            Accept: 'application/vnd.github+json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ event_type: 'publish' }),
+        })
+      } catch (dispatchError) {
+        console.error('Publish dispatch failed:', dispatchError)
+      }
 
     } else if (action === 'reject') {
       // Collect every staged file belonging to this submission
