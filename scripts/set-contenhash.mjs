@@ -56,10 +56,19 @@ function base32Decode(input) {
   return Buffer.from(out)
 }
 
-// CIDv1 base32 to multihash bytes. EIP-1577 prefix for IPFS is 0xe301.
-const multihash = base32Decode(CID)
+// Decode the CIDv1, then strip its 2-byte header (version, codec) so only the
+// multihash remains. EIP-1577 prefix for IPFS is 0xe301.
+const decoded = base32Decode(CID)
+if (decoded[0] !== 0x01) {
+  throw new Error(`Expected a CIDv1, got version ${decoded[0]}`)
+}
+const codec = decoded[1]
+if (codec !== 0x70 && codec !== 0x71) {
+  throw new Error(`Unexpected codec 0x${codec.toString(16)}, expected dag-pb or raw`)
+}
+const multihash = decoded.subarray(2)
 if (multihash[0] !== 0x12 || multihash[1] !== 0x20) {
-  throw new Error('Unexpected multihash prefix, expected sha2-256 (0x12 0x20)')
+  throw new Error('Unexpected multihash, expected sha2-256 (0x12 0x20)')
 }
 const contenthash = `0xe301${multihash.toString('hex')}`
 
