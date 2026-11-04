@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import HomepageClient from './HomepageClient'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function Home() {
   const { count: artefactCount } = await supabase
