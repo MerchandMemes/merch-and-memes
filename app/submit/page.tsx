@@ -62,6 +62,7 @@ export default function SubmitPage() {
     const [story, setStory] = useState('')
   const [year, setYear] = useState('')
   const [source, setSource] = useState('')
+  const [creditAs, setCreditAs] = useState('')
   const [notificationEmail, setNotificationEmail] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -73,7 +74,7 @@ export default function SubmitPage() {
 
       const resetForm = () => {
     setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
-    setStory(''); setYear(''); setSource('')
+    setStory(''); setYear(''); setSource(''); setCreditAs('')
     setFiles([]); setNotificationEmail('')
   }
 
@@ -115,10 +116,11 @@ export default function SubmitPage() {
       const formData = new FormData()
       uploadFiles.forEach((f) => formData.append('files', f))
             formData.append('title', title)
-      formData.append('story', story)
+      'story', story)
       formData.append('category', selectedCategory)
       formData.append('year', year)
       formData.append('source', source)
+      formData.append('creditAs', creditAs)
       formData.append('notificationEmail', notificationEmail)
       const res = await fetch(apiUrl('/api/submit'), { method: 'POST', body: formData })
       if (!res.ok) { const data = await res.json(); throw new Error(data.error || 'Submission failed') }
@@ -268,6 +270,17 @@ export default function SubmitPage() {
                 <textarea value={story} onChange={e => setStory(e.target.value)}
                   placeholder="What is it? Where did you get it? What does it mean to you?"
                   rows={5} style={{ ...inputStyle, resize: 'none' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>
+                  Credit as <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span>
+                </label>
+                <input value={creditAs} onChange={e => setCreditAs(e.target.value)}
+                  placeholder="Name or handle to publish with. Leave blank to stay anonymous."
+                  maxLength={60} style={inputStyle} />
+                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
+                  Published on the artefact. Free text, no validation — your call how you are named.
+                </p>
               </div>
 
               <div>
