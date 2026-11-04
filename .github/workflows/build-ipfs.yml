@@ -2,6 +2,8 @@ name: Build IPFS shell
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [publish]
 
 jobs:
   build:
@@ -15,6 +17,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - run: npm i --no-save viem
 
       - run: npm run build:ipfs
         env:
@@ -32,11 +36,20 @@ jobs:
           FILEBASE_BUCKET_NAME: ${{ secrets.FILEBASE_SHELL_BUCKET }}
 
       - name: Generate bucket CID
+        id: cid
         run: node scripts/bucket-cid.mjs
         env:
           FILEBASE_ACCESS_KEY_ID: ${{ secrets.FILEBASE_ACCESS_KEY_ID }}
           FILEBASE_SECRET_ACCESS_KEY: ${{ secrets.FILEBASE_SECRET_ACCESS_KEY }}
           FILEBASE_BUCKET_NAME: ${{ secrets.FILEBASE_SHELL_BUCKET }}
+
+      - name: Point ENS at the new CID
+        run: node scripts/set-contenhash.mjs
+        env:
+          CID: ${{ steps.cid.outputs.cid }}
+          ENS_NAME: ${{ secrets.ENS_NAME }}
+          ENS_RPC_URL: ${{ secrets.ENS_RPC_URL }}
+          ENS_UPDATER_PRIVATE_KEY: ${{ secrets.ENS_UPDATER_PRIVATE_KEY }}
 
       - uses: actions/upload-artifact@v4
         with:
