@@ -1,4 +1,5 @@
 import { S3Client, PutBucketTaggingCommand } from '@aws-sdk/client-s3'
+import { appendFileSync } from 'node:fs'
 
 const client = new S3Client({
   region: 'auto',
@@ -19,14 +20,22 @@ const command = new PutBucketTaggingCommand({
   },
 })
 
+let cid = ''
 command.middlewareStack.add(
   (next) => async (args) => {
     const response = await next(args)
-    const cid = response.response.headers['x-amz-meta-cid']
-    console.log(cid ? `BUCKET_CID=${cid}` : 'No x-amz-meta-cid header returned')
+    cid = response.response.headers['x-amz-meta-cid'] || ''
     return response
   },
   { step: 'build' }
 )
 
 await client.send(command)
+
+if (!cid) {
+  console.error('No x-amz-meta-cid header returned')
+  process.exit(1)
+}
+
+console.log(`BUCKET_CID=${cid}`)
+if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `cid=${cid}\n`)
