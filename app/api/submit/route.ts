@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
     const categorySlug = formData.get('category') as string
     const year = formData.get('year') as string
     const source = formData.get('source') as string
+    const creditAs = formData.get('creditAs') as string
 
        if (!files || files.length === 0 || !title || !categorySlug) {
       return NextResponse.json(
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
         category_id: category.id,
         licence_type: category.licence_type,
         year_approx: year ? parseInt(year) : null,
+        credit_as: creditAs?.trim() || null,
       })
       .select('id')
       .single()
