@@ -58,7 +58,8 @@ function base32Decode(input) {
 
 // Decode the CIDv1, then strip its 2-byte header (version, codec) so only the
 // multihash remains. EIP-1577 prefix for IPFS is 0xe301.
-const decoded = base32Decode(CID)
+const body = CID.startsWith('b') || CID.startsWith('B') ? CID.slice(1) : CID
+const decoded = base32Decode(body)
 if (decoded[0] !== 0x01) {
   throw new Error(`Expected a CIDv1, got version ${decoded[0]}`)
 }
