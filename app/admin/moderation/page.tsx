@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import ModerationActions from './ModerationActions'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function ModerationPage() {
   const supabase = createClient(
