@@ -120,7 +120,7 @@ export default function SubmitPage() {
       formData.append('year', year)
       formData.append('source', source)
       formData.append('notificationEmail', notificationEmail)
-      const res = await fetch(apiUrl('/api/feedback'), { method: 'POST', body: formData })
+      const res = await fetch(apiUrl('/api/submit'), { method: 'POST', body: formData })
       if (!res.ok) { const data = await res.json(); throw new Error(data.error || 'Submission failed') }
       setSubmitted(true)
     } catch (err) {
