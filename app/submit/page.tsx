@@ -213,6 +213,20 @@ export default function SubmitPage() {
             <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', marginBottom: '20px' }}>
               What are you contributing?
             </h2>
+            <div style={{
+              background: 'rgba(0,255,163,0.06)',
+              border: '1px solid rgba(0,255,163,0.25)',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              marginBottom: '24px',
+            }}>
+              <p style={{ fontSize: '0.85rem', color: '#bbb', lineHeight: 1.6, margin: 0 }}>
+                <strong style={{ color: '#00FFA3' }}>Nothing is required.</strong>{' '}
+                No account, no wallet, no email, no fee. Submit anonymously if you prefer —
+                but an anonymous artefact is published without your name attached, so add a
+                credit name in the next step if you want to be named.
+              </p>
+            </div>
                         <style>{submitResponsiveStyle}</style>
             <div className="submit-category-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '24px' }}>
                             {CATEGORIES.map((cat) => (
