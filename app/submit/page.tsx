@@ -116,7 +116,7 @@ export default function SubmitPage() {
       const formData = new FormData()
       uploadFiles.forEach((f) => formData.append('files', f))
             formData.append('title', title)
-      'story', story)
+      formData.append('story', story)
       formData.append('category', selectedCategory)
       formData.append('year', year)
       formData.append('source', source)
