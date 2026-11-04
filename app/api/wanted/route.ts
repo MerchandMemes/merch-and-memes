@@ -34,9 +34,22 @@ export async function POST(request: NextRequest) {
   const cors = corsHeaders(request)
   const { title, description } = await request.json()
 
+  const cleanTitle = typeof title === 'string' ? title.trim() : ''
+  const cleanDescription = typeof description === 'string' ? description.trim() : ''
+
+  if (!cleanTitle) {
+    return NextResponse.json({ error: 'A title is required' }, { status: 400, headers: cors })
+  }
+  if (cleanTitle.length > 120) {
+    return NextResponse.json({ error: 'Title is too long, 120 characters max' }, { status: 400, headers: cors })
+  }
+  if (cleanDescription.length > 2000) {
+    return NextResponse.json({ error: 'Description is too long, 2000 characters max' }, { status: 400, headers: cors })
+  }
+
   const { data, error } = await supabase
     .from('wanted_posts')
-    .insert({ title, description })
+    .insert({ title: cleanTitle, description: cleanDescription || null })
     .select()
     .single()
 
