@@ -23,6 +23,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_API_BASE: https://merch-and-memes.vercel.app
           NEXT_PUBLIC_SITE_URL: https://merchandmemes.eth.limo
+          - name: Generate bucket CID
+        run: node scripts/bucket-cid.mjs
+        env:
+          FILEBASE_ACCESS_KEY_ID: ${{ secrets.FILEBASE_ACCESS_KEY_ID }}
+          FILEBASE_SECRET_ACCESS_KEY: ${{ secrets.FILEBASE_SECRET_ACCESS_KEY }}
+          FILEBASE_BUCKET_NAME: ${{ secrets.FILEBASE_SHELL_BUCKET }}
 
       - name: Upload shell to Filebase
         run: node scripts/upload-ipfs.mjs
