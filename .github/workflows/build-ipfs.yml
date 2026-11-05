@@ -43,6 +43,12 @@ jobs:
           FILEBASE_SECRET_ACCESS_KEY: ${{ secrets.FILEBASE_SECRET_ACCESS_KEY }}
           FILEBASE_BUCKET_NAME: ${{ secrets.FILEBASE_SHELL_BUCKET }}
 
+      - name: Pin the new CID and verify it resolves
+        run: node scripts/pin-cid.mjs
+        env:
+          CID: ${{ steps.cid.outputs.cid }}
+          FILEBASE_IPFS_TOKEN: ${{ secrets.FILEBASE_IPFS_TOKEN }}
+
       - name: Point ENS at the new CID
         run: node scripts/set-contenhash.mjs
         env:
