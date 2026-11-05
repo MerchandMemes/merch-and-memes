@@ -8,9 +8,9 @@ const TOKEN = process.env.FILEBASE_IPFS_TOKEN
 const API = 'https://api.filebase.io/v1/ipfs/pins'
 const ROUTING = 'https://delegated-ipfs.dev/routing/v1/providers'
 const GATEWAYS = [
-  'https://dweb.link/ipfs',
-  'https://ipfs.io/ipfs',
-  'https://trustless.filebase.io/ipfs',
+  (cid) => `https://dweb.link/ipfs/${cid}/`,
+  (cid) => `https://ipfs.io/ipfs/${cid}/`,
+  (cid) => `https://trustless.filebase.io/ipfs/${cid}?format=raw`,
 ]
 
 if (!CID) {
@@ -81,8 +81,8 @@ async function hasProviders() {
 }
 
 async function anyGatewayServes() {
-  for (const gw of GATEWAYS) {
-    const url = `${gw}/${CID}/`
+  for (const build of GATEWAYS) {
+    const url = build(CID)
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       console.log(`${url} -> ${res.status}`)
