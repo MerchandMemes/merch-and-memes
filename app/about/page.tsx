@@ -139,8 +139,22 @@ export default function AboutPage() {
         </p>
 
         <h2 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '16px' }}>
-          This is just the beginning
+          Where this is now
         </h2>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '20px' }}>
+          This is a first version, built by one person and kept deliberately small. There are no
+          accounts, no logins and no wallets. Nothing is required to contribute, which also means
+          contributions are published without a name attached unless you add a credit name.
+          Attribution, contributor profiles and sign-in are planned for a later version, once there
+          are enough contributors to justify the machinery.
+        </p>
+
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '48px' }}>
+          Because the source is open and the public site is a static bundle pinned to IPFS, anyone
+          can fork it, run it, or keep serving this copy if the original maintainer stops. That is
+          the reason for building it this way rather than on a platform.
+        </p>
 
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '20px' }}>
           The archive you see today is a starting point, not a finished product. It will grow with every contribution, every reaction, every piece of feedback from the community that uses it.
