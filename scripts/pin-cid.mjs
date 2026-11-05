@@ -10,8 +10,7 @@ const ROUTING = 'https://delegated-ipfs.dev/routing/v1/providers'
 const GATEWAYS = [
   'https://dweb.link/ipfs',
   'https://ipfs.io/ipfs',
-  'https://4everland.io/ipfs',
-  'https://trustless-gateway.link/ipfs',
+  'https://trustless.filebase.io/ipfs',
 ]
 
 if (!CID) {
@@ -72,10 +71,8 @@ async function hasProviders() {
       return false
     }
     const body = await res.json()
-    const providers = (body?.Providers ?? []).filter((p) =>
-      (p?.Protocols ?? []).includes('transport-bitswap')
-    )
-    console.log(`routing lookup -> ${providers.length} bitswap provider(s)`)
+    const providers = (body?.Providers ?? []).filter((p) => p?.ID)
+    console.log(`routing lookup -> ${providers.length} provider(s)`)
     return providers.length > 0
   } catch (err) {
     console.log(`routing lookup -> ${err.message}`)
