@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Reactions from './Reactions'
 import Comments from './Comments'
+import Corrections from './Corrections'
 import ArtefactGallery from './ArtefactGallery'
 
 export const revalidate = 60
@@ -236,7 +237,7 @@ export default async function ArtefactPage({
                 Have something similar? Contribute it →
               </Link>
             </div>
-
+<Corrections artefactId={artefact.id} />
             {/* Comments */}
             <Comments artefactId={artefact.id} />
           </div>
