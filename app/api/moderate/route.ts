@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   HeadObjectCommand,
 } from '@aws-sdk/client-s3'
+import sharp from 'sharp'
 
 // Env vars needed (in .env.local and Vercel):
 //   FILEBASE_ACCESS_KEY_ID
@@ -103,7 +104,38 @@ export async function POST(request: NextRequest) {
           if (updateError) {
             throw updateError
           }
+// Grid thumbnail, best-effort. A failure here must not block the
+          // approval: the artefact page uses the original, and grids fall back
+          // to it whenever thumb_cid is null.
+          try {
+            const thumb = await sharp(buffer)
+              .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
+              .webp({ quality: 72 })
+              .toBuffer()
 
+            const thumbKey = `${key}.thumb.webp`
+            await filebase.send(
+              new PutObjectCommand({
+                Bucket: FILEBASE_BUCKET,
+                Key: thumbKey,
+                Body: thumb,
+                ContentType: 'image/webp',
+              })
+            )
+            const thumbHead = await filebase.send(
+              new HeadObjectCommand({ Bucket: FILEBASE_BUCKET, Key: thumbKey })
+            )
+            const thumbCid = thumbHead.Metadata?.cid
+
+            if (thumbCid) {
+              await supabase
+                .from('media_assets')
+                .update({ thumb_cid: thumbCid })
+                .eq('id', asset.id)
+            }
+          } catch (thumbError) {
+            console.error('Thumbnail generation failed:', thumbError)
+          }
           // Remove from staging only once the upload and CID are confirmed
           await supabase.storage.from('staging').remove([asset.staging_path])
         } catch (filebaseError) {
