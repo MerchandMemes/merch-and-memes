@@ -59,7 +59,7 @@ export default function AboutPage() {
           {principles.map((p) => (
             <div key={p.title} style={{ display: 'flex', gap: '10px', alignItems: 'baseline' }}>
               <span style={{ color: '#627EEA', flexShrink: 0 }}>&bull;</span>
-              <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
+        <p style={{ color: '#777', lineHeight: 1.7, fontSize: '0.95rem', margin: 0 }}>
                 <strong style={{ color: 'white' }}>{p.title}:</strong> {p.text}
               </p>
             </div>
@@ -155,7 +155,9 @@ export default function AboutPage() {
           can fork it, run it, or keep serving this copy if the original maintainer stops. That is
           the reason for building it this way rather than on a platform.
         </p>
-
+  <h2 style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif', color: 'white', marginBottom: '16px' }}>
+          This is just the beginning
+        </h2>
         <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '20px' }}>
           The archive you see today is a starting point, not a finished product. It will grow with every contribution, every reaction, every piece of feedback from the community that uses it.
         </p>
