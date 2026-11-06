@@ -38,25 +38,44 @@ async function createPin() {
     }),
   })
   const body = await res.text()
-  if (!res.ok) throw new Error(`Pin request failed: ${res.status} ${body}`)
+
+  // A CID that is already pinned is a pass, not a failure. This happens on a
+  // re-run of the same build.
+  if (!res.ok) {
+    if (/already/i.test(body)) {
+      console.log(`already pinned: ${body.slice(0, 200)}`)
+      return null
+    }
+    throw new Error(`Pin request failed: ${res.status} ${body}`)
+  }
   return JSON.parse(body).requestid
 }
 
+// Large DAGs sit in Filebase's queue for a long time before the worker picks
+// them up, so the wait is generous and backs off rather than polling flat out.
 async function waitForPin(requestid) {
-  for (let i = 0; i < 40; i++) {
+  let delay = 3000
+  let waited = 0
+  const LIMIT = 15 * 60 * 1000
+
+  while (waited < LIMIT) {
     const res = await fetch(`${API}/${requestid}`, {
       headers: { Authorization: `Bearer ${TOKEN}` },
     })
     const body = await res.json()
     const status = body?.status
-    console.log(`pin status: ${status}`)
+    console.log(`pin status: ${status} (${Math.round(waited / 1000)}s)`)
+
     if (status === 'pinned') return
     if (status === 'failed') {
       throw new Error(`Pin failed: ${JSON.stringify(body.info ?? body)}`)
     }
-    await sleep(3000)
+
+    await sleep(delay)
+    waited += delay
+    if (delay < 10000) delay += 1000
   }
-  throw new Error('Pin did not complete in time')
+  throw new Error('Pin did not complete in 15 minutes')
 }
 
 // The delegated routing endpoint is what a gateway asks when it needs to find
@@ -95,8 +114,10 @@ async function anyGatewayServes() {
 }
 
 const requestid = await createPin()
-console.log(`pin queued: ${requestid}`)
-await waitForPin(requestid)
+if (requestid) {
+  console.log(`pin queued: ${requestid}`)
+  await waitForPin(requestid)
+}
 
 for (let round = 0; round < 20; round++) {
   if (await hasProviders()) {
