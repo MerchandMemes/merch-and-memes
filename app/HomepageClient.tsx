@@ -33,7 +33,12 @@ const PARTICLES = [
 ]
 
 function CountUp({ target }: { target: number }) {
-  const [count, setCount] = useState(0)
+  // Start at the real value so the server render and no-JS visitors see the
+  // correct number; the animation only runs once JavaScript is up.
+  const [count, setCount] = useState(target)
+  useEffect(() => {
+    if (target === 0) return
+    setCount(0)
   useEffect(() => {
     if (target === 0) return
     const steps = 60
@@ -330,8 +335,8 @@ export default function HomepageClient({
                   >
                     <Link href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
                       <div style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '1', marginBottom: '10px', background: '#1A1A1A', border: '1px solid #2A2A2A' }}>
-                        {(artefact.media_assets as any[])?.[0]?.ipfs_cid ? (
-                          <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any[])[0].ipfs_cid}`} alt={artefact.title}
+                        {((artefact.media_assets as any[])?.[0]?.thumb_cid || (artefact.media_assets as any[])?.[0]?.ipfs_cid) ? (
+                          <img src={`https://ipfs.filebase.io/ipfs/${(artefact.media_assets as any[])[0].thumb_cid || (artefact.media_assets as any[])[0].ipfs_cid}`} alt={artefact.title}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem' }}>🏷️</div>
