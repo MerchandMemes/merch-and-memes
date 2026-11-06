@@ -17,7 +17,7 @@ export default async function Home() {
       title,
       year_approx,
       categories(name, slug),
-      media_assets(ipfs_cid)
+      media_assets(ipfs_cid, thumb_cid)
     `)
     .not('published_at', 'is', null)
     .order('published_at', { ascending: false })
