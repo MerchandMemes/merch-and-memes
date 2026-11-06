@@ -134,7 +134,6 @@ export async function POST(request: NextRequest) {
         .eq('id', submissionId)
 
       // Log action
-     // Log action
       await supabase.from('audit_log').insert({
         action: 'submission_approved',
         entity_type: 'submission',
