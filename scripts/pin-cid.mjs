@@ -22,6 +22,8 @@ if (!TOKEN) {
   process.exit(1)
 }
 
+console.log(`pinning ${CID}`)
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 async function createPin() {
@@ -49,33 +51,6 @@ async function createPin() {
     throw new Error(`Pin request failed: ${res.status} ${body}`)
   }
   return JSON.parse(body).requestid
-}
-
-// Large DAGs sit in Filebase's queue for a long time before the worker picks
-// them up, so the wait is generous and backs off rather than polling flat out.
-async function waitForPin(requestid) {
-  let delay = 3000
-  let waited = 0
-  const LIMIT = 15 * 60 * 1000
-
-  while (waited < LIMIT) {
-    const res = await fetch(`${API}/${requestid}`, {
-      headers: { Authorization: `Bearer ${TOKEN}` },
-    })
-    const body = await res.json()
-    const status = body?.status
-    console.log(`pin status: ${status} (${Math.round(waited / 1000)}s)`)
-
-    if (status === 'pinned') return
-    if (status === 'failed') {
-      throw new Error(`Pin failed: ${JSON.stringify(body.info ?? body)}`)
-    }
-
-    await sleep(delay)
-    waited += delay
-    if (delay < 10000) delay += 1000
-  }
-  throw new Error('Pin did not complete in 15 minutes')
 }
 
 // The delegated routing endpoint is what a gateway asks when it needs to find
@@ -113,6 +88,49 @@ async function anyGatewayServes() {
   return false
 }
 
+// Reachability is the real objective, so a reachable root ends the wait even
+// while Filebase still reports the pin as in progress.
+async function reachable() {
+  return (await hasProviders()) || (await anyGatewayServes())
+}
+
+// The shell is a large DAG and Filebase walks it slowly, so the ceiling is
+// high. Progress is timestamped rather than silent.
+async function waitForPin(requestid) {
+  let delay = 3000
+  let waited = 0
+  const LIMIT = 45 * 60 * 1000
+  const CHECK_EVERY = 90 * 1000
+  let lastCheck = 0
+
+  while (waited < LIMIT) {
+    const res = await fetch(`${API}/${requestid}`, {
+      headers: { Authorization: `Bearer ${TOKEN}` },
+    })
+    const body = await res.json()
+    const status = body?.status
+    console.log(`pin status: ${status} (${Math.round(waited / 1000)}s)`)
+
+    if (status === 'pinned') return 'pinned'
+    if (status === 'failed') {
+      throw new Error(`Pin failed: ${JSON.stringify(body.info ?? body)}`)
+    }
+
+    if (waited - lastCheck >= CHECK_EVERY) {
+      lastCheck = waited
+      if (await reachable()) {
+        console.log('root is reachable while the pin is still in progress')
+        return 'reachable'
+      }
+    }
+
+    await sleep(delay)
+    waited += delay
+    if (delay < 10000) delay += 1000
+  }
+  return 'timeout'
+}
+
 const requestid = await createPin()
 if (requestid) {
   console.log(`pin queued: ${requestid}`)
@@ -120,12 +138,8 @@ if (requestid) {
 }
 
 for (let round = 0; round < 20; round++) {
-  if (await hasProviders()) {
-    console.log(`CID ${CID} is pinned and announced to the network`)
-    process.exit(0)
-  }
-  if (await anyGatewayServes()) {
-    console.log(`CID ${CID} is pinned and served by a public gateway`)
+  if (await reachable()) {
+    console.log(`CID ${CID} is pinned and reachable`)
     process.exit(0)
   }
   await sleep(10000)
