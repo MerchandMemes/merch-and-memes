@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Merch &amp; Memes">
+  <rect width="512" height="512" fill="#1C2447"/>
+  <circle cx="256" cy="256" r="176" fill="#FFFFFF"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,-14)">
+    <path d="M128 332 L140 200 L161 276 L182 200 L194 332" stroke-width="36" stroke="#8B2BE2"/>
+    <path d="M232 320 C232 341 264 346 277 330 C286 317 280 303 264 296 L243 283 C232 275 234 256 247 250 C260 244 274 250 274 265 C274 279 258 287 244 297 L279 338" stroke-width="18" stroke="#9BEF1F"/>
+    <path d="M318 332 L330 200 L351 276 L372 200 L384 332" stroke-width="36" stroke="#8B2BE2"/>
+  </g>
+</svg>
