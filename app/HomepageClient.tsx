@@ -36,11 +36,10 @@ function CountUp({ target }: { target: number }) {
   // Start at the real value so the server render and no-JS visitors see the
   // correct number; the animation only runs once JavaScript is up.
   const [count, setCount] = useState(target)
+
   useEffect(() => {
     if (target === 0) return
     setCount(0)
-  useEffect(() => {
-    if (target === 0) return
     const steps = 60
     const increment = target / steps
     let current = 0
@@ -51,6 +50,7 @@ function CountUp({ target }: { target: number }) {
     }, 1500 / steps)
     return () => clearInterval(timer)
   }, [target])
+
   return <span>{count}</span>
 }
 
