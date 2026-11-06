@@ -12,6 +12,7 @@ export type BrowseArtefact = {
   category_slug: string | null
   category_name: string | null
   cid: string | null
+  thumb: string | null
   extra_images: number
   reactions: Record<string, number>
   comments: number
@@ -202,8 +203,8 @@ export default function BrowseClient({
                     <Link key={artefact.id} href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
                       <div style={{ background: 'transparent' }}>
                         <div style={{ aspectRatio: '1', position: 'relative', overflow: 'hidden', borderRadius: '10px' }}>
-                          {artefact.cid ? (
-                            <img src={`https://ipfs.filebase.io/ipfs/${artefact.cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {(artefact.thumb || artefact.cid) ? (
+                            <img src={`https://ipfs.filebase.io/ipfs/${artefact.thumb || artefact.cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
                             <span style={{ fontSize: '2.5rem' }}>🏷️</span>
                           )}
