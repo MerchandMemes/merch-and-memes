@@ -1,0 +1,32 @@
+name: Repoint ENS to a CID
+
+on:
+  workflow_dispatch:
+    inputs:
+      cid:
+        description: 'CIDv1 to point merchandmemes.eth at (must already be pinned)'
+        required: true
+        type: string
+
+jobs:
+  repoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm i --no-save viem
+
+      - name: Set content hash
+        run: node scripts/set-contenhash.mjs
+        env:
+          CID: ${{ inputs.cid }}
+          ENS_NAME: ${{ secrets.ENS_NAME }}
+          ENS_RPC_URL: ${{ secrets.ENS_RPC_URL }}
+          ENS_UPDATER_PRIVATE_KEY: ${{ secrets.ENS_UPDATER_PRIVATE_KEY }}
