@@ -29,7 +29,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://merchandmemes.eth.limo
 
       - name: Upload shell to Filebase
-        run: node scripts/upload-ipfs.mjs
+        run: node scripts/set-contenthash.mjs
         env:
           FILEBASE_ACCESS_KEY_ID: ${{ secrets.FILEBASE_ACCESS_KEY_ID }}
           FILEBASE_SECRET_ACCESS_KEY: ${{ secrets.FILEBASE_SECRET_ACCESS_KEY }}
