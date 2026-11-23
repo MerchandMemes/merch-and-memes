@@ -54,6 +54,9 @@ export async function GET(request: NextRequest) {
         signal: AbortSignal.timeout(20000),
       })
       if (!res.ok) throw new Error(`gateway ${res.status}`)
+      if (!res.headers.get('content-type')?.startsWith('image/')) {
+        throw new Error('not an image')
+      }
 
       const buffer = Buffer.from(await res.arrayBuffer())
       const thumb = await sharp(buffer)
