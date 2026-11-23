@@ -25,6 +25,12 @@ export async function POST(request: NextRequest) {
     const year = formData.get('year') as string
     const source = formData.get('source') as string
     const creditAs = formData.get('creditAs') as string
+    // Unambiguous base32 (no I, L, O, U). 10 chars = 50 bits.
+    const CODE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+    const makeCode = () => {
+      const bytes = crypto.getRandomValues(new Uint8Array(10))
+      return Array.from(bytes).map((b) => CODE_ALPHABET[b % 32]).join('')
+    }
 
        if (!files || files.length === 0 || !title || !categorySlug) {
       return NextResponse.json(
@@ -113,13 +119,31 @@ export async function POST(request: NextRequest) {
       })
     }
 
-        // Create submission record (staging_path kept as the primary image for backward compatibility)
-    await supabase.from('submissions').insert({
-      artefact_id: artefact.id,
-      status: 'pending',
-      rights_declared: true,
-      staging_path: uploadedFiles[0].path,
-    })
+        // Create submission record (staging_path kept as the primary image for backward compatibility).
+    // The reference code is the only handle the submitter gets, so it is retried on collision.
+    let submission: { id: string; reference_code: string } | null = null
+    for (let attempt = 0; attempt < 4 && !submission; attempt++) {
+      const { data, error } = await supabase
+        .from('submissions')
+        .insert({
+          artefact_id: artefact.id,
+          status: 'pending',
+          rights_declared: true,
+          staging_path: uploadedFiles[0].path,
+          reference_code: makeCode(),
+        })
+        .select('id, reference_code')
+        .single()
+      if (!error) submission = data
+      else if (error.code !== '23505') throw new Error(error.message)
+    }
+
+    if (!submission) {
+      return NextResponse.json(
+        { error: 'Failed to create submission record' },
+        { status: 500, headers: cors }
+      )
+    }
 
     // Log to audit log
 await supabase.from('audit_log').insert({
@@ -143,6 +167,7 @@ try {
       <p><strong>Title:</strong> ${title}</p>
       <p><strong>Category:</strong> ${categorySlug}</p>
       ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
+      <p><strong>Reference:</strong> ${submission.reference_code}</p>
       <p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/moderation">Review in moderation queue →</a></p>
     `,
   })
@@ -151,7 +176,15 @@ try {
   // Do not fail the submission if email fails
 }
 
-return NextResponse.json({ success: true, id: artefact.id }, { headers: cors })
+return NextResponse.json(
+  {
+    success: true,
+    id: artefact.id,
+    code: submission.reference_code,
+    statusUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/status?code=${submission.reference_code}`,
+  },
+  { headers: cors }
+)
 
   } catch (error) {
     console.error('Submission error:', error)
