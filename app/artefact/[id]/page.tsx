@@ -133,7 +133,7 @@ export default async function ArtefactPage({
         backdropFilter: 'blur(8px)',
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+          <img src="/logo_nofold.webp" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
           <span style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
         </Link>
         <Link href="/browse" style={{
