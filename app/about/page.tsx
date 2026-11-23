@@ -118,7 +118,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-                <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
+        <p style={{ color: '#777', lineHeight: 1.8, marginBottom: '12px' }}>
           This reflects the current build stage, not a ceiling. Decentralising a domain name and static content is well-supported and low-risk to build on today. Decentralising the interactive parts of an application, the database, moderation, search, and real-time features, requires a substantially different architecture: on-chain announcements, peer-to-peer storage networks such as Swarm, and independently operated indexing or curation services. This was evaluated and set aside for the initial build as disproportionate to what a solo-maintained MVP can sustain, not because it conflicts with the project&apos;s principles.
         </p>
 
