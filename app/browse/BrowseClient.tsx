@@ -13,6 +13,7 @@ export type BrowseArtefact = {
   category_name: string | null
   cid: string | null
   thumb: string | null
+  mime: string | null
   extra_images: number
   reactions: Record<string, number>
   comments: number
@@ -203,11 +204,13 @@ export default function BrowseClient({
                     <Link key={artefact.id} href={`/artefact/${artefact.id}`} style={{ textDecoration: 'none' }}>
                       <div style={{ background: 'transparent' }}>
                         <div style={{ aspectRatio: '1', position: 'relative', overflow: 'hidden', borderRadius: '10px' }}>
-                          {(artefact.thumb || artefact.cid) ? (
-                            <img src={`https://ipfs.filebase.io/ipfs/${artefact.thumb || artefact.cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <span style={{ fontSize: '2.5rem' }}>🏷️</span>
-                          )}
+                          {artefact.thumb ? (
+  <img src={`https://ipfs.filebase.io/ipfs/${artefact.thumb}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+) : artefact.cid && artefact.mime !== 'application/pdf' ? (
+  <img src={`https://ipfs.filebase.io/ipfs/${artefact.cid}`} alt={artefact.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+) : (
+  <span style={{ fontSize: '2.5rem' }}>📄</span>
+)}
                           {artefact.extra_images > 0 && (
                             <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem' }}>
                               +{artefact.extra_images}
