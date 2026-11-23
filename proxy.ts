@@ -15,7 +15,7 @@ function safeEqual(a: string, b: string) {
   return out === 0
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   if (pathname === '/admin/login' || pathname === '/api/admin-login') {
