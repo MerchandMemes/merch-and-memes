@@ -24,7 +24,7 @@ jobs:
       - run: npm i --no-save viem
 
       - name: Set content hash
-        run: node scripts/set-contenhash.mjs
+        run: node scripts/set-contenthash.mjs
         env:
           CID: ${{ inputs.cid }}
           ENS_NAME: ${{ secrets.ENS_NAME }}
