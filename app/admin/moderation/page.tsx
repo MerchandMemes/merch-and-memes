@@ -80,7 +80,7 @@ export default async function ModerationPage() {
       <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/5 flex items-center justify-center">
-            <img src="/logo_nofold.png" alt="Merch&Memes" className="w-full h-full object-contain" />
+            <img src="/logo_nofold.webp" alt="Merch&Memes" className="w-full h-full object-contain" />
           </div>
           <span className="font-['Space_Grotesk'] font-bold text-white">Merch&Memes</span>
           <span className="text-white/40 text-sm">moderation</span>
