@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Result = {
@@ -22,11 +21,17 @@ const card = {
 }
 
 export default function StatusClient() {
-  const params = useSearchParams()
-  const code = (params.get('code') || '').toUpperCase()
+  const [code, setCode] = useState('')
   const [result, setResult] = useState<Result | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // useSearchParams returns an empty snapshot on statically exported pages,
+  // so read the query straight off the location on mount instead.
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('code') || ''
+    setCode(fromUrl.trim().toUpperCase().replace(/[^0-9A-Z]/g, ''))
+  }, [])
 
   useEffect(() => {
     if (code.length !== 10) {
@@ -87,7 +92,8 @@ export default function StatusClient() {
         <form method="GET" action="/status" style={{ display: 'flex', gap: '8px', marginBottom: '40px' }}>
           <input
             name="code"
-            defaultValue={code}
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, '').slice(0, 10))}
             maxLength={10}
             placeholder="Your code"
             style={{
