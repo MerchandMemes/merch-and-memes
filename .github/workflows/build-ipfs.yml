@@ -29,7 +29,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://merchandmemes.eth.limo
 
       - name: Upload shell to Filebase
-        run: node scripts/set-contenthash.mjs
+        run: node scripts/upload-ipfs.mjs
         env:
           FILEBASE_ACCESS_KEY_ID: ${{ secrets.FILEBASE_ACCESS_KEY_ID }}
           FILEBASE_SECRET_ACCESS_KEY: ${{ secrets.FILEBASE_SECRET_ACCESS_KEY }}
@@ -50,7 +50,7 @@ jobs:
           FILEBASE_IPFS_TOKEN: ${{ secrets.FILEBASE_IPFS_TOKEN }}
 
       - name: Point ENS at the new CID
-        run: node scripts/set-contenhash.mjs
+        run: node scripts/set-contenthash.mjs
         env:
           CID: ${{ steps.cid.outputs.cid }}
           ENS_NAME: ${{ secrets.ENS_NAME }}
