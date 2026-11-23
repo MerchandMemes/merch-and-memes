@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { apiUrl } from '@/lib/lib/api'
+import { supabase } from '@/lib/supabase'
 
 type Result = {
   status: string
@@ -38,12 +38,17 @@ export default function StatusClient() {
     setLoading(true)
     setError('')
     setResult(null)
-    fetch(apiUrl(`/api/status?code=${encodeURIComponent(code)}`))
-      .then(async (r) => {
-        const body = await r.json()
+    supabase
+      .rpc('get_submission_status', { p_code: code })
+      .then(({ data, error: rpcError }) => {
         if (cancelled) return
-        if (!r.ok) setError(body.error || 'Something went wrong')
-        else setResult(body)
+        if (rpcError) {
+          setError('Could not reach the server. Try again.')
+          return
+        }
+        const row = Array.isArray(data) ? data[0] : data
+        if (!row) setError('No submission found for that code')
+        else setResult(row as Result)
       })
       .catch(() => {
         if (!cancelled) setError('Could not reach the server. Try again.')
