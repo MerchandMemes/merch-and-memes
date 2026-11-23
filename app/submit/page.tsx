@@ -146,6 +146,7 @@ export default function SubmitPage() {
           </h1>
           <p style={{ color: '#999', marginBottom: '16px', lineHeight: 1.7 }}>
             Your artefact is now in the moderation queue and will be reviewed before publication.
+          </p>
           {reference && (
             <div style={{ background: '#1A1A1A', border: '1px solid #627EEA', borderRadius: '12px', padding: '16px', marginBottom: '16px', textAlign: 'left' }}>
               <p style={{ fontSize: '0.8rem', color: '#999', marginBottom: '6px' }}>Your reference code</p>
@@ -160,7 +161,6 @@ export default function SubmitPage() {
               </Link>
             </div>
           )}
-          </p>
           <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '12px', padding: '16px', marginBottom: '32px', textAlign: 'left' }}>
             <p style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.7 }}>
               <span style={{ fontWeight: 600, color: '#F5F5F5' }}>When will it appear?</span><br />
