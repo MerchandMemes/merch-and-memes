@@ -84,7 +84,7 @@ export default function BrowseClient({
           position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(8px)',
         }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
+            <img src="/logo_nofold.webp" alt="Merch&Memes" style={{ width: '36px', height: '36px', objectFit: 'contain' }} />
             <span className="browse-wordmark" style={{ fontWeight: 700, color: 'white', fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
           </Link>
           <div className="browse-nav-links" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
