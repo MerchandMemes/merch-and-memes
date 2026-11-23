@@ -24,7 +24,7 @@ export default async function BrowsePage() {
       year_approx,
       published_at,
       categories(name, slug),
-      media_assets(ipfs_cid, thumb_cid, is_primary)
+      media_assets(ipfs_cid, thumb_cid, is_primary, mime_type)
     `)
     .not('published_at', 'is', null)
     .order('published_at', { ascending: false })
@@ -62,6 +62,7 @@ export default async function BrowsePage() {
       category_name: (a.categories as any)?.name ?? null,
       cid: media[0]?.ipfs_cid ?? null,
       thumb: media[0]?.thumb_cid ?? null,
+      mime: media[0]?.mime_type ?? null,
       extra_images: Math.max(0, ((a.media_assets as any[]) || []).length - 1),
       reactions: reactionMap[a.id] || {},
       comments: commentMap[a.id] || 0,
