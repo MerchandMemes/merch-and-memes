@@ -68,6 +68,7 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [reference, setReference] = useState('')
 
   const selectedCat = CATEGORIES.find(c => c.slug === selectedCategory)
   const isMeme = ['memes', 'photography', 'artwork-illustrations', 'screenshots'].includes(selectedCategory)
@@ -75,7 +76,7 @@ export default function SubmitPage() {
       const resetForm = () => {
     setSubmitted(false); setStep(1); setSelectedCategory(''); setTitle('')
     setStory(''); setYear(''); setSource(''); setCreditAs('')
-    setFiles([]); setNotificationEmail('')
+    setFiles([]); setNotificationEmail(''); setReference('')
   }
 
     const compressImage = (input: File): Promise<File> => {
@@ -124,6 +125,8 @@ export default function SubmitPage() {
       formData.append('notificationEmail', notificationEmail)
       const res = await fetch(apiUrl('/api/submit'), { method: 'POST', body: formData })
       if (!res.ok) { const data = await res.json(); throw new Error(data.error || 'Submission failed') }
+      const body = await res.json()
+      setReference(body.code || '')
       setSubmitted(true)
     } catch (err) {
       Sentry.captureException(err, { extra: { fileCount: files.length, category: selectedCategory } })
@@ -143,6 +146,20 @@ export default function SubmitPage() {
           </h1>
           <p style={{ color: '#999', marginBottom: '16px', lineHeight: 1.7 }}>
             Your artefact is now in the moderation queue and will be reviewed before publication.
+          {reference && (
+            <div style={{ background: '#1A1A1A', border: '1px solid #627EEA', borderRadius: '12px', padding: '16px', marginBottom: '16px', textAlign: 'left' }}>
+              <p style={{ fontSize: '0.8rem', color: '#999', marginBottom: '6px' }}>Your reference code</p>
+              <p style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '1.4rem', fontWeight: 700, color: 'white', letterSpacing: '0.14em', marginBottom: '10px' }}>
+                {reference}
+              </p>
+              <p style={{ fontSize: '0.85rem', color: '#888', lineHeight: 1.6, marginBottom: '10px' }}>
+                Save this. It is the only way to check your submission later, and it is in the notification email.
+              </p>
+              <Link href={`/status?code=${reference}`} style={{ fontSize: '0.85rem', color: '#627EEA' }}>
+                Check status →
+              </Link>
+            </div>
+          )}
           </p>
           <div style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '12px', padding: '16px', marginBottom: '32px', textAlign: 'left' }}>
             <p style={{ fontSize: '0.9rem', color: '#888', lineHeight: 1.7 }}>
