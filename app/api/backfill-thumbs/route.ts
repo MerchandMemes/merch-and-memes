@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     .select('id, ipfs_cid')
     .is('thumb_cid', null)
     .not('ipfs_cid', 'is', null)
-    .like('mime_type', 'image/%')
+    .or('mime_type.like.image/%,mime_type.is.null')
     .limit(limit)
 
   if (error) {
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
     .select('*', { count: 'exact', head: true })
     .is('thumb_cid', null)
     .not('ipfs_cid', 'is', null)
-    .like('mime_type', 'image/%')
+    .or('mime_type.like.image/%,mime_type.is.null')
 
   return NextResponse.json({ done, failed, remaining: remaining ?? 0 })
 }
