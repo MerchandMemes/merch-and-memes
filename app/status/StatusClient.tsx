@@ -38,8 +38,7 @@ export default function StatusClient() {
     setLoading(true)
     setError('')
     setResult(null)
-    supabase
-      .rpc('get_submission_status', { p_code: code })
+    Promise.resolve(supabase.rpc('get_submission_status', { p_code: code }))
       .then(({ data, error: rpcError }) => {
         if (cancelled) return
         if (rpcError) {
