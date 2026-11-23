@@ -92,7 +92,7 @@ export default function HomepageClient({
         }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
             <motion.div whileHover={{ scale: 1.1, rotate: 5 }} whileTap={{ scale: 0.95 }}>
-              <img src="/logo_nofold.png" alt="Merch&Memes" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
+              <img src="/logo_nofold.webp" alt="Merch&Memes" style={{ width: '44px', height: '44px', objectFit: 'contain' }} />
             </motion.div>
             <div className="home-wordmark" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ color: 'white', fontSize: '1.2rem', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>Merch&Memes</span>
@@ -173,7 +173,7 @@ export default function HomepageClient({
               style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}
             >
               <motion.img
-                src="/logo_nofold.png"
+                src="/logo_nofold.webp"
                 alt="Merch&Memes"
                 style={{ width: '200px', height: '200px', objectFit: 'contain', filter: 'drop-shadow(0 0 40px rgba(98,126,234,0.5))' }}
                 animate={{ rotate: [0, 3, -3, 0] }}
