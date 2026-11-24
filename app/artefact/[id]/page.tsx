@@ -36,7 +36,7 @@ export async function generateMetadata({
 
   const { data } = await supabase
     .from('artefacts')
-    .select('title, description, media_assets(ipfs_cid, is_primary)')
+    .select('title, description, media_assets(ipfs_cid, thumb_cid, is_primary)')
     .eq('id', id)
     .single()
 
@@ -47,8 +47,9 @@ export async function generateMetadata({
   const primary = ((data.media_assets as any[]) || []).sort(
     (a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0)
   )[0]
-  const image = primary?.ipfs_cid
-    ? `https://ipfs.filebase.io/ipfs/${primary.ipfs_cid}`
+  const previewCid = primary?.thumb_cid || primary?.ipfs_cid
+  const image = previewCid
+    ? `https://ipfs.filebase.io/ipfs/${previewCid}`
     : undefined
   const description = (
     data.description ||
