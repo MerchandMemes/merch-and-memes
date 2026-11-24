@@ -13,6 +13,8 @@ export default function Footer() {
         <span>·</span>
         <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
         <span>·</span>
+        <Link href="/status" className="hover:text-gray-600">Submission status</Link>
+        <span>·</span>
         <Link href="/browse" className="hover:text-gray-600">Browse</Link>
       </p>
     </footer>
