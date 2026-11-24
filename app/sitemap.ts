@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
-
+export const dynamic = 'force-static'
 const BASE = 'https://merchandmemes.eth.limo'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
