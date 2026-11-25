@@ -270,3 +270,79 @@ page. Removal is manual and immediate once verified. The artefact page then 404s
 and the next bundle omits it; pinned copies persist as described in §5.4.
 
 *Status: Shipped.*
+
+## 6. Functional Requirements
+
+Split into access, submission, media, moderation and engagement. Each item carries
+a status per §0.
+
+### FR1 — Access and identity
+
+**FR1.1 No contributor identity.** Submitting requires no account, wallet or
+email. The artefact belongs to the archive on publication.
+*Status: Shipped.*
+
+**FR1.2 Optional credit.** A free-text `credit_as` field is the only identity a
+contributor may attach. Blank is normal and renders nothing.
+*Status: Shipped.*
+
+**FR1.3 Admin authentication.** A single shared password, hashed with SHA-256 and
+compared timing-safely against a session cookie. Unauthenticated requests to admin
+pages redirect to `/admin/login`; unauthenticated API calls get 401.
+*Status: Shipped, Vercel only.* `proxy.ts` is middleware and does not execute in
+the static bundle, so moderation happens against the Vercel deployment, not
+through the ENS name.
+
+**FR1.4 Missing-password fallback.** If `ADMIN_PASSWORD` is unset, admin routes
+are left open and a warning is logged.
+*Status: Shipped.*
+
+**FR1.5 Wallet authentication.** Sign-In With Ethereum (EIP-4361) so a returning
+contributor can prove continuity without an email.
+*Status: Deferred.* Adds nothing a first-time contributor needs, and the archive
+has no contributor-side state to protect yet.
+
+**FR1.6 Contributor accounts.** Profiles, submission history, edits.
+*Status: Deferred.* See FR1.5; accounts exist to serve the account, and there is
+nothing yet that requires one.
+
+### FR2 — Submission
+
+**FR2.1 Required fields.** Title and category. Description, story, approximate
+year, source and credit are optional.
+*Status: Shipped.*
+
+**FR2.2 One or many files.** The form accepts multiple files in a single
+submission; the first is marked primary.
+*Status: Shipped.*
+
+**FR2.3 Client-side pre-checks.** Type and size limits enforced before upload so
+a doomed submission fails fast.
+*Status: Shipped.*
+
+**FR2.4 Private staging.** Uploads land in the Supabase `staging` bucket. Nothing
+is public before approval.
+*Status: Shipped.*
+
+**FR2.5 Rights declaration.** `rights_declared` recorded per submission (§5.3).
+*Status: Shipped.*
+
+**FR2.6 Reference code.** A ten-character base32 code, 50 bits, alphabet excluding
+I, L, O and U. Generated server-side and retried on collision.
+*Status: Shipped.*
+
+**FR2.7 Status URL.** The response returns `code` and a ready-made `/status?code=`
+URL, shown on the success screen so the contributor can save or bookmark it.
+*Status: Shipped.*
+
+**FR2.8 Moderator notification.** Email via Resend on arrival, carrying the code
+and a link to the queue. A failed send does not fail the submission.
+*Status: Shipped.*
+
+**FR2.9 Audit entry.** `submission_created` written to `audit_log`.
+*Status: Shipped.*
+
+**FR2.10 CORS.** The endpoint answers preflight and sets CORS headers so a
+non-browser client can submit.
+*Status: Shipped.*
+
