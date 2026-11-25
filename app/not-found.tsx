@@ -56,7 +56,7 @@ export default function NotFound() {
       </div>
 
       <p style={{ color: '#555', fontSize: '0.8rem', marginTop: '40px' }}>
-        Looking up a submission? <Link href="/status" style={{ color: '#627CEA' }}>Check its status</Link>.
+        Looking up a submission? <Link href="/status" style={{ color: '#627EEA' }}>Check its status</Link>.
       </p>
     </main>
   )
