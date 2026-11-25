@@ -22,7 +22,7 @@ export default function TermsPage() {
           Terms of Service
         </h1>
         <p style={{ fontSize: '0.85rem', color: '#999', marginBottom: '48px' }}>
-          Last updated July 2026 · This is a minimal terms of service for the MVP phase and will be extended.
+          Last updated November 2026 · These terms are minimal by design and will be extended.
         </p>
 
         {[
@@ -44,7 +44,7 @@ export default function TermsPage() {
           },
           {
             n: '5', title: 'Architecture and permanence',
-            body: 'Merch&Memes runs on a combination of centrally-hosted infrastructure and decentralised storage. The website, database, submission and moderation workflow, search, reactions, and comments are hosted on conventional servers. Approved artefact images are stored on IPFS, a decentralised network, and the archive\u2019s domain (merchandmemes.eth) is registered on ENS. For content stored on IPFS: once published, its content identifier (CID) is permanent and may remain accessible even if the artefact is later removed from this site. We can unpin content from our infrastructure but cannot guarantee removal from the broader IPFS network. This is a property of the technology, not a limitation of our moderation. Other platform data (submission records, comments, reactions, moderation history) is stored in a centrally-managed database and is not subject to the same permanence property: this data can be fully deleted upon request or as part of standard moderation action. The extent of decentralisation described above reflects the current build stage of the platform and may change. Further decentralisation of the application\u2019s data and interactive features is on the project roadmap and may be pursued based on community interest and available contributor capacity.',
+            body: 'Merch&Memes is served from IPFS, a decentralised network, and its address is an ENS name registered on Ethereum mainnet. The pages themselves are content-addressed: each published version of the site has a content identifier (CID) and can be retrieved from any IPFS gateway by anyone, without going through this project. Approved artefact media is pinned to IPFS and referenced by CID. Once pinned, a CID is permanent and may remain retrievable even if the artefact is later removed from this site. We can unpin from our own infrastructure but cannot recall copies held elsewhere; this is a property of the technology, not a limitation of moderation. Some things remain on conventional servers: the submission and moderation workflow, the database, search, comments, reactions and the admin interface. That data is centrally held and can be deleted in full on request or by moderation action. The extent of decentralisation reflects the current build, and the roadmap is published in the repository.',
           },
           {
             n: '6', title: 'Takedown requests',
@@ -56,7 +56,7 @@ export default function TermsPage() {
           },
           {
             n: '8', title: 'Privacy',
-            body: 'We collect only the minimum information necessary. Anonymous contributions require no personal information. Registered contributors provide an email address and username only. No personal information is sold or shared with third parties. Notification emails, if provided, are used only for reaction notifications.',
+            body: 'We collect as little as possible. There are no accounts and no registration. Contributing requires no personal information: the optional credit name is free text and is published if supplied. Comments accept an optional display name, and a blank name is shown as Anonymous. Each submission receives a random reference code, which is the only handle to it; keep it if you want to check the status, since it is linked to no identity. Reactions and flags are keyed to a random identifier stored in your browser, and clearing browser storage resets it. No personal information is sold or shared with third parties.',
           },
           {
             n: '9', title: 'Limitation of liability',
