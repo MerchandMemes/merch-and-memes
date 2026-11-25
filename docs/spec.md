@@ -1162,7 +1162,7 @@ credit, rights declaration, success screen carrying the reference code and statu
 URL.
 *Gap:* HEIC unverified on Chromium.
 
-**`/status`** — code field , lookup, per-status rendering with the note on rejection and a link when published.
+**`/status`** — code field, lookup, per-status rendering with the note on rejection and a link when published.
 *Gap:* renders empty until JS runs.
 
 **`/wanted`** — request form and list with inline responses, unmoderated.
