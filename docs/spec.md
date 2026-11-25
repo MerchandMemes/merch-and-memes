@@ -591,3 +591,200 @@ instrumentation.
 artefact, drafts, bookmarks, contributor profiles, search beyond category
 filtering, public audit log, data export, second pinning provider, Arweave,
 governance, mobile client.
+
+## 10. Information Architecture
+
+### 10.1 Routes
+
+| Route | Purpose | Render |
+| --- | --- | --- |
+| `/` | Hero, stats, recent, categories | Static |
+| `/browse` | Full grid, category filter | Static list, client filter |
+| `/artefact/[id]` | Artefact, licence, story, reactions, comments, corrections | Static per id |
+| `/submit` | Submission form | Static shell |
+| `/wanted` | Requests and responses | Client, API-backed |
+| `/status` | Reference-code lookup | Static shell, client lookup |
+| `/about` | Project rationale | Static |
+| `/terms` | Terms | Static |
+| `/admin/login` | Password form | Vercel only |
+| `/admin/moderation` | Queue | Vercel only |
+| `/api/*` | Submissions, moderation, wanted, corrections, feedback, flags | Vercel only |
+| `/robots.txt`, `/sitemap.xml` | Crawler metadata | Static |
+| `/og.png`, `/icon.svg` | Social card, favicon | Static |
+
+### 10.2 Navigation
+
+Top nav: Browse, Anyone has...?, About, Contribute. Footer: About, Terms,
+Submission status, Browse. A floating feedback button sits on every page.
+
+*Status: Shipped.*
+
+### 10.3 URL scheme
+
+Artefact URLs are `/artefact/<uuid>`. Stable and permanent; ugly and uncitable.
+Slugs would need a redirect table to keep old URLs alive, so they are deferred.
+
+*Status: Shipped as UUIDs.*
+
+### 10.4 Client dependence
+
+`/wanted` and `/status` render empty until JavaScript runs and calls the API, which
+on the IPFS bundle means calling the Vercel deployment via `NEXT_PUBLIC_API_BASE`.
+Both degrade to an empty shell if Vercel is unreachable.
+
+*Status: Shipped, accepted.* §18.3 covers the dependence.
+
+## 11. Data Model
+
+Supabase Postgres. Access is service-role from the server, except where noted.
+
+### 11.1 Tables
+
+**`artefacts`** — `id`, `title`, `description`, `category_id`, `licence_type`,
+`year_approx`, `credit_as`, `published_at`. `published_at` null means unpublished.
+
+**`media_assets`** — `id`, `artefact_id`, `staging_path`, `ipfs_cid`, `thumb_cid`,
+`mime_type`, `file_size_bytes`, `is_primary`. `staging_path` doubles as the Filebase
+object key and survives publication so the original can be located.
+
+**`submissions`** — `id`, `artefact_id`, `status`, `rights_declared`,
+`staging_path`, `reference_code`, `moderator_note`, `reviewed_at`. Status is
+`pending`, `approved` or `rejected`. `reference_code` is unique, ten base32
+characters.
+
+**`categories`** — `id`, `name`, `slug`, `licence_type`. The licence a submission
+inherits.
+
+**`stories`** — `id`, `artefact_id`, `content`, `created_at`. Optional contributor
+narrative.
+
+**`comments`** — `id`, `artefact_id`, `display_name`, `content`, `created_at`,
+`flag_count`, `is_visible`.
+
+**`comment_reactions`** — `id`, `comment_id`, `emoji`, `session_id`.
+
+**`reactions`** — `id`, `artefact_id`, `emoji`, `session_id`.
+
+**`corrections`** — `id`, `artefact_id`, `content`, `credit_as`, `created_at`.
+
+**`wanted_posts`** / **`wanted_responses`** — `title` (≤120), `description`
+(≤2000), `image_url`; response `content`.
+
+**`audit_log`** — `id`, `action`, `entity_type`, `entity_id`, `note`,
+`created_at`.
+
+### 11.2 Functions
+
+**`get_submission_status(text)`** — `SECURITY DEFINER`, granted to anon. Returns
+status, timestamps, moderator note, title and artefact id when published. A
+`SECURITY DEFINER` function is used because the static bundle cannot run a
+server-side handler; the projection is minimal so nothing but the status leaks.
+
+**`increment_comment_flag(uuid)`** — bumps `flag_count`.
+
+### 11.3 Anonymous access
+
+Comments and reactions are written straight from the browser with the anon key, so
+RLS permits `INSERT` on `comments`, `reactions` and `comment_reactions` and
+`SELECT` on visible comments. Every write is anonymous by definition; there is
+nothing to authenticate.
+
+*Status: Shipped.* An exposed anon key with insert rights is the reason the
+moderation path exists at all.
+
+### 11.4 Session identity
+
+A random `session_id` in localStorage, sent as an `x-session-id` header by the
+Supabase client, is the only per-visitor identity. It dedupes reactions and flags
+in one browser and means nothing across devices.
+
+*Status: Shipped.*
+
+## 12. Technical Architecture
+
+### 12.1 Stack
+
+Next.js 16 App Router, React 19, TypeScript, Tailwind 4 plus inline styles,
+framer-motion, Supabase Postgres and Storage, `sharp`, `@aws-sdk/client-s3`
+against Filebase, Resend, Sentry, `viem`.
+
+*Status: Shipped.*
+
+### 12.2 Rendering
+
+Server Components by default; client components only where interaction needs
+them. Pages are prerendered at build time, which is what makes a static bundle
+possible at all.
+
+Two builds come from one source:
+
+- `npm run build` — the ordinary server app. Route handlers and middleware work.
+  This is what Vercel runs.
+- `npm run build:ipfs` — sets `STATIC_EXPORT=1`, which switches on
+  `output: "export"`, `trailingSlash` and unoptimised images. This is the archive.
+
+`STATIC_EXPORT` is the only switch between them; neither build is a special case
+of the other in the source.
+
+*Status: Shipped.*
+
+### 12.3 Hosting and provider rationale
+
+**The bundle lives on IPFS.** CI uploads the export to a Filebase bucket
+configured as an IPFS network bucket, so every `PutObject` is pinned and the
+assigned CID is returned in the object metadata. A bucket CID is computed, pinned
+and verified, then written to the ENS resolver.
+
+*Filebase*, not Omnipin. v2.5 assumed Omnipin pushing a redirect page to Filecoin.
+That was retired because a redirect page means the archive is a pointer to a
+centralised app, which defeats the point. Filebase offers an S3-compatible API
+with pinning on write, so CI can upload an ordinary directory and get real CIDs
+back. Filebase is on the Pro tier; the bucket CID is stable across uploads.
+
+*Supabase* holds the database and the private staging bucket. It is the one
+component with no decentralised substitute at this scale.
+
+*Vercel* runs the API and the admin pages. It is a preview and an origin for
+route handlers, not the archive. Artefact pages, grids and metadata all work
+without it; comments, reactions, wanted posts and moderation do not.
+
+*Resend* sends moderator notifications. *Sentry* captures client and server errors,
+with the tunnel rewrite disabled in the export because there is no server to
+receive it.
+
+*Status: Shipped.*
+
+### 12.4 Media path
+
+Staging bucket on upload → approval downloads the file → `PutObject` to Filebase
+with the staging path as key → CID read from response metadata → `ipfs_cid`
+recorded → `sharp` renders a 400px WebP thumbnail → `thumb_cid` recorded → staged
+copy deleted. Originals and thumbnails are both immutable once pinned.
+
+*Status: Shipped.*
+
+### 12.5 ENS
+
+The name's resolver holds an EIP-1577 contenthash. `set-contenthash.mjs` validates
+the CID (must be v1, dag-pb or raw, sha2-256), strips the version and codec bytes,
+prefixes `0xe301`, resolves the resolver through the ENS registry, sends
+`setContenthash` and waits for a successful receipt.
+
+Writes are made by a dedicated CI wallet holding a resolver-level approval, so the
+owner key never touches the workflow. The name owner is separate again.
+
+*Status: Shipped.*
+
+### 12.6 Nothing renders from a database at request time
+
+Every page is baked at build. A submission approved after a build is invisible
+until the next publish. This is the central trade of the design and is why
+approval triggers a rebuild automatically.
+
+*Status: Shipped.*
+
+## 13. Deployment and Operations
+
+### 13.1 Publish
+
+GitHub Actions, `workflow_dispatch`
