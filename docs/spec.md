@@ -224,10 +224,11 @@ archive. The specification is in the same repository under the same terms.
 
 Two licences, chosen per category and inherited automatically at submission:
 
-- **CC0** for ephemera where attribution is impractical or irrelevant — memes,
-  screenshots and similar. No rights reserved.
-- **CC BY 4.0** for objects with an identifiable maker or origin — garments,
-  hardware, printed matter. Attribution required.
+- **CC0** for merchandise categories — hoodies, t-shirts, stickers, badges, caps,
+  posters, keyrings, hardware, other merchandise. The object is a manufactured
+  thing; attribution to whoever happened to photograph it adds nothing.
+- **CC BY 4.0** for authored and captured work — memes, photography, artwork,
+  publications, screenshots, POAPs. A maker is identifiable and credit matters.
 
 The licence is fixed by the category rather than picked by the contributor, so
 nobody has to make a legal decision at the form. It is displayed on every artefact
@@ -287,23 +288,36 @@ contributor may attach. Blank is normal and renders nothing.
 *Status: Shipped.*
 
 **FR1.3 Admin authentication.** A single shared password, hashed with SHA-256 and
-compared timing-safely against a session cookie. Unauthenticated requests to admin
-pages redirect to `/admin/login`; unauthenticated API calls get 401.
+compared timing-safely against an `httpOnly`, `secure`, `sameSite=lax` session
+cookie. Unauthenticated requests to admin pages redirect to `/admin/login`;
+unauthenticated API calls get 401.
 *Status: Shipped, Vercel only.* `proxy.ts` is middleware and does not execute in
 the static bundle, so moderation happens against the Vercel deployment, not
 through the ENS name.
 
-**FR1.4 Missing-password fallback.** If `ADMIN_PASSWORD` is unset, admin routes
-are left open and a warning is logged.
+**FR1.4 Session lifetime.** Twelve hours, then re-login.
 *Status: Shipped.*
 
-**FR1.5 Wallet authentication.** Sign-In With Ethereum (EIP-4361) so a returning
+**FR1.5 Password recovery.** The password exists only as the `ADMIN_PASSWORD`
+environment variable; nothing stores it in the database, so there is no reset flow
+to build. Recovery is to set a new value in Vercel and redeploy. Because the
+cookie is the SHA-256 of the current password, rotation also invalidates every
+live session — recovery and revocation are one operation.
+*Status: Shipped.* The password should also be kept in a password manager, since
+it is the only credential to the queue and is not recoverable from anywhere else.
+
+**FR1.6 Missing-password fallback.** If `ADMIN_PASSWORD` is unset, admin routes
+are left open to anyone and a warning is logged. This is the dangerous direction:
+lost is survivable, unset is a hole.
+*Status: Shipped.*
+
+**FR1.7 Wallet authentication.** Sign-In With Ethereum (EIP-4361) so a returning
 contributor can prove continuity without an email.
 *Status: Deferred.* Adds nothing a first-time contributor needs, and the archive
 has no contributor-side state to protect yet.
 
-**FR1.6 Contributor accounts.** Profiles, submission history, edits.
-*Status: Deferred.* See FR1.5; accounts exist to serve the account, and there is
+**FR1.8 Contributor accounts.** Profiles, submission history, edits.
+*Status: Deferred.* See FR1.7; accounts exist to serve the account, and there is
 nothing yet that requires one.
 
 ### FR2 — Submission
@@ -346,3 +360,234 @@ and a link to the queue. A failed send does not fail the submission.
 non-browser client can submit.
 *Status: Shipped.*
 
+### FR3 — Media
+
+**FR3.1 Accepted types.** `image/*`, plus explicit `.heic` and `.heif`, plus
+`application/pdf`.
+*Status: Shipped.*
+
+**FR3.2 Limits.** 50 MB per file, five files per submission, at least one
+required.
+*Status: Shipped.*
+
+**FR3.3 Client compression.** Images are downscaled to 1920px on the long edge and
+re-encoded to JPEG at quality 0.82 before upload. PDFs bypass compression.
+*Status: Shipped.* Originals above 1920px lose resolution on the way in; below
+that, nothing changes.
+
+**FR3.4 Duplicate guard.** Files are keyed on name, size and last-modified and
+rejected if already selected.
+*Status: Shipped.*
+
+**FR3.5 Thumbnails.** At approval, a 400px WebP at quality 72 is generated per
+image and stored as `thumb_cid`. Best-effort: a failure does not block approval,
+and grids fall back to the original when `thumb_cid` is null.
+*Status: Shipped.*
+
+**FR3.6 Non-image fallback.** Assets with no thumbnail and a PDF mime type render
+a document glyph in grids instead of a broken image.
+*Status: Shipped.*
+
+**FR3.7 Full-resolution retention.** The compressed upload is the archived copy;
+no larger original is retained.
+*Status: Shipped, by design.* Keeps pins small and predictable.
+
+**FR3.8 HEIC.** Accepted at the input, but conversion happens in-browser through
+canvas, so behaviour depends on the browser's HEIC decoder. Safari handles it;
+Chromium historically does not.
+*Status: Partial.* Worth confirming on a Chromium browser with a real HEIC file
+before promoting HEIC in the helper text.
+
+### FR4 — Moderation
+
+**FR4.1 Queue.** Pending submissions listed for the authenticated admin, newest
+first, with thumbnail, metadata and reference code.
+*Status: Shipped.*
+
+**FR4.2 Arrival alert.** Email on every new submission (§FR2.8).
+*Status: Shipped.*
+
+**FR4.3 Approval.** For each asset: download from staging, upload to the Filebase
+IPFS bucket, read the assigned CID from object metadata, store `ipfs_cid`,
+generate the thumbnail, delete the staged file. Then set `published_at`, mark the
+submission approved, write the audit entry and dispatch a publish.
+*Status: Shipped.*
+
+**FR4.4 Rejection.** Delete every staged file, mark the submission rejected with
+the moderator note, write the audit entry. The unpublished artefact row is left in
+place.
+*Status: Shipped.*
+
+**FR4.5 Idempotent retry.** Assets already carrying an `ipfs_cid` are skipped, so a
+failed approval can be retried without re-pinning.
+*Status: Shipped.*
+
+**FR4.6 Fail-closed.** If a staged file is missing or Filebase errors, approval
+aborts and the submission stays pending rather than publishing a broken page.
+*Status: Shipped.*
+
+**FR4.7 Publish dispatch.** The GitHub `repository_dispatch` that triggers a
+rebuild is swallowed on failure — the approval stands, and the next publish picks
+the artefact up.
+*Status: Shipped.*
+
+**FR4.8 Comment moderation.** Comments approve or remove individually from the
+artefact page's admin view.
+*Status: Shipped.*
+
+**FR4.9 Flagging.** Any visitor can flag a comment for review.
+*Status: Shipped.*
+
+**FR4.10 Single moderator.** One shared password, no roles, no second pair of
+eyes, no self-approval restriction.
+*Status: Partial.* See §16.
+
+### FR5 — Engagement
+
+**FR5.1 Artefact reactions.** Five emoji (🔥 💎 🚀 😂 ❤️), toggled per artefact.
+Identity is a random `session_id` in localStorage, so the same browser cannot
+double-count and clearing storage resets it.
+*Status: Shipped.* No dedupe beyond the browser; a determined visitor can inflate
+counts.
+
+**FR5.2 Comment reactions.** The same mechanism, three emoji (👍 ❤️ 😂), per
+comment.
+*Status: Shipped.*
+
+**FR5.3 Comments.** Anonymous by default with an optional display name (50
+characters) and 500 characters of body. Posted straight from the browser to
+Supabase; visible immediately.
+*Status: Shipped.* Comments are post-moderated, not pre-moderated — see §7.3.
+
+**FR5.4 Flagging.** Any visitor can flag a comment once. The flag increments
+`flag_count`, emails the moderator and is remembered in localStorage so the button
+locks.
+*Status: Shipped.* Flag state is per-browser, so the same comment can be flagged
+again from elsewhere.
+
+**FR5.5 Corrections.** A correction form on every artefact page, capped at 1000
+characters with an optional 60-character credit, stored in `corrections`.
+*Status: Partial.* Stored and shown on the page, but unlike submissions a
+correction triggers no email, so one can sit unnoticed until someone looks.
+
+**FR5.6 No-JS behaviour.** Reactions, comments and corrections all require
+JavaScript, since they talk to Supabase from the browser. The artefact itself,
+its images, metadata and licence render without it.
+*Status: Shipped, accepted trade.*
+
+## 7. Moderation Policy
+
+### 7.1 What gets approved
+
+Almost everything. The archive is a record, not a curated exhibition, so
+provenance and aesthetic merit are not criteria. A creased sticker photographed
+badly is as valid as a studio shot.
+
+Grounds for rejection:
+
+- Not merchandise, ephemera or culture from the ecosystem (§1).
+- Illegally obtained or plainly misattributed.
+- Duplicate of something already archived.
+- Unusable — unreadable, corrupt, or the wrong file entirely.
+- Rights holder objection, upheld (§5.6).
+
+*Status: Shipped.*
+
+### 7.2 Who decides
+
+One moderator, the owner, applying §7.1 alone. No appeal body, no second opinion.
+A rejected submission keeps the moderator note and is visible to the submitter
+through the status page.
+
+*Status: Shipped.*
+
+### 7.3 Comments are post-moderated
+
+Comments appear on posting and are only reviewed when flagged (§FR5.4). The bar is
+deliberately low: illegal or abusive gets removed, disagreement stays. Spam is the
+main exposure, since nothing throttles posting.
+
+*Status: Shipped.*
+
+### 7.4 Corrections
+
+Corrections are advisory. The moderator applies them by editing or removing, and
+the correction stays listed. Nothing is auto-applied.
+
+*Status: Shipped.*
+
+### 7.5 Transparency
+
+Every approve and reject writes to `audit_log` with the note. The log is not
+public.
+*Status: Partial.* §16 covers exposing it.
+
+## 8. UX Principles
+
+### 8.1 The artefact is the subject
+
+Every layout decision defers to the object. Large images, restrained chrome, no
+competing illustration. The homepage is the exception — it is the one page allowed
+a personality.
+
+*Status: Shipped.*
+
+### 8.2 Dark by default
+
+`#0D0D0D` ground, `#1A1A1A` surfaces, `#2A2A2A` borders, `#F5F5F5` primary text,
+`#888` secondary. Light tokens exist in `globals.css` but no theme switch is
+exposed.
+*Status: Shipped, dark only.*
+
+### 8.3 Type
+
+Space Grotesk for headings, Inter for body, both loaded from Google Fonts.
+*Status: Shipped.* Self-hosting the pair would remove a third-party dependency
+from the critical path; not yet done.
+
+### 8.4 Mobile first
+
+Single-column artefact layout below 720px, compressed nav, no horizontal scroll.
+The archive will mostly be browsed on a phone.
+*Status: Shipped.*
+
+### 8.5 Lists render without JavaScript
+
+Homepage, browse grid and artefact pages are server-rendered. Filtering needs JS;
+reading does not.
+*Status: Shipped.*
+
+### 8.6 Motion
+
+Entrance transitions and a slow gradient shift. `prefers-reduced-motion` is not
+honoured — the gradient and framer-motion transitions run regardless.
+*Status: Partial.*
+
+### 8.7 Accessibility
+
+Semantic headings, real links, generous targets, `alt` on every artefact image.
+Icon-only controls (flag, reactions) carry no `aria-label`.
+*Status: Partial.*
+
+### 8.8 Weight
+
+The bundle is pinned to IPFS and pulled on first visit, so bytes matter more than
+on a normal host. The logo is a 32 KB WebP with real alpha. `og.png` at 630 KB is
+the largest single asset and is only needed by crawlers.
+*Status: Partial — see §16.*
+
+## 9. Current State
+
+Inline statuses throughout this document are authoritative; this is the summary.
+
+**Live:** submission with multi-file upload and compression, private staging,
+reference codes and status lookup, email alerting, moderation queue with pinning
+and thumbnailing at approval, browse grid with filters, artefact pages, reactions,
+comments with flagging, corrections, `/wanted`, admin authentication, IPFS build
+and ENS repoint with rollback, social metadata, robots, sitemap, Sentry
+instrumentation.
+
+**Not live:** contributor accounts, wallet authentication, editing a published
+artefact, drafts, bookmarks, contributor profiles, search beyond category
+filtering, public audit log, data export, second pinning provider, Arweave,
+governance, mobile client.
