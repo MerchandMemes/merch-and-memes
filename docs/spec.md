@@ -61,7 +61,7 @@ architecture no longer matched the running system.
 | | |
 | --- | --- |
 | Live at | `merchandmemes.eth.limo`, ENS contenthash → IPFS bundle |
-| Content | 18 published artefacts, 14 categories |
+| Content | All published artefacts; fixed category taxonomy |
 | Hosting | IPFS, pinned to Filebase; ENS name is the address |
 | Data | Supabase Postgres, service-role access server-side only |
 | Preview | Vercel, same source, non-authoritative |
