@@ -788,3 +788,119 @@ approval triggers a rebuild automatically.
 ### 13.1 Publish
 
 GitHub Actions, `workflow_dispatch`
+
+## 14. API
+
+### 14.1 Base
+
+`NEXT_PUBLIC_API_BASE` points at the Vercel deployment, so client code works
+identically from the ENS bundle and from Vercel. Route handlers exist only on
+Vercel; the IPFS copy calls across.
+
+*Status: Shipped.* This is the sharpest centralisation in the system — see §18.3.
+
+### 14.2 Routes
+
+| Route | Methods | Auth | Notes |
+| --- | --- | --- | --- |
+| `/api/submit` | `POST`, `OPTIONS` | none | multipart, up to five files, returns `code` and `statusUrl` |
+| `/api/moderate` | `POST` | admin cookie | approve or reject |
+| `/api/moderate-comment` | `POST` | admin cookie | approve or remove |
+| `/api/flag-comment` | `POST` | none | increments and emails |
+| `/api/correction` | `POST` | none | insert, 1000 char cap |
+| `/api/feedback` | `POST` | none | feedback button |
+| `/api/wanted` | `GET`, `POST` | none | list and create requests |
+| `/api/wanted/respond` | `POST` | none | reply to a request |
+| `/api/admin-login` | `POST` | password | sets the session cookie |
+
+All JSON routes answer `OPTIONS` with CORS preflight so a non-browser client can
+call them.
+
+*Status: Shipped.*
+
+### 14.3 Caching
+
+`/api/wanted` is `force-static` with `revalidate = 0` so the list stays fresh while
+satisfying the export constraint.
+
+*Status: Shipped.*
+
+### 14.4 Validation
+
+Server-side validation is present on the routes that take free text: length caps on
+corrections, wanted titles and descriptions, required-field checks on submissions.
+Type and size are enforced client-side only, so a hand-rolled `POST` can exceed
+them.
+
+*Status: Partial.*
+
+### 14.5 No versioning, no keys
+
+One unversioned surface, no API keys, no rate limiting. A mobile client would need
+all three.
+
+*Status: Partial.* See §16.
+
+## 15. Non-Functional Requirements
+
+### 15.1 Permanence
+
+Media is addressed by CID, never by host URL. The bundle is pinned and rebuildable
+from public source.
+
+*Status: Shipped.*
+
+### 15.2 Build time
+
+A publish runs three to four minutes, dominated by install and export. Acceptable
+at current scale.
+
+*Status: Shipped.*
+
+### 15.3 Failure isolation
+
+Approval aborts rather than half-publishing; publish dispatch failures do not
+undo an approval; email failures do not fail a submission; thumbnail failures do
+not fail an approval.
+
+*Status: Shipped.*
+
+### 15.4 Metadata
+
+Per-page canonical URLs, `og:title`, `og:description`, `og:image` at 1280×720,
+`twitter:card` of `summary_large_image`, `alt` text. Artefact pages override the
+default card with their own thumbnail and title; everything else inherits
+`/og.png`.
+
+*Status: Shipped.*
+
+### 15.5 Crawlers
+
+`robots.txt` allows everything and names the sitemap; `sitemap.xml` lists static
+pages and every published artefact with lastmod.
+
+*Status: Partial.* eth.limo serves its own `robots.txt` for all ENS sites, so the
+built file — and its sitemap line — is never seen on this host.
+
+### 15.6 Performance
+
+No measured budget. Largest asset is `og.png` at 630 KB; the logo is 32 KB WebP.
+
+*Status: Partial.*
+
+### 15.7 Accessibility
+
+Semantic structure and image `alt` are present; icon-only controls lack labels and
+`prefers-reduced-motion` is ignored.
+
+*Status: Partial.*
+
+### 15.8 Resilience
+
+If Vercel is down the archive still serves; comments, reactions, wanted and
+moderation stop. If Supabase is down nothing new renders from a build but the
+existing bundle is unaffected.
+
+*Status: Shipped, as a consequence of the architecture.*
+
+
