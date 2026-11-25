@@ -142,3 +142,72 @@ The archive succeeds if the following hold. Statuses reflect v3.0.
 SC1 and SC2 are the load-bearing pair. An archive whose images live on a
 dashboard URL, or whose served page differs from its published source, is not an
 archive — it is a website about one.
+
+## 4. Personas
+
+### P1 — The contributor
+
+Has an object in front of them and a phone. Took a photo before it went in a
+drawer, or found it in one. Tolerant of a form, intolerant of a signup, and likely
+to abandon if asked for an email. Often does not know the year, and does not want
+to be credited.
+
+Needs: a short form, several photos accepted at once, an optional credit field
+that can be left blank, and some way to check what happened afterwards without
+handing over an address.
+
+*Status: Shipped.* Multi-image upload, optional `credit_as`, and a reference code
+with a `/status` lookup.
+
+### P2 — The browser
+
+Arrives from a link, a post, or curiosity. No account, no intention of
+contributing today. Wants to look, and to leave without a modal.
+
+Needs: a browsable grid, category filters, artefact pages that load, and enough
+context to understand what they are looking at.
+
+*Status: Shipped.* Server-rendered grid, filters, artefact pages with category,
+licence, year and any contributor story.
+
+### P3 — The moderator
+
+Currently one person, the owner. Sees a queue, not a feed. Judging an item takes
+seconds and the decision is binary.
+
+Needs: an alert on arrival, enough context to judge in one screen, one-click
+approve or reject, and automatic handling of the tedious parts.
+
+*Status: Shipped.* Email notification, admin-gated queue, one-click actions,
+thumbnail generated at approval. Single-admin dependence is the known weakness —
+see §16.
+
+### P4 — The researcher
+
+Journalist, curator, or someone writing a thread. Wants a citable object with a
+date and a licence, not a scroll.
+
+Needs: stable URLs that will still resolve, dates, explicit licence terms, and
+ideally a ready-made citation.
+
+*Status: Partial.* URLs are stable and per-artefact; licences are stated on every
+page. No citation block and no bulk export.
+
+### P5 — The third-party preserver
+
+Has no relationship with the project. Wants the archive to survive the project.
+
+Needs: public source, public CIDs, and written recovery steps.
+
+*Status: Partial.* Source is MIT and the bundle is pinnable, but recovery is not
+documented (SC6).
+
+### Not personas
+
+**Sellers.** No prices, no listings, no "for sale". An artefact page is a record,
+not a shop window. This is what keeps exchange of artefacts (§16) deferred rather
+than assumed.
+
+**Brands.** No analytics dashboard, no campaign reporting. A project that wants
+its own merch archived submits it like anyone else.
+
