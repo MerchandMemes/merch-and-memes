@@ -211,3 +211,62 @@ than assumed.
 **Brands.** No analytics dashboard, no campaign reporting. A project that wants
 its own merch archived submits it like anyone else.
 
+## 5. Licensing
+
+### 5.1 Code
+
+The repository is MIT-licensed. Anyone may fork, run, rebuild or rehost the
+archive. The specification is in the same repository under the same terms.
+
+*Status: Shipped.*
+
+### 5.2 Artefacts
+
+Two licences, chosen per category and inherited automatically at submission:
+
+- **CC0** for ephemera where attribution is impractical or irrelevant — memes,
+  screenshots and similar. No rights reserved.
+- **CC BY 4.0** for objects with an identifiable maker or origin — garments,
+  hardware, printed matter. Attribution required.
+
+The licence is fixed by the category rather than picked by the contributor, so
+nobody has to make a legal decision at the form. It is displayed on every artefact
+page and in the licence block beneath the details.
+
+*Status: Shipped.*
+
+### 5.3 Rights declaration
+
+Every submission records `rights_declared`. The contributor asserts they have the
+right to publish what they are uploading. No proof is required and none is
+checked at moderation — a queue that demanded invoices would never clear.
+
+*Status: Shipped.*
+
+### 5.4 Irreversibility
+
+Publishing is permanent in a way that a normal site is not. Once a file is pinned
+and its CID served, copies can exist anywhere. Withdrawal removes the artefact
+from the database and from subsequent bundles, but does not recall CIDs already
+pinned by others.
+
+Contributors are told this on the submit page before uploading. It is the main
+reason the form is deliberately blunt about what "publish" means.
+
+*Status: Shipped.*
+
+### 5.5 Third-party content
+
+Logos, characters and wordmarks belong to their owners. The archive claims no
+ownership of them; the licence applies to the photograph and its metadata, not to
+the trademark depicted. A screenshot of a project's site is CC0 as a screenshot.
+
+*Status: Shipped.*
+
+### 5.6 Takedown
+
+A rights holder can request removal through the correction path on the artefact
+page. Removal is manual and immediate once verified. The artefact page then 404s
+and the next bundle omits it; pinned copies persist as described in §5.4.
+
+*Status: Shipped.*
