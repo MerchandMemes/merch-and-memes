@@ -1193,8 +1193,8 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A6 | HEIC behaviour on Chromium | Phase 2 |
 | A7 | `og.png` recompression | Phase 2 |
 | A8 | Scaffold file removal from `public/` | Phase 2 |
-| A9 | Delete the two legacy test artefacts — they store old Supabase URLs and render broken | Phase 2 |
-| A10 | Remove `/sentry-example-page` and `/api/sentry-example-api` | Phase 2 |
+| A9 | Delete the two legacy test artefacts — they store old Supabase URLs and render broken | Closed 2026-11-25 |
+| A10 | Remove `/sentry-example-page` and `/api/sentry-example-api` | Closed — routes were already absent |
 | A11 | Terms §5 hosting description | Phase 2 |
 | A12 | Terms §8 registration claim | Phase 2 |
 | A13 | Styled 404 | Phase 2 |
