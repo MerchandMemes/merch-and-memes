@@ -1177,7 +1177,9 @@ extended".
 
 **`/admin/login`**, **`/admin/moderation`** — password form and queue, Vercel only.
 
-**404** — the default Next page, unstyled and off-brand.
+**404** — branded page with a 404, an explanation and links to browse, contribute
+and status. Reached on Vercel; not reached on the ENS host, where the gateway
+answers unknown paths itself before the bundle is consulted.
 
 ## Appendix — Open Items
 
@@ -1195,9 +1197,9 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A8 | Scaffold file removal from `public/` | Phase 2 |
 | A9 | Delete the two legacy test artefacts — they store old Supabase URLs and render broken | Closed 2026-11-25 |
 | A10 | Remove `/sentry-example-page` and `/api/sentry-example-api` | Closed — routes were already absent |
-| A11 | Terms §5 hosting description | Phase 2 |
-| A12 | Terms §8 registration claim | Phase 2 |
-| A13 | Styled 404 | Phase 2 |
+| A11 | Terms §5 hosting description | Closed 2026-11-25 |
+| A12 | Terms §8 registration claim | Closed 2026-11-25 |
+| A13 | Styled 404 | Partial — works on Vercel; eth.limo resolves unknown paths at the gateway and never reaches 404.html |
 | A14 | Sentry auth token | Phase 2 |
 | A15 | Second pinning provider | Phase 5 |
 | A16 | Public audit log | Phase 3 |
