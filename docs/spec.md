@@ -1013,3 +1013,113 @@ project, and the domain only matters once being unfindable costs something.
 The two that need action rather than acceptance are the token expiry and the single
 pinner.
 
+## 18. Decentralisation
+
+### 18.1 Principle
+
+Decentralise where it buys survival; centralise where it buys speed. Content and
+address earn their place — a hash survives its host, and a name held rather than
+rented survives a registrar. Coordination does not: a single moderator reviewing a
+queue is better than a quorum, and a Postgres row is better than a chain write, at
+this size.
+
+The test applied throughout: **if this component vanished tomorrow, would the
+archive still be readable?** Where the answer is no, it is in the decentralised
+column.
+
+### 18.2 Keys and roles
+
+- **ENS owner** — `0xD6a42821C6a24A8eb25c49d9B48Cc822608300dF`. Controls the name.
+  Held offline.
+- **Resolver approval** — granted to the CI wallet
+  `0xee9876160e52f571dA56E26162Ae05a6c72DE95D`, scoped to `setContenthash` only.
+  Compromise cannot transfer the name.
+- **Admin password** — human credential for the queue, unrelated to the keys above.
+
+Contributor `wallet_address` is a nullable column, unused until Phase 4. Roles are
+designed to be addressable from the start so moderator authority can migrate
+on-chain later without a permission model change.
+
+*Status: Shipped.* Key separation is the part that matters and is done.
+
+### 18.3 Scope
+
+| Layer | State | Why |
+| --- | --- | --- |
+| Pages | Decentralised | Exported and pinned; rebuildable from MIT source |
+| Media | Decentralised | Content-addressed, pinned, CID in the database |
+| Address | Decentralised | ENS contenthash on mainnet |
+| Pinning | Single provider | Filebase only; Phase 5 adds a second |
+| Database | Centralised | No comparable managed option at this scale |
+| API surface | Centralised | Route handlers need a server; Vercel provides it |
+| Moderation state | Centralised | Human decisions in Postgres |
+| Comments, reactions | Centralised | Written straight to Supabase from the browser |
+| Search | Centralised | Postgres FTS |
+| Admin auth | Centralised | One password in one env var |
+
+The gap between rows is the honest description of this project: the record is
+decentralised and the machinery around it is not. A visitor can read everything
+without a centralised component except the gateway. Contributing, commenting and
+moderating all require one.
+
+v2.5 claimed the reverse — that only a redirect page was hosted and the
+application stayed centralised — and was wrong in both directions.
+
+*Status: Shipped, with the pinning gap noted.*
+
+### 18.4 What is deliberately not decentralised
+
+**The build.** One CI pipeline, one repository. Anyone can fork and rebuild, but
+the canonical build is centralised. Splitting it would mean multiple builders
+racing to write the contenthash.
+
+**The decision to publish.** Moderation is a person. Optimistic moderation
+(Phase 6) moves the delay, not the authority.
+
+**The schema.** Postgres, not a content-addressed store. Relational queries are
+worth more here than schema immutability.
+
+## 19. Naming
+
+**19.1 Rename — closed.** The project was written as "MemesMerch" in places and the
+order was unsettled. Merch&Memes is final and the v3.0 rename pass is retired.
+
+**19.2 Forms.** Display: `Merch&Memes`. ENS: `merchandmemes.eth`. Repository:
+`merch-and-memes`. No ampersand in anything technical.
+
+*Status: Shipped.*
+
+## 20. Repository Conventions
+
+Single `main` branch, no feature branches. One author, so a branch would be
+ceremony.
+
+Components live beside their route (`app/artefact/[id]/Comments.tsx`); there is no
+root `components/` folder. `scripts/` holds CI helpers. `docs/` holds this document.
+
+*Status: Shipped.*
+
+## 21. Current Page Implementations
+
+Recorded so a reader knows what is there without opening the source.
+
+**`/`** — animated hero with floating emoji, CountUp stats (server-rendered at the
+real figure), recent artefacts, category grid, a memes block badged "Coming soon"
+with no date. Nav and footer.
+*Gap:* the memes badge promises without a schedule.
+
+**`/browse`** — server-rendered grid of every published artefact, client-side
+category filter, document glyph for PDFs.
+*Gap:* filtering needs JS.
+
+**`/artefact/[id]`** — gallery, category, licence, title, credit, year, description,
+contributor story, reactions, corrections, comments, licence block.
+*Gap:* no citation block; corrections produce no alert.
+
+**`/submit`** — multi-file input, compression, limits, duplicate guard, optional
+credit, rights declaration, success screen carrying the reference code and status
+URL.
+*Gap:* HEIC unverified on Chromium.
+
+**`/status`** — code field
+
