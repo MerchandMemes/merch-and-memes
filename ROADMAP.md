@@ -7,8 +7,7 @@ This file exists so nobody looks for a roadmap here and finds nothing.
 
 ## Start here
 
-Phase 2 in §16. The only items a visitor can currently see are A9 (two broken
-legacy test artefacts) and A13 (unstyled 404).
+Phase 2 in §16. The only item a visitor can currently see is A13 (unstyled 404).
 
 ## Not planned
 
