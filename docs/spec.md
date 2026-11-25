@@ -1122,4 +1122,3 @@ URL.
 *Gap:* HEIC unverified on Chromium.
 
 **`/status`** — code field
-
