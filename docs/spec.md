@@ -92,3 +92,53 @@ enters the archive locked behind permissions.
 The archive is not a marketplace, a portfolio or a social network. It is a record
 of things that existed, kept because they are evidence of a culture that was
 mostly busy throwing them away.
+
+## 2. Problem
+
+Web3 produces a great deal of merchandise and almost none of it survives as
+evidence. Runs are small, made for a conference or a launch, handed out, worn,
+washed, lost or binned. The objects are cheap and the culture around them is
+disposable by design — which is exactly what makes them a record worth keeping.
+
+Three things conspire against the record.
+
+**Nobody archives physical ephemera.** Institutions collect fine art and
+manuscripts, slowly and selectively. The Internet Archive captures pages, not the
+hoodie photographed on them. Trading platforms index tokens; the sticker beside
+the token has no metadata and no owner of record.
+
+**Projects die and take their context with them.** When a project folds, its site
+goes first. Screenshots and photos linger on scattered posts with no dates, no
+attribution and no way to tell a 2017 conference shirt from a 2023 revival. The
+object loses its story and becomes an unbranded rag.
+
+**Archive tooling is heavy.** Most platforms want an account, an email, sometimes
+a wallet before they will accept a photo. Friction is the main reason ephemera
+never gets contributed at all.
+
+The result is a gap: a decade of ecosystem history that is being thrown out
+because no low-friction, permanent, community-driven place exists to put it.
+
+Merch&Memes answers that with hash-addressed storage, a name the project holds
+rather than rents, an open licence and a submission form that asks for nothing
+but the artefact itself.
+
+## 3. Success Criteria
+
+The archive succeeds if the following hold. Statuses reflect v3.0.
+
+| | Criterion | Status |
+| --- | --- | --- |
+| SC1 | Every published artefact's media is pinned to IPFS and referenced by CID, never by a host URL. | Shipped |
+| SC2 | The served bundle is built by CI from the source at the deployed commit, so the archive matches its own code. | Shipped |
+| SC3 | A submission is completable in under two minutes with no account, wallet or email. | Shipped |
+| SC4 | The moderation queue is actioned promptly and notifies the admin by email on arrival. | Shipped |
+| SC5 | A submitter can check the state of their submission with a reference code and no account. | Shipped |
+| SC6 | A third party can rebuild the site from the MIT source and the pinned bundle without the project's cooperation. | Partial — source and spec are public; recovery steps are not yet written down |
+| SC7 | Search engines index artefact pages, so the record is findable by people who do not already know the ENS name. | Partial — sitemap published, robots overridden by the gateway, `.eth.limo` indexes poorly; see §16 |
+| SC8 | All data is exportable in open formats. | Not built |
+| SC9 | Running costs stay within free or low tiers. | Shipped |
+
+SC1 and SC2 are the load-bearing pair. An archive whose images live on a
+dashboard URL, or whose served page differs from its published source, is not an
+archive — it is a website about one.
