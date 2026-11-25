@@ -897,10 +897,119 @@ Semantic structure and image `alt` are present; icon-only controls lack labels a
 
 ### 15.8 Resilience
 
-If Vercel is down the archive still serves; comments, reactions, wanted and
-moderation stop. If Supabase is down nothing new renders from a build but the
-existing bundle is unaffected.
+The archive is not uniformly dependent on one vendor. Each component fails
+differently:
 
-*Status: Shipped, as a consequence of the architecture.*
+| Component | If it fails | What survives | Mitigation |
+| --- | --- | --- | --- |
+| Filebase pinning | Blocks stop being pinned | CID stays valid; resolves only while another node holds it | Second pinning provider (§16 Phase 5) |
+| eth.limo gateway | `merchandmemes.eth.limo` breaks | Name resolves on-chain; any gateway plus the CID still serves it; Brave resolves `.eth` natively | Document gateway fallback; domain in §16 |
+| ENS mainnet / owner key | Contenthash cannot be changed | Current content remains resolvable by CID | Key already separated from the CI updater |
+| GitHub | Source and CI unavailable | Pinned bundle keeps serving | Public MIT source; third party can fork |
+| Vercel | API, admin, comments, reactions, wanted, moderation stop | All pages, all media, all metadata | Documented; §18.3 |
+| Supabase | No new build can render data; staging lost | Existing bundle unaffected | Data export (§16 Phase 5) |
 
+*Status: Partial.* The single pinner and the single gateway are the two that
+matter, and neither has a mitigation in place.
+
+## 16. Phases
+
+### Phase 1 — Delivered
+
+Closed. Everything below is Shipped and described elsewhere in this document.
+
+Submission form with multi-file upload, client compression and duplicate guard;
+private staging; reference codes with collision retry and a status lookup;
+moderator email alerting; moderation queue with pinning, thumbnailing and
+fail-closed approval; browse grid with category filter; artefact pages with
+licence, year, story and credit; reactions; comments with flagging; corrections;
+`/wanted` with responses; admin password authentication; IPFS export build, pin,
+CID computation, contenthash write and rollback; social metadata; robots; sitemap;
+Sentry instrumentation; logo with real alpha at 32 KB.
+
+### Phase 2 — Near-term hardening
+
+- Written recovery procedure (SC6): rebuild from source, pin independently,
+  repoint, gateway fallback. Without it "anyone can preserve this" is a claim.
+- Email alert on corrections (§FR5.5).
+- Verify HEIC on Chromium, then either fix or drop it from the helper text.
+- Styled `not-found.tsx`.
+- Reconcile terms §8 with reality — no registration exists.
+- Recompress `og.png` to JPEG.
+- Delete unused scaffold files and `logo.png` from `public/`.
+- Sentry auth token so stack traces are not minified.
+- Monitor the three expiring dependencies in §13.4.
+
+### Phase 3 — Reach
+
+- Point a conventional domain at the bundle, keeping the ENS name canonical via
+  `rel=canonical`. Gives a real `robots.txt`, a submittable sitemap and a host
+  search engines trust.
+- Submit the sitemap to Search Console and Bing.
+- Citation block on artefact pages.
+- Full-text search over titles and descriptions with Postgres FTS.
+- Expose `audit_log` publicly.
+
+### Phase 4 — Contributor continuity
+
+Deferred as a block. Nothing here serves a first-time contributor, so it waits
+until the archive has enough material that people return.
+
+- Wallet authentication via EIP-4361 (§FR1.7).
+- Contributor accounts with profiles and submission history (§FR1.8).
+- Drafts saved before submission.
+- Editing a published artefact's text, without changing pinned media.
+- Bookmarks.
+
+Wallet before accounts, because a signature proves continuity without an email and
+keeps the no-email promise intact.
+
+### Phase 5 — Durability
+
+- Second pinning provider, so no single vendor holds the only copy (§15.8).
+- Data export in open formats (SC8).
+- Arweave as a cold archival tier.
+- Documented multi-gateway resolution.
+- Bundle size budget, enforced in CI.
+
+### Phase 6 — Governance
+
+- Volunteer moderators with individual credentials instead of one shared
+  password.
+- Quorum on disputed rejections.
+- Optimistic moderation — publish immediately, review on flag, matching how
+  comments already work.
+- Mirror `audit_log` on-chain so the record is not editable by the operator.
+
+### Deferred, with reasons
+
+**Exchange of artefacts.** Trade or swap between visitors. Unscoped: a noticeboard,
+a match, or escrow — and whether the platform takes custody. Leaning noticeboard,
+because custody drags in disputes, shipping and liability that an archive does not
+need. Deferred until there is demand to justify a design pass.
+
+**Discoverable domain.** A second host for search engines. Deferred to Phase 3
+because at current volume the ENS name is reachable by everyone who knows about the
+project, and the domain only matters once being unfindable costs something.
+
+**Rename.** Closed. Merch&Memes is final; see §19.
+
+## 17. Risks
+
+| Risk | Likelihood | Impact | Mitigation |
+| --- | --- | --- | --- |
+| `GITHUB_DISPATCH_TOKEN` expires | Certain, in 90 days | Site silently freezes at the last build | Calendar reminder; renew before expiry |
+| CI wallet runs dry | Moderate | Publishes fail at the contenthash step | Top up below 0.005 ETH; failure is loud in Actions |
+| Filebase unpins or closes | Low, rising with time | Archive degrades toward unreachable | Second pinner, Phase 5 |
+| Single admin falls ill or loses interest | Certain eventually | Queue stops, no governance | Phase 6 |
+| Comment spam | High, once noticed | Noise on artefact pages | Flagging, manual removal; no throttle yet |
+| A pinned mistake is permanent | Certain | Wrong file or title live forever | Corrections and edits; CIDs cannot be recalled (§5.4) |
+| Rights claim contested | Moderate | Takedown, possible dispute | §5.6, manual and immediate |
+| Wrong category licence applied | Low | Object published under the wrong terms | Category is chosen by the submitter; reviewable at moderation |
+| Vercel outage during moderation | Low | Queue unavailable | Accepted; the archive itself serves |
+| ENS name expires (2031) or owner key lost | Low / unknown | Address lost | Renewal calendar; key custody |
+| Credentials in the repo | Low | Full compromise | All via secrets, never committed |
+
+The two that need action rather than acceptance are the token expiry and the single
+pinner.
 
