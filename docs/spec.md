@@ -788,6 +788,47 @@ approval triggers a rebuild automatically.
 ### 13.1 Publish
 
 GitHub Actions, `workflow_dispatch`
+or a `repository_dispatch` of type `publish`. Steps: checkout, install,
+`npm run build:ipfs`, upload to Filebase, compute the bucket CID, pin and verify it,
+write the contenthash.
+
+*Status: Shipped.*
+
+### 13.2 Rollback
+
+`repoint-ens.yml` writes a previous CID back to the resolver without rebuilding,
+so a bad publish is reverted by pointing at the last good one.
+
+*Status: Shipped.* Requires the previous CID to be recorded somewhere; publishes
+should be logged with their CIDs.
+
+### 13.3 Artifacts
+
+The exported bundle is uploaded as a workflow artifact with seven-day retention, so
+a published bundle can be retrieved without re-running the build.
+
+*Status: Shipped.*
+
+### 13.4 Operational dependencies
+
+Three things expire or run out, and each fails quietly:
+
+- **`GITHUB_DISPATCH_TOKEN`** — fine-grained PAT, 90-day expiry. When it lapses,
+  approvals stop triggering publishes and the site silently freezes.
+- **CI wallet** — must hold ETH for the contenthash write. Top up below 0.005 ETH.
+- **`FILEBASE_IPFS_TOKEN`** — pinning and verification fail without it; the run
+  fails rather than publishing an unpinned CID.
+
+*Status: Shipped.* None are monitored; all are checked by hand.
+
+### 13.5 Secrets
+
+`FILEBASE_ACCESS_KEY_ID`, `FILEBASE_SECRET_ACCESS_KEY`, `FILEBASE_SHELL_BUCKET`,
+`FILEBASE_IPFS_TOKEN`, `ENS_NAME`, `ENS_RPC_URL`, `ENS_UPDATER_PRIVATE_KEY`,
+`GITHUB_DISPATCH_TOKEN`, `ADMIN_PASSWORD`, `RESEND_API_KEY`, Supabase URL and both
+keys, `NEXT_PUBLIC_SITE_URL`, Sentry credentials.
+
+*Status: Shipped.* The updater key and the owner key are deliberately different.
 
 ## 14. API
 
@@ -1121,4 +1162,44 @@ credit, rights declaration, success screen carrying the reference code and statu
 URL.
 *Gap:* HEIC unverified on Chromium.
 
-**`/status`** — code field
+**`/status`** — code field , lookup, per-status rendering with the note on rejection and a link when published.
+*Gap:* renders empty until JS runs.
+
+**`/wanted`** — request form and list with inline responses, unmoderated.
+*Gap:* no email on response; a poster is never told they got one.
+
+**`/about`** — project rationale.
+
+**`/terms`** — nine sections.
+*Gaps:* §5 still says the website is conventionally hosted; §8 describes
+registration that does not exist; the page is stamped "July 2026" and "will be
+extended".
+
+**`/admin/login`**, **`/admin/moderation`** — password form and queue, Vercel only.
+
+**404** — the default Next page, unstyled and off-brand.
+
+## Appendix — Open Items
+
+Carried from v2.5 with current status. Phase references point at §16.
+
+| | Item | Status |
+| --- | --- | --- |
+| A1 | Co-locate serverless region with the database (eu-west-1, needs Vercel Pro) | Open |
+| A2 | Rename the Mac account and hostname | Open |
+| A3 | Legal review of the liability clause (§9 terms) | Open |
+| A4 | Written recovery procedure | Phase 2, SC6 |
+| A5 | Correction alert email | Phase 2 |
+| A6 | HEIC behaviour on Chromium | Phase 2 |
+| A7 | `og.png` recompression | Phase 2 |
+| A8 | Scaffold file removal from `public/` | Phase 2 |
+| A9 | Delete the two legacy test artefacts — they store old Supabase URLs and render broken | Phase 2 |
+| A10 | Remove `/sentry-example-page` and `/api/sentry-example-api` | Phase 2 |
+| A11 | Terms §5 hosting description | Phase 2 |
+| A12 | Terms §8 registration claim | Phase 2 |
+| A13 | Styled 404 | Phase 2 |
+| A14 | Sentry auth token | Phase 2 |
+| A15 | Second pinning provider | Phase 5 |
+| A16 | Public audit log | Phase 3 |
+
+
