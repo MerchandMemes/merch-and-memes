@@ -13,11 +13,11 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: 'Merch&Memes',
     type: 'website',
-    images: [{ url: '/og.png', width: 1280, height: 720, alt: 'Merch&Memes — the web3 archive' }],
+    images: [{ url: '/og.jpg', width: 1280, height: 720, alt: 'Merch&Memes — the web3 archive' }],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/og.png'],
+    images: ['/og.jpg'],
   },
 }
 
