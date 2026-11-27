@@ -62,7 +62,7 @@ architecture no longer matched the running system.
 | --- | --- |
 | Live at | `merchandmemes.eth.limo`, ENS contenthash → IPFS bundle |
 | Content | All published artefacts; fixed category taxonomy |
-| Hosting | IPFS, pinned to Filebase; ENS name is the address |
+| Hosting | IPFS, pinned to Filebase and Pinata; ENS name is the address |
 | Data | Supabase Postgres, service-role access server-side only |
 | Preview | Vercel, same source, non-authoritative |
 | Deploy | GitHub Actions, manual dispatch, pins then repoints ENS |
@@ -610,7 +610,7 @@ governance, mobile client.
 | `/admin/moderation` | Queue | Vercel only |
 | `/api/*` | Submissions, moderation, wanted, corrections, feedback, flags | Vercel only |
 | `/robots.txt`, `/sitemap.xml` | Crawler metadata | Static |
-| /og.jpg, /icon.svg | Social card, favicon | Static |
+| `/og.jpg`, /`icon.svg` | Social card, favicon | Static |
 
 ### 10.2 Navigation
 
@@ -858,7 +858,7 @@ Vercel; the IPFS copy calls across.
 | `/api/wanted` | `GET`, `POST` | none | list and create requests |
 | `/api/wanted/respond` | `POST` | none | reply to a request |
 | `/api/admin-login` | `POST` | password | sets the session cookie |
-| `/api/backfill-pins | GET | none | one-off pin backfill, idempotent via pinata_pinned_at |
+| `/api/backfill-pins` | `GET` | none | one-off pin backfill, idempotent via pinata_pinned_at |
 
 All JSON routes answer `OPTIONS` with CORS preflight so a non-browser client can
 call them.
@@ -917,7 +917,7 @@ not fail an approval.
 Per-page canonical URLs, `og:title`, `og:description`, `og:image` at 1280×720,
 `twitter:card` of `summary_large_image`, `alt` text. Artefact pages override the
 default card with their own thumbnail and title; everything else inherits
-`/og.png`.
+`/og.jpg`.
 
 *Status: Shipped.*
 
@@ -1010,7 +1010,6 @@ keeps the no-email promise intact.
 
 ### Phase 5 — Durability
 
-- Second pinning provider, so no single vendor holds the only copy (§15.8).
 - Data export in open formats (SC8).
 - Arweave as a cold archival tier.
 - Documented multi-gateway resolution.
