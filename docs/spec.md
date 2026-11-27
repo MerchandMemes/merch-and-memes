@@ -572,7 +572,7 @@ Icon-only controls (flag, reactions) carry no `aria-label`.
 ### 8.8 Weight
 
 The bundle is pinned to IPFS and pulled on first visit, so bytes matter more than
-on a normal host. The logo is a 32 KB WebP with real alpha. `og.png` at 630 KB is
+on a normal host. The logo is a 32 KB WebP with real alpha. `og.png` at 101 KB is
 the largest single asset and is only needed by crawlers.
 *Status: Partial — see §16.*
 
@@ -610,7 +610,7 @@ governance, mobile client.
 | `/admin/moderation` | Queue | Vercel only |
 | `/api/*` | Submissions, moderation, wanted, corrections, feedback, flags | Vercel only |
 | `/robots.txt`, `/sitemap.xml` | Crawler metadata | Static |
-| `/og.png`, `/icon.svg` | Social card, favicon | Static |
+| /og.jpg, /icon.svg | Social card, favicon | Static |
 
 ### 10.2 Navigation
 
@@ -858,6 +858,7 @@ Vercel; the IPFS copy calls across.
 | `/api/wanted` | `GET`, `POST` | none | list and create requests |
 | `/api/wanted/respond` | `POST` | none | reply to a request |
 | `/api/admin-login` | `POST` | password | sets the session cookie |
+| `/api/backfill-pins | GET | none | one-off pin backfill, idempotent via pinata_pinned_at |
 
 All JSON routes answer `OPTIONS` with CORS preflight so a non-browser client can
 call them.
@@ -930,7 +931,7 @@ built file — and its sitemap line — is never seen on this host.
 
 ### 15.6 Performance
 
-No measured budget. Largest asset is `og.png` at 630 KB; the logo is 32 KB WebP.
+No measured budget. Largest asset is `og.png` at 101 KB; the logo is 32 KB WebP.
 
 *Status: Partial.*
 
@@ -1172,9 +1173,7 @@ URL.
 **`/about`** — project rationale.
 
 **`/terms`** — nine sections.
-*Gaps:* §5 still says the website is conventionally hosted; §8 describes
-registration that does not exist; the page is stamped "July 2026" and "will be
-extended".
+*Gap:* the page is stamped "November 2026" and "will be extended".
 
 **`/admin/login`**, **`/admin/moderation`** — password form and queue, Vercel only.
 
