@@ -969,16 +969,14 @@ Sentry instrumentation; logo with real alpha at 32 KB.
 
 ### Phase 2 — Near-term hardening
 
-- Written recovery procedure (SC6): rebuild from source, pin independently,
-  repoint, gateway fallback. Without it "anyone can preserve this" is a claim.
-- Email alert on corrections (§FR5.5).
 - Verify HEIC on Chromium, then either fix or drop it from the helper text.
-- Styled `not-found.tsx`.
-- Reconcile terms §8 with reality — no registration exists.
-- Recompress `og.png` to JPEG.
-- Delete unused scaffold files and `logo.png` from `public/`.
+- 404 handling on the ENS host — A13 is Partial, the gateway answers before the
+  bundle is consulted.
 - Sentry auth token so stack traces are not minified.
 - Monitor the three expiring dependencies in §13.4.
+- Watch the Pinata free-tier ceiling of 500 files. At roughly two objects per
+  artefact it arrives around 220 artefacts, after which a paid tier or a third
+  pinner is needed.
 
 ### Phase 3 — Reach
 
