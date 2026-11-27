@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
           if (updateError) {
             throw updateError
           }
-          await pinToPinata(cid)
+          await pinToPinata(buffer, cid, 'jpg')
 // Grid thumbnail, best-effort. A failure here must not block the
           // approval: the artefact page uses the original, and grids fall back
           // to it whenever thumb_cid is null.
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
                 .from('media_assets')
                 .update({ thumb_cid: thumbCid })
                 .eq('id', asset.id)
-              await pinToPinata(thumbCid)
+              await pinToPinata(thumb, thumbCid, 'webp')
             }
           } catch (thumbError) {
             console.error('Thumbnail generation failed:', thumbError)
