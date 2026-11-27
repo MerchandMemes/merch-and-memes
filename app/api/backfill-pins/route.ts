@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 export const runtime = 'nodejs'
 export const maxDuration = 60
 export const dynamic = 'force-static'
+export const revalidate = 0
 
 const GATEWAY = 'https://ipfs.filebase.io/ipfs/'
 const PINATA = 'https://api.pinata.cloud/pinning/pinFileToIPFS'
