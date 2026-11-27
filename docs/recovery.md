@@ -110,7 +110,3 @@ What cannot be recovered
 The database. Submissions, comments, reactions, corrections and the moderation
 log live in Supabase and are not in the bundle. The pages render the data they
 were built with, so the archive survives — but new contributions do not.
-
-The one task: open the file, pencil icon, Ctrl+A, Delete, paste all of the above, commit.
-
-Check before committing: the last line should read were built with, so the archive survives — but new contributions do not.
