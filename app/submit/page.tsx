@@ -107,7 +107,19 @@ export default function SubmitPage() {
       img.src = objectUrl
     })
   }
+const isHeic = (f: File) => /image\/hei[cf]/i.test(f.type) || /\.(heic|heif)$/i.test(f.name)
 
+  const toUploadable = async (input: File): Promise<File> => {
+    if (!isHeic(input)) return input
+    try {
+      const heic2any = (await import('heic2any')).default
+      const out = await heic2any({ blob: input, toType: 'image/jpeg', quality: 0.9 })
+      const blob = Array.isArray(out) ? out[0] : out
+      return new File([blob], input.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' })
+    } catch {
+      return input
+    }
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
             if (files.length === 0) { setError('Please select at least one image to upload.'); return }
@@ -317,18 +329,19 @@ export default function SubmitPage() {
                             <div>
                 <label style={labelStyle}>Images <span style={{ color: '#DC1FFF' }}>*</span></label>
                                 <input type="file" accept="image/*,.heic,.heif,application/pdf" multiple
-                  onChange={e => {
+                  onChange={async (e) => {
                     const picked = Array.from(e.target.files || [])
                     e.target.value = ''
+                    const uploadable = await Promise.all(picked.map(toUploadable))
                     setFiles(prev => {
                       const seen = new Set(prev.map(f => `${f.name}-${f.size}-${f.lastModified}`))
-                      const additions = picked.filter(f => !seen.has(`${f.name}-${f.size}-${f.lastModified}`))
+                      const additions = uploadable.filter(f => !seen.has(`${f.name}-${f.size}-${f.lastModified}`))
                       return [...prev, ...additions].slice(0, 5)
                     })
                   }}
                   style={{ ...inputStyle, padding: '10px 16px' }} />
                 <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '6px' }}>
-                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB each. Tap the field again to add more images ({files.length}/5).
+                  JPG, PNG, GIF, WebP, HEIC or PDF. Max 50MB each. HEIC from iPhone is converted automatically. Tap the field again to add more images ({files.length}/5).
                 </p>
                 {files.length > 0 && (
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
