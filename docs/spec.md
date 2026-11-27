@@ -134,7 +134,7 @@ The archive succeeds if the following hold. Statuses reflect v3.0.
 | SC3 | A submission is completable in under two minutes with no account, wallet or email. | Shipped |
 | SC4 | The moderation queue is actioned promptly and notifies the admin by email on arrival. | Shipped |
 | SC5 | A submitter can check the state of their submission with a reference code and no account. | Shipped |
-| SC6 | A third party can rebuild the site from the MIT source and the pinned bundle without the project's cooperation. | Partial — source and spec are public; recovery steps are not yet written down |
+| SC6 | A third party can rebuild the site from the MIT source and the pinned bundle without the project's cooperation. | Shipped — docs/recovery.md; preservation needs nothing private, rebuild needs database access |
 | SC7 | Search engines index artefact pages, so the record is findable by people who do not already know the ENS name. | Partial — sitemap published, robots overridden by the gateway, `.eth.limo` indexes poorly; see §16 |
 | SC8 | All data is exportable in open formats. | Not built |
 | SC9 | Running costs stay within free or low tiers. | Shipped |
@@ -1191,7 +1191,7 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A1 | Co-locate serverless region with the database (eu-west-1, needs Vercel Pro) | Open |
 | A2 | Rename the Mac account and hostname | Open |
 | A3 | Legal review of the liability clause (§9 terms) | Open |
-| A4 | Written recovery procedure | Phase 2, SC6 |
+| A4 | Written recovery procedure | Closed 2026-11-26 — docs/recovery.md |
 | A5 | Correction alert email | Closed 2026-11-26 |
 | A6 | HEIC behaviour on Chromium | Phase 2 |
 | A7 | `og.png` recompression | Closed 2026-11-26 — replaced by a 101 KB `og.jpg` at 1280×720 |
