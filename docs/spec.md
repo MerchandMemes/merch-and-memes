@@ -1201,7 +1201,7 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A11 | Terms §5 hosting description | Closed 2026-11-25 |
 | A12 | Terms §8 registration claim | Closed 2026-11-25 |
 | A13 | Styled 404 | Partial — works on Vercel; eth.limo resolves unknown paths at the gateway and never reaches 404.html |
-| A14 | Sentry auth token | Phase 2 |
+| A14 | Sentry auth token | Closed 2026-11-27 — verified run 38, release 52328b4, 307 files uploaded, "Successfully uploaded source maps to Sentry" |
 | A15 | Second pinning provider | Closed 2026-11-26 — Pinata, all 54 media objects pinned |
 | A16 | Public audit log | Phase 3 |
 
