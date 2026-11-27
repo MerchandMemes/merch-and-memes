@@ -944,15 +944,14 @@ differently:
 
 | Component | If it fails | What survives | Mitigation |
 | --- | --- | --- | --- |
-| Filebase pinning | Blocks stop being pinned | CID stays valid; resolves only while another node holds it | Second pinning provider (§16 Phase 5) |
+| Filebase pinning | Blocks stop being pinned | Pinata holds an independent copy of every media object | Two pinners; Filebase failure is survivable |
 | eth.limo gateway | `merchandmemes.eth.limo` breaks | Name resolves on-chain; any gateway plus the CID still serves it; Brave resolves `.eth` natively | Document gateway fallback; domain in §16 |
 | ENS mainnet / owner key | Contenthash cannot be changed | Current content remains resolvable by CID | Key already separated from the CI updater |
 | GitHub | Source and CI unavailable | Pinned bundle keeps serving | Public MIT source; third party can fork |
 | Vercel | API, admin, comments, reactions, wanted, moderation stop | All pages, all media, all metadata | Documented; §18.3 |
 | Supabase | No new build can render data; staging lost | Existing bundle unaffected | Data export (§16 Phase 5) |
 
-*Status: Partial.* The single pinner and the single gateway are the two that
-matter, and neither has a mitigation in place.
+*Status: Partial.* The gateway is now the only single point with no mitigation in place; pinning is covered by two independent providers.
 
 ## 16. Phases
 
@@ -1042,7 +1041,7 @@ project, and the domain only matters once being unfindable costs something.
 | --- | --- | --- | --- |
 | `GITHUB_DISPATCH_TOKEN` expires | Certain, in 90 days | Site silently freezes at the last build | Calendar reminder; renew before expiry |
 | CI wallet runs dry | Moderate | Publishes fail at the contenthash step | Top up below 0.005 ETH; failure is loud in Actions |
-| Filebase unpins or closes | Low, rising with time | Archive degrades toward unreachable | Second pinner, Phase 5 |
+| Filebase unpins or closes | Low, rising with time | Archive degrades toward unreachable | Pinata holds every media object independently |
 | Single admin falls ill or loses interest | Certain eventually | Queue stops, no governance | Phase 6 |
 | Comment spam | High, once noticed | Noise on artefact pages | Flagging, manual removal; no throttle yet |
 | A pinned mistake is permanent | Certain | Wrong file or title live forever | Corrections and edits; CIDs cannot be recalled (§5.4) |
@@ -1091,7 +1090,7 @@ on-chain later without a permission model change.
 | Pages | Decentralised | Exported and pinned; rebuildable from MIT source |
 | Media | Decentralised | Content-addressed, pinned, CID in the database |
 | Address | Decentralised | ENS contenthash on mainnet |
-| Pinning | Single provider | Filebase only; Phase 5 adds a second |
+| Pinning | Decentralised | Two independent providers hold every media object |
 | Database | Centralised | No comparable managed option at this scale |
 | API surface | Centralised | Route handlers need a server; Vercel provides it |
 | Moderation state | Centralised | Human decisions in Postgres |
@@ -1202,7 +1201,7 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A12 | Terms §8 registration claim | Closed 2026-11-25 |
 | A13 | Styled 404 | Partial — works on Vercel; eth.limo resolves unknown paths at the gateway and never reaches 404.html |
 | A14 | Sentry auth token | Phase 2 |
-| A15 | Second pinning provider | Phase 5 |
+| A15 | Second pinning provider | Closed 2026-11-26 — Pinata, all 54 media objects pinned |
 | A16 | Public audit log | Phase 3 |
 
 
