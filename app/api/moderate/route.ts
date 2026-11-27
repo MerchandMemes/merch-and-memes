@@ -32,23 +32,28 @@ const FILEBASE_BUCKET = process.env.FILEBASE_BUCKET_NAME!
 
 // Second pinner. Best-effort: Pinata failing must never abort an approval,
 // because Filebase already holds the object and its CID is recorded.
-async function pinToPinata(cid: string) {
+// Bytes are uploaded rather than the bare hash because pin-by-CID is paid;
+// identical bytes hash to the identical CID, so the recorded CID is unchanged.
+async function pinToPinata(data: Buffer, cid: string, ext: string) {
   const jwt = process.env.PINATA_JWT
   if (!jwt) return
   try {
-    const res = await fetch('https://api.pinata.cloud/pinning/pinByHash', {
+    const form = new FormData()
+    form.append('file', new Blob([new Uint8Array(data)]), `${cid}.${ext}`)
+    form.append('pinataMetadata', JSON.stringify({ name: `merchmemes-${cid}` }))
+
+    const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        hashToPin: cid,
-        pinataMetadata: { name: `merchmemes-${cid}` },
-      }),
+      headers: { Authorization: `Bearer ${jwt}` },
+      body: form,
     })
     if (!res.ok) {
       console.error('Pinata pin failed:', res.status, await res.text())
+      return
+    }
+    const body = await res.json()
+    if (body?.IpfsHash && body.IpfsHash !== cid) {
+      console.error('Pinata returned a different CID:', body.IpfsHash, 'expected', cid)
     }
   } catch (pinError) {
     console.error('Pinata pin error:', pinError)
