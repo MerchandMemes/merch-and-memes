@@ -30,6 +30,31 @@ const filebase = new S3Client({
 
 const FILEBASE_BUCKET = process.env.FILEBASE_BUCKET_NAME!
 
+// Second pinner. Best-effort: Pinata failing must never abort an approval,
+// because Filebase already holds the object and its CID is recorded.
+async function pinToPinata(cid: string) {
+  const jwt = process.env.PINATA_JWT
+  if (!jwt) return
+  try {
+    const res = await fetch('https://api.pinata.cloud/pinning/pinByHash', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        hashToPin: cid,
+        pinataMetadata: { name: `merchmemes-${cid}` },
+      }),
+    })
+    if (!res.ok) {
+      console.error('Pinata pin failed:', res.status, await res.text())
+    }
+  } catch (pinError) {
+    console.error('Pinata pin error:', pinError)
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient(
