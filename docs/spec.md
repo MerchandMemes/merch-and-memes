@@ -610,7 +610,9 @@ governance, mobile client.
 | `/admin/moderation` | Queue | Vercel only |
 | `/api/*` | Submissions, moderation, wanted, corrections, feedback, flags | Vercel only |
 | `/robots.txt`, `/sitemap.xml` | Crawler metadata | Static |
-| `/og.jpg`, /`icon.svg` | Social card, favicon | Static |
+| /og.jpg, /icon.svg | Social card, favicon | Static |
+
+
 
 ### 10.2 Navigation
 
