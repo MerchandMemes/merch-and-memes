@@ -5,21 +5,29 @@ export const runtime = 'nodejs'
 export const maxDuration = 60
 export const dynamic = 'force-static'
 
-const PINATA = 'https://api.pinata.cloud/pinning/pinByHash'
+const GATEWAY = 'https://ipfs.filebase.io/ipfs/'
+const PINATA = 'https://api.pinata.cloud/pinning/pinFileToIPFS'
 
 async function pin(jwt: string, cid: string) {
+  const src = await fetch(GATEWAY + cid, { signal: AbortSignal.timeout(20000) })
+  if (!src.ok) throw new Error(`gateway ${src.status}`)
+  const data = await src.arrayBuffer()
+
+  const form = new FormData()
+  form.append('file', new Blob([new Uint8Array(data)]), `${cid}.bin`)
+  form.append('pinataMetadata', JSON.stringify({ name: `merchmemes-${cid}` }))
+
   const res = await fetch(PINATA, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      hashToPin: cid,
-      pinataMetadata: { name: `merchmemes-${cid}` },
-    }),
+    headers: { Authorization: `Bearer ${jwt}` },
+    body: form,
   })
   if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 120)}`)
+
+  const body = await res.json()
+  if (body?.IpfsHash && body.IpfsHash !== cid) {
+    throw new Error(`cid mismatch: ${body.IpfsHash}`)
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -28,7 +36,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'PINATA_JWT is not set' }, { status: 500 })
   }
 
-  const limit = Math.min(Number(request.nextUrl.searchParams.get('limit') || '20'), 40)
+  const limit = Math.min(Number(request.nextUrl.searchParams.get('limit') || '8'), 20)
   const offset = Number(request.nextUrl.searchParams.get('offset') || '0')
 
   const supabase = createClient(
