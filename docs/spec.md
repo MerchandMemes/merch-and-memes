@@ -644,7 +644,7 @@ Supabase Postgres. Access is service-role from the server, except where noted.
 `year_approx`, `credit_as`, `published_at`. `published_at` null means unpublished.
 
 **`media_assets`** — `id`, `artefact_id`, `staging_path`, `ipfs_cid`, `thumb_cid`,
-`mime_type`, `file_size_bytes`, `is_primary`. `staging_path` doubles as the Filebase
+`mime_type`, `file_size_bytes`, `is_primary`, `pinata_pinned_at`. `staging_path` doubles as the Filebase
 object key and survives publication so the original can be located.
 
 **`submissions`** — `id`, `artefact_id`, `status`, `rights_declared`,
@@ -741,6 +741,11 @@ centralised app, which defeats the point. Filebase offers an S3-compatible API
 with pinning on write, so CI can upload an ordinary directory and get real CIDs
 back. Filebase is on the Pro tier; the bucket CID is stable across uploads.
 
+*Pinata* is the second pinner. Approval uploads each media object to it too, and
+the returned hash is checked against the Filebase CID so a mismatch fails loudly.
+It is best-effort: a Pinata failure never aborts an approval, because Filebase
+already holds the object. Free tier is 1 GB / 500 files.
+
 *Supabase* holds the database and the private staging bucket. It is the one
 component with no decentralised substitute at this scale.
 
@@ -824,7 +829,7 @@ Three things expire or run out, and each fails quietly:
 ### 13.5 Secrets
 
 `FILEBASE_ACCESS_KEY_ID`, `FILEBASE_SECRET_ACCESS_KEY`, `FILEBASE_SHELL_BUCKET`,
-`FILEBASE_IPFS_TOKEN`, `ENS_NAME`, `ENS_RPC_URL`, `ENS_UPDATER_PRIVATE_KEY`,
+`FILEBASE_IPFS_TOKEN`, `PINATA_JWT`, `ENS_NAME`, `ENS_RPC_URL`, `ENS_UPDATER_PRIVATE_KEY`,
 `GITHUB_DISPATCH_TOKEN`, `ADMIN_PASSWORD`, `RESEND_API_KEY`, Supabase URL and both
 keys, `NEXT_PUBLIC_SITE_URL`, Sentry credentials.
 
