@@ -466,9 +466,10 @@ locks.
 again from elsewhere.
 
 **FR5.5 Corrections.** A correction form on every artefact page, capped at 1000
-characters with an optional 60-character credit, stored in `corrections`.
-*Status: Partial.* Stored and shown on the page, but unlike submissions a
-correction triggers no email, so one can sit unnoticed until someone looks.
+characters with an optional 60-character credit, stored in `corrections`. Arrival
+emails the moderator with the artefact title, the text and a link; a failed send
+does not fail the correction.
+*Status: Shipped.*
 
 **FR5.6 No-JS behaviour.** Reactions, comments and corrections all require
 JavaScript, since they talk to Supabase from the browser. The artefact itself,
