@@ -199,8 +199,7 @@ Has no relationship with the project. Wants the archive to survive the project.
 
 Needs: public source, public CIDs, and written recovery steps.
 
-*Status: Partial.* Source is MIT and the bundle is pinnable, but recovery is not
-documented (SC6).
+*Status: Shipped.* Source is MIT, the bundle is pinnable, and docs/recovery.md documents preservation and rebuild.
 
 ### Not personas
 
@@ -590,7 +589,7 @@ instrumentation.
 
 **Not live:** contributor accounts, wallet authentication, editing a published
 artefact, drafts, bookmarks, contributor profiles, search beyond category
-filtering, public audit log, data export, second pinning provider, Arweave,
+filtering, public audit log, data export, Arweave,
 governance, mobile client.
 
 ## 10. Information Architecture
@@ -1051,8 +1050,7 @@ project, and the domain only matters once being unfindable costs something.
 | ENS name expires (2031) or owner key lost | Low / unknown | Address lost | Renewal calendar; key custody |
 | Credentials in the repo | Low | Full compromise | All via secrets, never committed |
 
-The two that need action rather than acceptance are the token expiry and the single
-pinner.
+The one that needs action rather than acceptance is the token expiry.
 
 ## 18. Decentralisation
 
@@ -1106,7 +1104,7 @@ moderating all require one.
 v2.5 claimed the reverse — that only a redirect page was hosted and the
 application stayed centralised — and was wrong in both directions.
 
-*Status: Shipped, with the pinning gap noted.*
+*Status: Shipped.*
 
 ### 18.4 What is deliberately not decentralised
 
