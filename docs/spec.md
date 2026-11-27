@@ -1191,10 +1191,10 @@ Carried from v2.5 with current status. Phase references point at §16.
 | A2 | Rename the Mac account and hostname | Open |
 | A3 | Legal review of the liability clause (§9 terms) | Open |
 | A4 | Written recovery procedure | Phase 2, SC6 |
-| A5 | Correction alert email | Phase 2 |
+| A5 | Correction alert email | Closed 2026-11-26 |
 | A6 | HEIC behaviour on Chromium | Phase 2 |
-| A7 | `og.png` recompression | Phase 2 |
-| A8 | Scaffold file removal from `public/` | Phase 2 |
+| A7 | `og.png` recompression | Closed 2026-11-26 — replaced by a 101 KB `og.jpg` at 1280×720 |
+| A8 | Scaffold file removal from `public/` | Closed 2026-11-26 |
 | A9 | Delete the two legacy test artefacts — they store old Supabase URLs and render broken | Closed 2026-11-25 |
 | A10 | Remove `/sentry-example-page` and `/api/sentry-example-api` | Closed — routes were already absent |
 | A11 | Terms §5 hosting description | Closed 2026-11-25 |
