@@ -1156,7 +1156,7 @@ category filter, document glyph for PDFs.
 
 **`/artefact/[id]`** — gallery, category, licence, title, credit, year, description,
 contributor story, reactions, corrections, comments, licence block.
-*Gap:* no citation block; corrections produce no alert.
+*Gap:* no citation block.
 
 **`/submit`** — multi-file input, compression, limits, duplicate guard, optional
 credit, rights declaration, success screen carrying the reference code and status
