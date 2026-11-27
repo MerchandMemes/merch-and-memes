@@ -27,6 +27,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_API_BASE: https://merch-and-memes.vercel.app
           NEXT_PUBLIC_SITE_URL: https://merchandmemes.eth.limo
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Upload shell to Filebase
         run: node scripts/upload-ipfs.mjs
