@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { corsHeaders, preflight } from '@/lib/lib/cors'
+import { apiUrl } from '@/lib/lib/api'
 
 export async function OPTIONS(request: NextRequest) {
   return preflight(request)
@@ -168,7 +169,7 @@ try {
       <p><strong>Category:</strong> ${categorySlug}</p>
       ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
       <p><strong>Reference:</strong> ${submission.reference_code}</p>
-      <p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/admin/moderation">Review in moderation queue →</a></p>
+      <p><a href="${apiUrl('/admin/moderation')}">Review in moderation queue →</a></p>
     `,
   })
 } catch (emailError) {
